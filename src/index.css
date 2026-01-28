@@ -1,0 +1,1020 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Windows XP Fonts - Authentic fonts from win32.run */
+@font-face {
+  font-family: "MSSans";
+  src: url("/src/assets/xp/fonts/ms_sans_serif.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "MSSans";
+  src: url("/src/assets/xp/fonts/ms_sans_serif_bold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Trebuchet";
+  src: url("/src/assets/xp/fonts/trebuchet.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Levi";
+  src: url("/src/assets/xp/fonts/levi.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Windows XP Design System */
+
+@layer base {
+  :root {
+    /* XP Window Colors - Authentic win32.run colors */
+    --background: 210 30% 90%;
+    --foreground: 0 0% 0%;
+
+    /* Authentic XP Yellow/Cream background (#ece9d8) */
+    --card: 42 24% 88%;
+    --card-foreground: 0 0% 0%;
+
+    --popover: 42 24% 88%;
+    --popover-foreground: 0 0% 0%;
+
+    /* XP Blue - Authentic */
+    --primary: 214 100% 47%;
+    --primary-foreground: 0 0% 100%;
+
+    /* XP Sidebar Blue */
+    --secondary: 214 70% 55%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 210 20% 85%;
+    --muted-foreground: 0 0% 30%;
+
+    --accent: 214 80% 60%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 85% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 30% 75%;
+    --input: 0 0% 100%;
+    --ring: 206 100% 40%;
+
+    --radius: 0px;
+
+    /* BSOD Colors */
+    --bsod-bg: 220 100% 45%;
+    --bsod-text: 0 0% 100%;
+
+    /* XP Specific Colors - Authentic from win32.run */
+    --xp-yellow: #ece9d8;
+    --xp-yellow-light: #e9e8e1;
+    --xp-title-start: 206 100% 40%;
+    --xp-title-end: 214 80% 50%;
+    --xp-sidebar-start: 214 70% 55%;
+    --xp-sidebar-end: 214 70% 45%;
+    --xp-sidebar-header-start: 214 70% 50%;
+    --xp-sidebar-header-end: 214 80% 40%;
+    --xp-content-bg: 42 24% 88%;
+    --xp-toolbar-bg: 210 30% 92%;
+    --xp-selection: 206 100% 40%;
+
+    /* Authentic XP Window Gradients from win32.run */
+    --xp-taskbar-gradient: linear-gradient(180deg, 
+      rgb(31, 47, 134) 0%, rgb(49, 101, 196) 3%, rgb(54, 130, 229) 6%,
+      rgb(68, 144, 230) 10%, rgb(56, 131, 229) 12%, rgb(43, 113, 224) 15%,
+      rgb(38, 99, 218) 18%, rgb(35, 91, 214) 20%, rgb(34, 88, 213) 23%,
+      rgb(33, 87, 214) 38%, rgb(36, 93, 219) 54%, rgb(37, 98, 223) 86%,
+      rgb(36, 95, 220) 89%, rgb(33, 88, 212) 92%, rgb(29, 78, 192) 95%,
+      rgb(25, 65, 165) 98%);
+    --titlebar-gradient: linear-gradient(180deg, #0997ff, #0053ee 8%, #0050ee 40%, #06f 88%, #06f 93%, #005bff 95%, #003dd7 96%, #003dd7);
+    --titlebar-gradient-inactive: linear-gradient(180deg, rgb(118, 151, 231) 0%, rgb(126, 158, 227) 3%, rgb(148, 175, 232) 6%, rgb(151, 180, 233) 8%, rgb(130, 165, 228) 14%, rgb(124, 159, 226) 17%, rgb(121, 150, 222) 25%, rgb(123, 153, 225) 56%, rgb(130, 169, 233) 81%, rgb(128, 165, 231) 89%, rgb(123, 150, 225) 94%, rgb(122, 147, 223) 97%, rgb(171, 186, 227) 100%);
+    
+    /* Authentic XP Window Box Shadows from win32.run */
+    --window-box-shadow: inset -1px -1px #424fa2, inset 1px 1px #4e68d1, inset -2px -2px #5669c0, inset 2px 2px #528eef, inset -3px -3px #4e73d7, inset 3px 3px #5284da;
+    --window-box-shadow-inactive: inset -1px -1px rgb(130, 165, 228), inset 1px 1px rgb(130, 165, 228), inset -2px -2px rgb(130, 165, 228), inset 2px 2px rgb(130, 165, 228), inset -3px -3px rgb(130, 165, 228), inset 3px 3px rgb(130, 165, 228);
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.1);
+    --shadow-md: 0 2px 4px 0 hsl(0 0% 0% / 0.15);
+    --shadow-lg: 0 4px 8px 0 hsl(0 0% 0% / 0.2);
+    --shadow-azure: 0 0 0 1px hsl(206 100% 40% / 0.5);
+
+    --sidebar-background: 214 70% 55%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 206 100% 40%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 214 80% 60%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 214 70% 40%;
+    --sidebar-ring: 206 100% 40%;
+
+    /* Windows Phone Metro Colors - Light Theme */
+    --wp-bg: 0 0% 100%;
+    --wp-text: 0 0% 0%;
+    --wp-chrome: 0 0% 96%;
+    --wp-accent: 207 90% 54%;
+    --wp-cobalt: 225 100% 47%;
+    --wp-cyan: 195 78% 50%;
+    --wp-emerald: 120 100% 27%;
+    --wp-teal: 180 100% 34%;
+    --wp-violet: 270 100% 50%;
+    --wp-magenta: 328 100% 42%;
+    --wp-orange: 24 100% 49%;
+    --wp-steel: 210 15% 46%;
+    --wp-card-bg: 0 0% 98%;
+    --wp-border: 0 0% 90%;
+  }
+
+  .dark {
+    --background: 220 15% 15%;
+    --foreground: 210 20% 95%;
+
+    /* Dark mode XP-style card background */
+    --card: 220 15% 20%;
+    --card-foreground: 210 20% 95%;
+
+    --popover: 220 15% 20%;
+    --popover-foreground: 210 20% 95%;
+
+    --primary: 206 100% 50%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 214 60% 40%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 220 15% 25%;
+    --muted-foreground: 215 15% 60%;
+
+    --accent: 214 70% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 15% 30%;
+    --input: 220 15% 25%;
+    --ring: 206 100% 50%;
+
+    --bsod-bg: 220 100% 45%;
+    --bsod-text: 0 0% 100%;
+
+    /* Dark mode XP colors */
+    --xp-yellow: #3a3a38;
+    --xp-yellow-light: #454543;
+    --xp-title-start: 206 80% 35%;
+    --xp-title-end: 214 70% 40%;
+    --xp-sidebar-start: 214 60% 40%;
+    --xp-sidebar-end: 214 60% 30%;
+    --xp-sidebar-header-start: 214 60% 35%;
+    --xp-sidebar-header-end: 214 70% 25%;
+    --xp-content-bg: 220 15% 18%;
+    --xp-toolbar-bg: 220 15% 22%;
+    --xp-selection: 206 100% 50%;
+    
+    /* Dark mode window styling */
+    --titlebar-gradient: linear-gradient(180deg, hsl(206 80% 45%) 0%, hsl(206 80% 35%) 8%, hsl(206 80% 30%) 40%, hsl(214 70% 25%) 88%, hsl(214 70% 30%) 93%, hsl(214 70% 40%) 95%, hsl(214 70% 45%) 100%);
+    --window-box-shadow: inset -1px -1px hsl(214 60% 30%), inset 1px 1px hsl(214 60% 40%), inset -2px -2px hsl(214 60% 35%), inset 2px 2px hsl(214 60% 45%), inset -3px -3px hsl(214 60% 38%), inset 3px 3px hsl(214 60% 42%);
+
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.3);
+    --shadow-md: 0 2px 4px 0 hsl(0 0% 0% / 0.4);
+    --shadow-lg: 0 4px 8px 0 hsl(0 0% 0% / 0.5);
+    --shadow-azure: 0 0 0 1px hsl(206 100% 50% / 0.5);
+
+    --sidebar-background: 214 60% 35%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 206 100% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 214 70% 45%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 214 60% 25%;
+    --sidebar-ring: 206 100% 50%;
+
+    /* Windows Phone Metro Colors - Dark Theme */
+    --wp-bg: 0 0% 0%;
+    --wp-text: 0 0% 100%;
+    --wp-chrome: 0 0% 10%;
+    --wp-accent: 207 90% 54%;
+    --wp-cobalt: 225 100% 47%;
+    --wp-cyan: 195 78% 50%;
+    --wp-emerald: 120 100% 27%;
+    --wp-teal: 180 100% 34%;
+    --wp-violet: 270 100% 50%;
+    --wp-magenta: 328 100% 42%;
+    --wp-orange: 24 100% 49%;
+    --wp-steel: 210 15% 46%;
+    --wp-card-bg: 0 0% 8%;
+    --wp-border: 0 0% 20%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: "MSSans", Tahoma, "Segoe UI", Arial, sans-serif;
+    font-size: 11px;
+  }
+}
+
+@layer components {
+
+  /* XP Menu Bar - Authentic win32.run styling */
+  .xp-menu-bar {
+    background-color: #ece9d8;
+    border-bottom: 1px solid rgb(180, 180, 180);
+    height: 22px;
+    display: flex;
+    align-items: center;
+    padding: 0 4px;
+    user-select: none;
+  }
+
+  /* XP MenuBar Buttons */
+  .xp-menu-btn {
+    padding: 2px 6px;
+    font-size: 11px;
+    border-radius: 2px;
+    color: #000;
+  }
+
+  .xp-menu-btn:hover {
+    background: rgb(51, 102, 204);
+    color: white;
+  }
+
+  .dark .xp-menu-bar {
+    background: linear-gradient(180deg,
+        hsl(220 10% 26%) 0%,
+        hsl(220 10% 18%) 100%);
+    border-bottom: 1px solid hsl(220 10% 30%);
+  }
+
+  .dark .xp-menu-btn {
+    color: hsl(210 20% 95%);
+  }
+
+  .dark .xp-menu-btn:hover {
+    background: hsl(214 70% 45%);
+    color: white;
+  }
+
+  /* XP Toolbar - Authentic win32.run styling */
+  .xp-toolbar {
+    background-color: #ece9d8;
+    border-bottom: 1px solid rgb(180, 180, 180);
+    padding: 4px 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* XP Toolbar Buttons */
+  .xp-toolbar-btn {
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    user-select: none;
+    color: #000;
+  }
+
+  .xp-toolbar-btn:hover {
+    background: rgba(51, 102, 204, 0.2);
+  }
+
+  .dark .xp-toolbar {
+    background: linear-gradient(180deg,
+        hsl(220 15% 30%) 0%,
+        hsl(220 15% 22%) 100%);
+    border-bottom: 1px solid hsl(220 15% 25%);
+  }
+
+  .dark .xp-toolbar-btn {
+    color: hsl(210 20% 95%);
+  }
+
+  .dark .xp-toolbar-btn:hover {
+    background: hsl(214 70% 45% / 0.5);
+  }
+
+  /* XP Address Bar - Authentic win32.run styling */
+  .xp-address-bar {
+    background-color: #ece9d8;
+    border-bottom: 1px solid rgb(180, 180, 180);
+    height: 26px;
+    display: flex;
+    align-items: center;
+    padding: 0 6px;
+    gap: 6px;
+    font-size: 11px;
+  }
+
+  /* XP Address input box - Authentic styling */
+  .xp-address-input {
+    flex: 1;
+    background: white;
+    border: 1px solid #7f9db9;
+    border-radius: 0;
+    padding: 2px 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    outline: none;
+  }
+
+  .xp-address-input:hover {
+    border-color: #3366cc;
+  }
+
+  .xp-address-input:focus {
+    border-color: #3366cc;
+    outline: none;
+  }
+
+  .dark .xp-address-bar {
+    background: linear-gradient(180deg,
+        hsl(220 15% 32%) 0%,
+        hsl(220 15% 24%) 100%);
+    border-bottom: 1px solid hsl(220 15% 25%);
+  }
+
+  .dark .xp-address-input {
+    background: hsl(220 15% 20%);
+    border-color: hsl(220 15% 35%);
+    color: hsl(210 20% 95%);
+  }
+
+  .dark .xp-address-input:hover {
+    border-color: hsl(206 100% 50%);
+  }
+
+  /* XP Taskbar - Authentic gradient from win32.run */
+  .xp-taskbar {
+    background-image: var(--xp-taskbar-gradient);
+
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    height: 30px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+
+    user-select: none;
+    z-index: 10;
+
+    border-top: 1px solid rgb(49, 101, 196);
+  }
+
+  /* Authentic XP Window shadow effect from win32.run */
+  .xp-window-shadow {
+    box-shadow: var(--window-box-shadow);
+  }
+
+  .xp-window-shadow-inactive {
+    box-shadow: var(--window-box-shadow-inactive);
+  }
+
+  /* XP Title Bar Gradient - Authentic from win32.run */
+  .xp-title-bar {
+    background: var(--titlebar-gradient);
+    font-family: 'Trebuchet MS', 'MSSans', Tahoma, Arial, sans-serif;
+  }
+
+  .dark .xp-title-bar {
+    background: linear-gradient(180deg,
+        hsl(206 80% 45%) 0%,
+        hsl(206 80% 35%) 8%,
+        hsl(206 80% 30%) 40%,
+        hsl(214 70% 25%) 88%,
+        hsl(214 70% 30%) 93%,
+        hsl(214 70% 40%) 95%,
+        hsl(214 70% 45%) 100%);
+  }
+
+  /* XP Sidebar Gradient */
+  .xp-sidebar {
+    background: linear-gradient(180deg,
+        rgb(149, 176, 241) 0%,
+        rgb(111, 140, 220) 40%,
+        rgb(78, 109, 203) 100%);
+    padding: 8px;
+  }
+
+  .dark .xp-sidebar {
+    background: linear-gradient(180deg,
+        hsl(214 60% 45%) 0%,
+        hsl(214 60% 40%) 50%,
+        hsl(214 60% 30%) 100%);
+  }
+
+  /* XP Sidebar Header Gradient */
+  .xp-sidebar-header {
+    background: linear-gradient(180deg,
+        rgb(70, 112, 214) 0%,
+        rgb(44, 84, 181) 100%);
+    border-radius: 6px 6px 0 0;
+    color: white;
+    padding: 6px 8px;
+    font-weight: bold;
+    font-size: 12px;
+  }
+
+  .dark .xp-sidebar-header {
+    background: linear-gradient(180deg,
+        hsl(214 60% 40%) 0%,
+        hsl(214 70% 30%) 100%);
+  }
+
+  .xp-sidebar-section {
+    background: linear-gradient(180deg,
+        rgb(240, 245, 255) 0%,
+        rgb(218, 228, 255) 100%);
+    padding: 10px 12px;
+    border: 1px solid rgb(180, 195, 240);
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+  }
+
+  .xp-link {
+    color: rgb(40, 74, 184);
+    font-size: 12px;
+    text-decoration: underline;
+  }
+
+  .xp-link:hover {
+    text-decoration: none;
+  }
+
+  /* XP Button Styles */
+  .xp-button {
+    background: linear-gradient(180deg,
+        hsl(0 0% 100%) 0%,
+        hsl(210 20% 95%) 45%,
+        hsl(210 20% 85%) 50%,
+        hsl(210 20% 90%) 100%);
+    border: 1px solid hsl(210 20% 60%);
+    border-radius: 3px;
+    padding: 2px 8px;
+    font-size: 11px;
+    box-shadow: 0 1px 0 hsl(0 0% 100% / 0.5) inset;
+  }
+
+  .dark .xp-button {
+    background: linear-gradient(180deg,
+        hsl(220 15% 35%) 0%,
+        hsl(220 15% 28%) 45%,
+        hsl(220 15% 22%) 50%,
+        hsl(220 15% 25%) 100%);
+    border-color: hsl(220 15% 40%);
+    color: hsl(210 20% 95%);
+  }
+
+  .xp-button:active {
+    background: linear-gradient(180deg,
+        hsl(210 20% 85%) 0%,
+        hsl(210 20% 80%) 100%);
+  }
+
+  /* XP Window Control Buttons */
+  .xp-control-btn {
+    width: 21px;
+    height: 21px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+  }
+
+  .xp-minimize {
+    background: linear-gradient(180deg,
+        hsl(206 80% 60%) 0%,
+        hsl(206 90% 45%) 45%,
+        hsl(206 90% 35%) 50%,
+        hsl(206 80% 50%) 100%);
+    border: 1px solid hsl(206 100% 25%);
+  }
+
+  .xp-maximize {
+    background: linear-gradient(180deg,
+        hsl(206 80% 60%) 0%,
+        hsl(206 90% 45%) 45%,
+        hsl(206 90% 35%) 50%,
+        hsl(206 80% 50%) 100%);
+    border: 1px solid hsl(206 100% 25%);
+  }
+
+  .xp-close {
+    background: linear-gradient(180deg,
+        hsl(0 70% 65%) 0%,
+        hsl(0 80% 50%) 45%,
+        hsl(0 80% 40%) 50%,
+        hsl(0 70% 55%) 100%);
+    border: 1px solid hsl(0 70% 30%);
+  }
+
+  /* XP Icon hover */
+  .xp-icon:hover {
+    background: hsl(var(--xp-selection) / 0.3);
+  }
+
+  .xp-icon.selected {
+    background: hsl(var(--xp-selection) / 0.4);
+  }
+
+  /* XP Content Area - Authentic XP Yellow/Cream */
+  .xp-content {
+    background-color: #ece9d8;
+  }
+
+  .dark .xp-content {
+    background-color: hsl(220 15% 18%);
+  }
+
+  /* XP Content Section divider - Blue gradient line like win32.run */
+  .xp-content-divider {
+    height: 2px;
+    background: linear-gradient(to right, #3366cc, #ece9d8);
+    margin-bottom: 16px;
+  }
+
+  .dark .xp-content-divider {
+    background: linear-gradient(to right, hsl(214 70% 45%), hsl(220 15% 18%));
+  }
+
+  /* XP Modal Window */
+  .xp-modal-window {
+    background: linear-gradient(180deg,
+        rgb(230, 235, 250) 0%,
+        rgb(215, 225, 245) 100%);
+    border-radius: 6px;
+    box-shadow:
+      0 4px 16px rgba(0, 0, 0, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    overflow: hidden;
+  }
+
+  .dark .xp-modal-window {
+    background: linear-gradient(180deg,
+        hsl(220 15% 22%) 0%,
+        hsl(220 15% 18%) 100%);
+    box-shadow:
+      0 4px 16px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  /* XP Modal Content */
+  .xp-modal-content {
+    background: hsl(var(--xp-content-bg));
+  }
+
+  /* XP Input */
+  .xp-input {
+    background: white;
+    border: 1px solid rgb(153, 180, 209);
+    border-radius: 2px;
+    padding: 4px 6px;
+    font-size: 11px;
+    font-family: inherit;
+    transition: border-color 0.15s ease;
+  }
+
+  .xp-input:focus {
+    outline: none;
+    border-color: rgb(51, 102, 204);
+    box-shadow: 0 0 0 1px rgb(51, 102, 204, 0.3);
+  }
+
+  .dark .xp-input {
+    background: hsl(220 15% 20%);
+    border-color: hsl(220 15% 35%);
+    color: hsl(210 20% 95%);
+  }
+
+  .dark .xp-input:focus {
+    border-color: hsl(206 100% 50%);
+    box-shadow: 0 0 0 1px hsl(206 100% 50% / 0.3);
+  }
+
+  /* XP List Container */
+  .xp-list-container {
+    background: white;
+    border: 1px solid rgb(180, 195, 220);
+    border-radius: 2px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .dark .xp-list-container {
+    background: hsl(220 15% 16%);
+    border-color: hsl(220 15% 28%);
+  }
+
+  /* XP List Item */
+  .xp-list-item {
+    display: flex;
+    align-items: center;
+    padding: 6px 8px;
+    border-bottom: 1px solid rgb(230, 235, 245);
+    animation: listItemEnter 0.25s ease-out forwards;
+    opacity: 0;
+  }
+
+  .xp-list-item:last-child {
+    border-bottom: none;
+  }
+
+  .xp-list-item:hover {
+    background: rgb(232, 240, 255);
+  }
+
+  .dark .xp-list-item {
+    border-bottom-color: hsl(220 15% 22%);
+  }
+
+  .dark .xp-list-item:hover {
+    background: hsl(214 70% 35% / 0.3);
+  }
+
+  /* XP File Item - My Computer style */
+  .xp-file-item {
+    font-family: "MSSans", Tahoma, sans-serif;
+  }
+
+  /* XP Section Title - My Computer style */
+  .xp-section-title {
+    font-family: "MSSans", Tahoma, sans-serif;
+  }
+
+  @keyframes listItemEnter {
+    from {
+      opacity: 0;
+      transform: translateX(10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+}
+
+@layer utilities {
+
+  /* Modal Animations */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px) scale(0.98);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .animate-progress {
+    animation: progress 3s ease-in-out infinite;
+  }
+
+  @keyframes progress {
+    0% {
+      width: 0%;
+    }
+
+    50% {
+      width: 70%;
+    }
+
+    100% {
+      width: 100%;
+    }
+  }
+
+  .animate-blink {
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink {
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0;
+    }
+  }
+
+  /* Hide scrollbar for WP panorama */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Windows Phone Tile Interaction Animations */
+  .wp-tile-anim {
+    transform-origin: center;
+    transition:
+      transform 0.22s cubic-bezier(0.19, 1, 0.22, 1),
+      opacity 0.15s ease-out;
+  }
+
+  .wp-tile-anim:active {
+    transform: scale(0.96) rotateX(4deg);
+    opacity: 0.9;
+  }
+
+  /* Subtle Metro hover effect (only for desktop, does not affect phone) */
+  @media (hover: hover) and (pointer: fine) {
+    .wp-tile-anim:hover {
+      transform: scale(1.02);
+    }
+  }
+
+  /* Windows Phone Tile Interaction Animations */
+  .wp-tile-anim {
+    transform-origin: center;
+    transition:
+      transform 0.22s cubic-bezier(0.19, 1, 0.22, 1),
+      opacity 0.15s ease-out;
+  }
+
+  .wp-tile-anim:active {
+    transform: scale(0.96) rotateX(4deg);
+    opacity: 0.9;
+  }
+
+  /* Subtle Metro hover effect (only for desktop, does not affect phone) */
+  @media (hover: hover) and (pointer: fine) {
+    .wp-tile-anim:hover {
+      transform: scale(1.02);
+    }
+  }
+
+  @keyframes wp-tile-enter {
+    0% {
+      opacity: 0;
+      transform: translateY(20px) scale(0.98);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* Apply staggered animation */
+  .wp-tile-enter {
+    animation: wp-tile-enter 0.4s ease-out forwards;
+    opacity: 0;
+  }
+
+  /* --------------------------------------------------------
+   WINDOWS PHONE LUMIA ANIMATIONS (WP8 / WP8.1 ACCURATE)
+-------------------------------------------------------- */
+
+  /* List entrance – staggered Lumia animation */
+  @keyframes wp-list-enter {
+    0% {
+      opacity: 0;
+      transform: translateX(25px);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .wp-list-enter {
+    opacity: 0;
+    animation: wp-list-enter 0.45s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+  }
+
+  /* Delay helper classes */
+  .wp-delay-1 {
+    animation-delay: 0.05s !important;
+  }
+
+  .wp-delay-2 {
+    animation-delay: 0.1s !important;
+  }
+
+  .wp-delay-3 {
+    animation-delay: 0.15s !important;
+  }
+
+  .wp-delay-4 {
+    animation-delay: 0.2s !important;
+  }
+
+  /* Metro tile press animation */
+  .wp-tile-anim {
+    transition: transform 0.22s cubic-bezier(0.13, 0.99, 0.32, 1);
+  }
+
+  .wp-tile-anim:active {
+    transform: scale(0.96) rotateX(4deg);
+  }
+
+  /* Subtle hover on desktop */
+  @media (hover: hover) and (pointer: fine) {
+    .wp-tile-anim:hover {
+      transform: scale(1.02);
+    }
+  }
+
+  /* Accent-left bar (Metro list style) */
+  .wp-accent-bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background-color: hsl(var(--wp-accent));
+  }
+
+  /* --------------------------------------------------------
+   WINDOWS XP BOOT SCREEN STYLES
+  -------------------------------------------------------- */
+
+  /* XP Boot Loading Bar Animation - 3 blue segments moving */
+  @keyframes xp-loading-segments {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(200%);
+    }
+  }
+
+  /* XP Welcome Screen fade in */
+  @keyframes xp-welcome-fade {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  /* XP Welcome text glow pulse */
+  @keyframes xp-welcome-glow {
+    0%, 100% {
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.4),
+                   0 0 40px rgba(255, 255, 255, 0.2);
+    }
+    50% {
+      text-shadow: 0 0 30px rgba(255, 255, 255, 0.6),
+                   0 0 60px rgba(255, 255, 255, 0.3);
+    }
+  }
+
+  /* XP Boot screen container */
+  .xp-boot-screen {
+    background: #000;
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* XP Loading bar container */
+  .xp-loading-bar {
+    width: 180px;
+    height: 20px;
+    border: 1px solid #3a6994;
+    border-radius: 2px;
+    background: #000;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* XP Loading bar segments container */
+  .xp-loading-segments {
+    display: flex;
+    gap: 4px;
+    position: absolute;
+    height: 100%;
+    padding: 3px;
+    animation: xp-loading-segments 1.5s linear infinite;
+  }
+
+  /* Individual loading segment */
+  .xp-loading-segment {
+    width: 12px;
+    height: 100%;
+    background: linear-gradient(180deg, 
+      #6eb5ff 0%, 
+      #3a8bd8 30%, 
+      #2a6bb8 70%, 
+      #1a4b98 100%);
+    border-radius: 1px;
+  }
+
+  /* XP Welcome screen */
+  .xp-welcome-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, 
+      #5a7bc0 0%, 
+      #5a7bc0 20%,
+      #6085c8 40%,
+      #5a7bc0 60%,
+      #5a7bc0 100%);
+    animation: xp-welcome-fade 0.5s ease-out;
+  }
+
+  /* XP Welcome screen glow overlay */
+  .xp-welcome-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 50%;
+    background: radial-gradient(ellipse at 0% 0%, 
+      rgba(100, 140, 220, 0.8) 0%, 
+      rgba(100, 140, 220, 0.4) 30%,
+      transparent 70%);
+    pointer-events: none;
+  }
+
+  /* XP Welcome text */
+  .xp-welcome-text {
+    font-family: "Franklin Gothic Medium", "Trebuchet MS", Arial, sans-serif;
+    font-size: 48px;
+    font-style: italic;
+    font-weight: 400;
+    color: white;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.4),
+                 0 0 40px rgba(255, 255, 255, 0.2);
+    animation: xp-welcome-glow 2s ease-in-out infinite;
+    z-index: 1;
+  }
+
+  /* XP Welcome bottom bar */
+  .xp-welcome-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 48px;
+    background: linear-gradient(180deg, 
+      #1a237e 0%,
+      #283593 50%,
+      #3949ab 100%);
+    border-top: 2px solid #5c6bc0;
+  }
+
+  /* XP Boot screen phase transition */
+  .xp-phase-exit {
+    animation: xp-welcome-fade 0.3s ease-out reverse forwards;
+  }
+}
