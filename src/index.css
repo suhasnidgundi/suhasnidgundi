@@ -412,6 +412,23 @@
         hsl(214 70% 45%) 100%);
   }
 
+  /* Inactive title bar - dimmed gradient (win32.run pattern) */
+  .xp-title-bar-inactive {
+    background: var(--titlebar-gradient-inactive);
+    font-family: 'Trebuchet MS', 'MSSans', Tahoma, Arial, sans-serif;
+  }
+
+  .dark .xp-title-bar-inactive {
+    background: linear-gradient(180deg,
+        hsl(206 30% 45%) 0%,
+        hsl(206 30% 38%) 8%,
+        hsl(206 30% 33%) 40%,
+        hsl(214 25% 28%) 88%,
+        hsl(214 25% 33%) 93%,
+        hsl(214 25% 38%) 95%,
+        hsl(214 25% 42%) 100%);
+  }
+
   /* XP Sidebar Gradient */
   .xp-sidebar {
     background: linear-gradient(180deg,

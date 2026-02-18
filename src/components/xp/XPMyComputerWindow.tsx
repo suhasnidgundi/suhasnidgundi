@@ -78,18 +78,26 @@ interface XPMyComputerWindowProps {
   onOpenBrowser: (url: string) => void;
   zIndex?: number;
   onFocus?: () => void;
+  isMaximized?: boolean;
+  isActive?: boolean;
+  onPositionChange?: (pos: { x: number; y: number }) => void;
+  onSizeChange?: (size: { width: number; height: number }) => void;
 }
 
-const XPMyComputerWindow = ({ 
+const XPMyComputerWindow = ({
   isDark,
-  onMinimize, 
-  onMaximize, 
+  onMinimize,
+  onMaximize,
   onClose,
   onOpenWordDoc,
   onOpenPdfViewer,
   onOpenBrowser,
   zIndex = 1,
-  onFocus
+  onFocus,
+  isMaximized,
+  isActive,
+  onPositionChange,
+  onSizeChange,
 }: XPMyComputerWindowProps) => {
   const navigate = useNavigate();
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
@@ -115,6 +123,10 @@ const XPMyComputerWindow = ({
       onClose={onClose}
       zIndex={zIndex}
       onFocus={onFocus}
+      isMaximized={isMaximized}
+      isActive={isActive}
+      onPositionChange={onPositionChange}
+      onSizeChange={onSizeChange}
     >
       {/* Sticky Headers */}
       <XPMenuBar />
@@ -124,7 +136,7 @@ const XPMyComputerWindow = ({
       {/* Main Content Area - Scrollable */}
       <div className="flex-1 flex min-h-0 overflow-hidden">
         {/* Sidebar */}
-        <XPSidebar 
+        <XPSidebar
           onViewAboutMe={onOpenWordDoc}
           onDownloadResume={() => {
             const link = document.createElement('a');
