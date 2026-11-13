@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, Info, Moon, Sun, FileText, BadgeCheck } from "lucide-react";
+import { Home, Info, Moon, Sun, FileText, BadgeCheck, Sparkles } from "lucide-react";
 
 import useAnalytics from "@/hooks/useAnalytics";
 import { useFeaturedProject, useProjects } from "@/hooks/useProjects";
@@ -11,6 +11,7 @@ import WPTile from "@/components/wp/WPTile";
 import WPAppBar from "@/components/wp/WPAppBar";
 import WPProfileTile from "@/components/wp/WPProfileTile";
 import WPInfoModal from "@/components/wp/WPInfoModal";
+import WPAIChatModal from "@/components/wp/WPAIChatModal";
 
 import WPFolderIcon from "@/components/wp/icons/WPFolderIcon";
 import WPGithubIcon from "@/components/wp/icons/WPGithubIcon";
@@ -29,6 +30,7 @@ interface WPHomeProps {
 const WPHome = ({ isDark, toggleTheme }: WPHomeProps) => {
   const navigate = useNavigate();
   const [showInfoModal, setShowInfoModal] = useState(false);
+  const [showAIChatModal, setShowAIChatModal] = useState(false);
 
   useAnalytics();
 
@@ -125,6 +127,16 @@ const WPHome = ({ isDark, toggleTheme }: WPHomeProps) => {
             />
           </div>
 
+          {/* AI Assistant (wide) */}
+          <WPTile
+            className="wp-tile-enter [animation-delay:0.28s]"
+            icon={<Sparkles className="w-8 h-8 text-white" />}
+            label="AI Assistant"
+            size="wide"
+            color="bg-wp-cobalt"
+            onClick={() => setShowAIChatModal(true)}
+          />
+
           {/* Blog (wide) */}
           <WPTile
             className="wp-tile-enter [animation-delay:0.30s]"
@@ -214,6 +226,11 @@ const WPHome = ({ isDark, toggleTheme }: WPHomeProps) => {
         onClose={() => setShowInfoModal(false)}
         isDark={isDark}
         toggleTheme={toggleTheme}
+      />
+
+      <WPAIChatModal
+        isOpen={showAIChatModal}
+        onClose={() => setShowAIChatModal(false)}
       />
     </div>
   );

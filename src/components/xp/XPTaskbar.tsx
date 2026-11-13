@@ -19,6 +19,7 @@ interface XPTaskbarProps {
   onOpenMyComputer?: () => void;
   onOpenWordDoc?: () => void;
   onOpenBrowser?: (url: string) => void;
+  onOpenAIChat?: () => void;
   onLogOff?: () => void;
   isMuted?: boolean;
   onToggleMute?: () => void;
@@ -33,6 +34,7 @@ const XPTaskbar = ({
   onOpenMyComputer,
   onOpenWordDoc,
   onOpenBrowser,
+  onOpenAIChat,
   onLogOff,
   isMuted = false,
   onToggleMute,
@@ -177,6 +179,10 @@ const XPTaskbar = ({
         }}
         onOpenBrowser={(url) => {
           onOpenBrowser?.(url);
+          handleCloseStartMenu();
+        }}
+        onOpenAIChat={() => {
+          onOpenAIChat?.();
           handleCloseStartMenu();
         }}
         onLogOff={() => {

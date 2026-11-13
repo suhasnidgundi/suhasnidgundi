@@ -8,6 +8,7 @@ import UserIcon from '@/assets/xp/icons/user_icon.png';
 import ShutDownIcon from '@/assets/xp/icons/Power.png';
 import LogoutIcon from '@/assets/xp/icons/Logout.png';
 import WordIcon from '@/assets/xp/icons/ms_word_logo_icon.png';
+import SearchIcon from '@/assets/xp/icons/search_icon.png';
 
 interface StartMenuProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ interface StartMenuProps {
   onOpenMyComputer: () => void;
   onOpenWordDoc: () => void;
   onOpenBrowser: (url: string) => void;
+  onOpenAIChat?: () => void;
   onLogOff: () => void;
 }
 
@@ -24,6 +26,7 @@ const StartMenu = ({
   onOpenMyComputer,
   onOpenWordDoc,
   onOpenBrowser,
+  onOpenAIChat,
   onLogOff
 }: StartMenuProps) => {
   const navigate = useNavigate();
@@ -82,6 +85,14 @@ const StartMenu = ({
                 subtitle="Microsoft Word"
                 onClick={() => handleItemClick(onOpenWordDoc)}
               />
+              {onOpenAIChat && (
+                <MenuItem
+                  icon={SearchIcon}
+                  title="AI Assistant"
+                  subtitle="Chat with Suhas AI"
+                  onClick={() => handleItemClick(onOpenAIChat)}
+                />
+              )}
 
               <div className="my-2 mx-3 h-px bg-gray-300" />
 

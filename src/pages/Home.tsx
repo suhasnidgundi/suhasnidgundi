@@ -4,6 +4,7 @@ import MyComputerIcon from "@/assets/xp/icons/my_computer.png";
 import InternetExplorerIcon from "@/assets/xp/icons/internet_explorer_icon.png";
 import WordIcon from "@/assets/xp/icons/ms_word_logo_icon.png";
 import PdfIcon from "@/assets/xp/icons/notepad_icon.png";
+import SearchIcon from "@/assets/xp/icons/search_icon.png";
 import { useIsMobile } from "@/hooks/use-mobile";
 import useAnalytics from "@/hooks/useAnalytics";
 import useXPSound from "@/hooks/useXPSound";
@@ -13,6 +14,7 @@ import XPWordDocument from "@/components/xp/XPWordDocument";
 import XPPdfViewer from "@/components/xp/XPPdfViewer";
 import XPDesktop from "@/components/xp/XPDesktop";
 import XPMyComputerWindow from "@/components/xp/XPMyComputerWindow";
+import XPAIChatWindow from "@/components/xp/XPAIChatWindow";
 import WPHome from "./WPHome";
 
 interface HomeProps {
@@ -22,7 +24,7 @@ interface HomeProps {
 
 interface WindowState {
   id: string;
-  type: 'my-computer' | 'browser' | 'word-doc' | 'pdf-viewer';
+  type: 'my-computer' | 'browser' | 'word-doc' | 'pdf-viewer' | 'ai-chat';
   title: string;
   icon: string;
   isMinimized: boolean;
@@ -64,6 +66,8 @@ function getDefaultSize(type: WindowState['type']): { width: number; height: num
       return { width: Math.min(1200, viewW * 0.92), height: Math.min(viewH * 0.94, viewH - 10) };
     case 'pdf-viewer':
       return { width: Math.min(1000, viewW * 0.85), height: Math.min(viewH * 0.88, viewH - 20) };
+    case 'ai-chat':
+      return { width: Math.min(520, viewW * 0.9), height: Math.min(620, viewH * 0.85) };
     default:
       return { width: Math.min(1000, viewW * 0.85), height: viewH * 0.8 };
   }
@@ -275,6 +279,11 @@ const Home = ({ isDark, toggleTheme }: HomeProps) => {
     openWindow('pdf-viewer', 'pdf-viewer', 'Resume.pdf - Adobe Reader', PdfIcon);
   }, [openWindow, playSound]);
 
+  const handleOpenAIChat = useCallback(() => {
+    playSound('click');
+    openWindow('ai-chat', 'ai-chat', 'Windows Assistant — AI', SearchIcon);
+  }, [openWindow, playSound]);
+
   const handleToggleMute = useCallback(() => {
     const newMuted = toggleMute();
     setIsMuted(newMuted);
@@ -411,6 +420,21 @@ const Home = ({ isDark, toggleTheme }: HomeProps) => {
           </div>
         );
 
+      case 'ai-chat':
+        return (
+          <div key={win.id} className="flex flex-col" style={windowStyle}>
+            <XPAIChatWindow
+              onClose={commonProps.onClose}
+              onMinimize={commonProps.onMinimize}
+              onMaximize={commonProps.onMaximize}
+              onFocus={commonProps.onFocus}
+              zIndex={win.zIndex}
+              isMaximized={win.isMaximized}
+              isActive={isActive}
+            />
+          </div>
+        );
+
       default:
         return null;
     }
@@ -424,6 +448,7 @@ const Home = ({ isDark, toggleTheme }: HomeProps) => {
         onOpenBrowser={openBrowser}
         onNavigateToProjects={() => navigate('/projects')}
         onNavigateToExperience={() => navigate('/experience')}
+        onOpenAIChat={handleOpenAIChat}
         isDark={isDark}
       />
 
@@ -444,6 +469,7 @@ const Home = ({ isDark, toggleTheme }: HomeProps) => {
         onOpenMyComputer={handleOpenMyComputer}
         onOpenWordDoc={handleOpenWordDoc}
         onOpenBrowser={openBrowser}
+        onOpenAIChat={handleOpenAIChat}
         onLogOff={handleLogOff}
         isMuted={isMuted}
         onToggleMute={handleToggleMute}

@@ -6,6 +6,7 @@ import NotepadIcon from '@/assets/xp/icons/notepad_icon.png';
 import GithubIcon from '@/assets/xp/icons/github_icon.png';
 import LinkedinIcon from '@/assets/xp/icons/linkedin_icon.png';
 import BriefcaseIcon from '@/assets/xp/icons/briefcase_icon.png';
+import SearchIcon from '@/assets/xp/icons/search_icon.png';
 import WallpaperLight from '@/assets/xp/wallpaper_light.jpg';
 import WallpaperDark from '@/assets/xp/wallpaper_dark.jpg';
 
@@ -57,6 +58,7 @@ interface XPDesktopProps {
   onOpenBrowser: (url: string) => void;
   onNavigateToProjects: () => void;
   onNavigateToExperience: () => void;
+  onOpenAIChat?: () => void;
   isDark: boolean;
 }
 
@@ -65,6 +67,7 @@ const XPDesktop = ({
   onOpenBrowser,
   onNavigateToProjects,
   onNavigateToExperience,
+  onOpenAIChat,
   isDark
 }: XPDesktopProps) => {
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
@@ -91,6 +94,12 @@ const XPDesktop = ({
       icon: BriefcaseIcon,
       label: 'Experience',
       onDoubleClick: onNavigateToExperience,
+    },
+    {
+      id: 'ai-assistant',
+      icon: SearchIcon,
+      label: 'AI Assistant',
+      onDoubleClick: onOpenAIChat,
     },
     {
       id: 'github',
