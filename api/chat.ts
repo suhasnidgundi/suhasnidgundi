@@ -1,10 +1,6 @@
 import { streamText } from 'ai';
 import { google } from '@ai-sdk/google';
 
-export const config = {
-  runtime: 'edge',
-};
-
 const SYSTEM_PROMPT = `
 You are the interactive AI Assistant for Suhas Nidgundi's portfolio website (suhasnidgundi.tech).
 Your role is to represent Suhas, answer questions about his skills, experience, projects, and background in a friendly, professional, and slightly witty tone fitting the nostalgic Windows XP theme.

@@ -1,9 +1,5 @@
 import { z } from 'zod';
 
-export const config = {
-  runtime: 'edge',
-};
-
 const ContactSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Valid email is required'),

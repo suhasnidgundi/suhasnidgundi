@@ -1,9 +1,5 @@
 import { get } from '@vercel/edge-config';
 
-export const config = {
-  runtime: 'edge',
-};
-
 export default async function handler(req: Request) {
   try {
     let edgeConfigData: any = null;
