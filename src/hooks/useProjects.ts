@@ -1,35 +1,39 @@
 import { useQuery } from '@tanstack/react-query';
-import { Query } from 'appwrite';
-import { databases, DATABASE_ID, COLLECTIONS } from '@/integrations/appwrite/client';
-import type { Project } from '@/integrations/appwrite/types';
+import { INITIAL_PROJECTS, type Project } from '@/data/portfolioData';
+
+export { type Project } from '@/data/portfolioData';
 
 export const useProjects = () => {
   return useQuery({
     queryKey: ['projects'],
-    queryFn: async () => {
-      const response = await databases.listDocuments(
-        DATABASE_ID,
-        COLLECTIONS.PROJECTS,
-        [Query.orderAsc('display_order')]
-      );
-      return response.documents as unknown as Project[];
+    queryFn: async (): Promise<Project[]> => {
+      try {
+        const res = await fetch('/api/projects');
+        if (!res.ok) throw new Error('Failed to fetch from API');
+        const data = await res.json();
+        return Array.isArray(data) && data.length > 0 ? data : INITIAL_PROJECTS;
+      } catch {
+        return INITIAL_PROJECTS;
+      }
     },
+    initialData: INITIAL_PROJECTS,
   });
 };
 
 export const useFeaturedProject = () => {
   return useQuery({
     queryKey: ['featured-project'],
-    queryFn: async () => {
-      const response = await databases.listDocuments(
-        DATABASE_ID,
-        COLLECTIONS.PROJECTS,
-        [
-          Query.equal('is_featured', true),
-          Query.limit(1)
-        ]
-      );
-      return (response.documents[0] as unknown as Project) ?? null;
+    queryFn: async (): Promise<Project | null> => {
+      try {
+        const res = await fetch('/api/projects?featured=true');
+        if (!res.ok) throw new Error('Failed to fetch featured project');
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) return data[0];
+        return INITIAL_PROJECTS.find((p) => p.is_featured) || INITIAL_PROJECTS[0];
+      } catch {
+        return INITIAL_PROJECTS.find((p) => p.is_featured) || INITIAL_PROJECTS[0];
+      }
     },
+    initialData: INITIAL_PROJECTS.find((p) => p.is_featured) || INITIAL_PROJECTS[0],
   });
 };
