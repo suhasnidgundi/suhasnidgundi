@@ -8,6 +8,7 @@ export default async function handler(req: Request) {
       try {
         edgeConfigData = {
           openToWork: await get('openToWork'),
+          status: await get('status'),
           announcement: await get('announcement'),
           featuredProject: await get('featuredProject'),
         };
