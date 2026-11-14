@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
-import { Sun, Moon, Volume2, VolumeX } from "lucide-react";
+import { Sun, Moon, Volume2, VolumeX, X } from "lucide-react";
 import MyComputerIcon from "@/assets/xp/icons/my_computer.png";
 import InternetExplorerIcon from "@/assets/xp/icons/internet_explorer_icon.png";
 import XPStartMenu from "./XPStartMenu";
 import { XPTaskbarContextMenu } from "./XPTaskbarContextMenu";
+import XPVisitorCounter from "./XPVisitorCounter";
+import { useEdgeConfig } from "@/hooks/useEdgeConfig";
 
 interface TaskbarWindowButton {
   id: string;
@@ -25,6 +27,7 @@ interface XPTaskbarProps {
   onOpenNotepad?: () => void;
   onOpenCalculator?: () => void;
   onOpenMinesweeper?: () => void;
+  onOpenGuestbook?: () => void;
   onLogOff?: () => void;
   onOpenFolder?: (folder: 'root' | 'projects' | 'experience') => void;
   isMuted?: boolean;
@@ -48,6 +51,7 @@ const XPTaskbar = ({
   onOpenNotepad,
   onOpenCalculator,
   onOpenMinesweeper,
+  onOpenGuestbook,
   onLogOff,
   onOpenFolder,
   isMuted = false,
@@ -61,6 +65,20 @@ const XPTaskbar = ({
   const [time, setTime] = useState(new Date());
   const [isStartMenuOpen, setIsStartMenuOpen] = useState(false);
   const [contextMenuPos, setContextMenuPos] = useState<{ x: number; y: number } | null>(null);
+
+  // Vercel Edge Config Announcement Balloon
+  const { data: edgeConfig } = useEdgeConfig();
+  const [showBalloon, setShowBalloon] = useState(false);
+
+  useEffect(() => {
+    if (edgeConfig?.announcement) {
+      const timer = setTimeout(() => {
+        setShowBalloon(true);
+        playSound?.('notify');
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [edgeConfig?.announcement, playSound]);
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -187,6 +205,11 @@ const XPTaskbar = ({
           )}
         </div>
 
+        {/* Retro Odometer Visitor Counter (Powered by Vercel Edge + Upstash Redis) */}
+        <div className="hidden sm:flex items-center px-1">
+          <XPVisitorCounter />
+        </div>
+
         {/* System Tray - Authentic Luna XP Style */}
         <div 
           className="flex items-center gap-2 px-3 h-full shrink-0 select-none"
@@ -267,6 +290,10 @@ const XPTaskbar = ({
           onOpenMinesweeper?.();
           handleCloseStartMenu();
         }}
+        onOpenGuestbook={() => {
+          onOpenGuestbook?.();
+          handleCloseStartMenu();
+        }}
         onLogOff={() => {
           onLogOff?.();
           handleCloseStartMenu();
@@ -286,6 +313,38 @@ const XPTaskbar = ({
           onOpenMyComputer={() => onOpenMyComputer?.()}
           onDismiss={() => setContextMenuPos(null)}
         />
+      )}
+      {/* Vercel Edge Config Announcement Balloon */}
+      {showBalloon && edgeConfig?.announcement && (
+        <div
+          className="fixed bottom-[34px] right-3 z-[100001] w-[270px] p-2.5 bg-[#ffffe1] border border-black rounded-[4px] shadow-xl text-black select-none font-['MSSans',Tahoma,sans-serif] animate-in fade-in slide-in-from-bottom-2 duration-200"
+          style={{
+            boxShadow: '2px 2px 6px rgba(0,0,0,0.45)',
+          }}
+        >
+          <div className="flex items-start justify-between mb-1 pb-1 border-b border-[#e6e6b8]">
+            <div className="flex items-center gap-1.5 font-bold text-[11px] text-[#000080]">
+              <span>📢</span>
+              <span>Vercel Edge Announcement</span>
+            </div>
+            <button
+              onClick={() => setShowBalloon(false)}
+              className="text-[11px] hover:bg-black/10 rounded px-1 cursor-pointer"
+              title="Dismiss"
+            >
+              <X className="w-3 h-3 text-black" />
+            </button>
+          </div>
+          <p className="text-[11px] text-gray-800 leading-snug">
+            {edgeConfig.announcement}
+          </p>
+          {edgeConfig.openToWork && (
+            <div className="mt-2 pt-1 border-t border-[#e6e6b8] flex items-center justify-between text-[10px]">
+              <span className="text-emerald-700 font-bold">🟢 Open for Work</span>
+              <span className="text-gray-500 font-mono text-[9px]">Edge Config</span>
+            </div>
+          )}
+        </div>
       )}
     </>
   );

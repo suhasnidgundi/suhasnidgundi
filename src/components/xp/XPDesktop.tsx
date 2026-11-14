@@ -93,6 +93,7 @@ interface XPDesktopProps {
   onOpenNotepad?: () => void;
   onOpenCalculator?: () => void;
   onOpenMinesweeper?: () => void;
+  onOpenGuestbook?: () => void;
   onUnfocusAll?: () => void;
   isDark: boolean;
 }
@@ -108,6 +109,7 @@ const XPDesktop: React.FC<XPDesktopProps> = ({
   onOpenNotepad,
   onOpenCalculator,
   onOpenMinesweeper,
+  onOpenGuestbook,
   onUnfocusAll,
   isDark,
 }) => {
@@ -173,6 +175,12 @@ const XPDesktop: React.FC<XPDesktopProps> = ({
       icon: '/icons/minesweeper_32.png',
       label: 'Minesweeper',
       onDoubleClick: () => onOpenMinesweeper?.(),
+    },
+    {
+      id: 'guestbook',
+      icon: '/icons/display_properties_32.png',
+      label: 'Guestbook',
+      onDoubleClick: () => onOpenGuestbook?.(),
     },
     {
       id: 'recycle-bin',

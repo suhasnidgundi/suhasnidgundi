@@ -14,7 +14,8 @@ export type WindowAppId =
   | 'ai-chat'
   | 'notepad'
   | 'calculator'
-  | 'minesweeper';
+  | 'minesweeper'
+  | 'guestbook';
 
 export interface ManagedWindow {
   id: string;
@@ -217,6 +218,14 @@ function getDefaultAppMeta(appId: WindowAppId) {
         w: 240,
         h: 300,
         resizable: false,
+      };
+    case 'guestbook':
+      return {
+        title: 'Guestbook — Suhas Nidgundi Portfolio',
+        icon: '/icons/display_properties_32.png',
+        w: 740,
+        h: 520,
+        resizable: true,
       };
   }
 }

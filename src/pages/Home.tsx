@@ -13,6 +13,7 @@ import XPAIChatWindow from "@/components/xp/XPAIChatWindow";
 import XPNotepad from "@/components/xp/XPNotepad";
 import XPCalculator from "@/components/xp/XPCalculator";
 import XPMinesweeper from "@/components/xp/XPMinesweeper";
+import XPGuestbook from "@/components/xp/XPGuestbook";
 import WPHome from "./WPHome";
 import {
   WindowManagerProvider,
@@ -112,6 +113,10 @@ const HomeContent: React.FC<HomeProps> = ({ isDark, toggleTheme }) => {
 
   const handleOpenMinesweeper = useCallback(() => {
     openWindow({ appId: 'minesweeper' });
+  }, [openWindow]);
+
+  const handleOpenGuestbook = useCallback(() => {
+    openWindow({ appId: 'guestbook' });
   }, [openWindow]);
 
   // Render individual windows according to their appId
@@ -302,6 +307,23 @@ const HomeContent: React.FC<HomeProps> = ({ isDark, toggleTheme }) => {
           </div>
         );
 
+      case 'guestbook':
+        return (
+          <div key={win.id} data-win-id={win.id} style={windowStyle}>
+            <XPGuestbook
+              onClose={commonProps.onClose}
+              onMinimize={commonProps.onMinimize}
+              onMaximize={commonProps.onMaximize}
+              onFocus={commonProps.onFocus}
+              zIndex={win.zIndex}
+              isMaximized={isMaximized}
+              isActive={win.focused}
+              onPositionChange={commonProps.onPositionChange}
+              onSizeChange={commonProps.onSizeChange}
+            />
+          </div>
+        );
+
       default:
         return null;
     }
@@ -321,6 +343,7 @@ const HomeContent: React.FC<HomeProps> = ({ isDark, toggleTheme }) => {
         onOpenNotepad={handleOpenNotepad}
         onOpenCalculator={handleOpenCalculator}
         onOpenMinesweeper={handleOpenMinesweeper}
+        onOpenGuestbook={handleOpenGuestbook}
         onUnfocusAll={unfocusAll}
         isDark={isDark}
       />
@@ -348,6 +371,7 @@ const HomeContent: React.FC<HomeProps> = ({ isDark, toggleTheme }) => {
         onOpenNotepad={handleOpenNotepad}
         onOpenCalculator={handleOpenCalculator}
         onOpenMinesweeper={handleOpenMinesweeper}
+        onOpenGuestbook={handleOpenGuestbook}
         onLogOff={handleLogOff}
         isMuted={isMuted}
         onToggleMute={handleToggleMute}

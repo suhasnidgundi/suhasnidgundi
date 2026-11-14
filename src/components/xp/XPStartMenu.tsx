@@ -9,6 +9,7 @@ import ShutDownIcon from '@/assets/xp/icons/Power.png';
 import LogoutIcon from '@/assets/xp/icons/Logout.png';
 import WordIcon from '@/assets/xp/icons/ms_word_logo_icon.png';
 import SearchIcon from '@/assets/xp/icons/search_icon.png';
+import { useEdgeConfig } from '@/hooks/useEdgeConfig';
 
 interface StartMenuProps {
   isOpen: boolean;
@@ -20,6 +21,7 @@ interface StartMenuProps {
   onOpenNotepad?: () => void;
   onOpenCalculator?: () => void;
   onOpenMinesweeper?: () => void;
+  onOpenGuestbook?: () => void;
   onLogOff: () => void;
   onOpenFolder?: (folder: 'root' | 'projects' | 'experience') => void;
 }
@@ -34,10 +36,12 @@ const StartMenu = ({
   onOpenNotepad,
   onOpenCalculator,
   onOpenMinesweeper,
+  onOpenGuestbook,
   onLogOff,
   onOpenFolder,
 }: StartMenuProps) => {
   const navigate = useNavigate();
+  const { data: edgeConfig } = useEdgeConfig();
 
   if (!isOpen) return null;
 
@@ -79,9 +83,14 @@ const StartMenu = ({
               className="w-full h-full object-cover bg-gradient-to-br from-[#3a7bd5] to-[#5aa9ff]"
             />
           </div>
-          <span className="text-white font-bold text-[16px] font-['Trebuchet_MS',Tahoma,sans-serif] drop-shadow-[1px_1px_2px_#0a1883b3] truncate">
-            Suhas Nidgundi
-          </span>
+          <div className="flex flex-col min-w-0">
+            <span className="text-white font-bold text-[16px] font-['Trebuchet_MS',Tahoma,sans-serif] drop-shadow-[1px_1px_2px_#0a1883b3] truncate">
+              Suhas Nidgundi
+            </span>
+            <span className="text-[10px] text-emerald-200 font-medium font-['MSSans',Tahoma,sans-serif] drop-shadow-[0_1px_1px_#000]">
+              {edgeConfig?.openToWork ? '🟢 Available for Hire' : '💻 Full Stack Engineer'}
+            </span>
+          </div>
         </div>
 
         {/* Main Content */}
@@ -178,6 +187,13 @@ const StartMenu = ({
               icon={FolderIcon}
               title="My Projects"
               onClick={() => handleItemClick(() => (onOpenFolder ? onOpenFolder('projects') : navigate('/projects')))}
+            />
+
+            <RightMenuItem
+              icon="/icons/display_properties_32.png"
+              title="Guestbook"
+              onClick={() => handleItemClick(() => onOpenGuestbook?.())}
+              bold
             />
 
             <div className="my-2 mx-3 h-[1px] bg-[#95b4e0]" />
