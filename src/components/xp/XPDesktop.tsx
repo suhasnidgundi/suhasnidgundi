@@ -9,6 +9,7 @@ import BriefcaseIcon from '@/assets/xp/icons/briefcase_icon.png';
 import SearchIcon from '@/assets/xp/icons/search_icon.png';
 import WallpaperLight from '@/assets/xp/wallpaper_light.jpg';
 import WallpaperDark from '@/assets/xp/wallpaper_dark.jpg';
+import { XPDesktopContextMenu } from './XPDesktopContextMenu';
 
 interface DesktopIconProps {
   icon: string;
@@ -67,6 +68,7 @@ interface XPDesktopProps {
   onNavigateToProjects: () => void;
   onNavigateToExperience: () => void;
   onOpenAIChat?: () => void;
+  onUnfocusAll?: () => void;
   isDark: boolean;
 }
 
@@ -76,12 +78,27 @@ const XPDesktop = ({
   onNavigateToProjects,
   onNavigateToExperience,
   onOpenAIChat,
-  isDark
+  onUnfocusAll,
+  isDark,
 }: XPDesktopProps) => {
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
+  const [contextMenuPos, setContextMenuPos] = useState<{ x: number; y: number } | null>(null);
 
-  const handleIconClick = (id: string) => {
+  const handleIconClick = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     setSelectedIcon(selectedIcon === id ? null : id);
+    onUnfocusAll?.();
+  };
+
+  const handleDesktopClick = () => {
+    if (selectedIcon) setSelectedIcon(null);
+    onUnfocusAll?.();
+  };
+
+  const handleDesktopContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onUnfocusAll?.();
+    setContextMenuPos({ x: e.clientX, y: e.clientY });
   };
 
   const desktopIcons = [
@@ -137,14 +154,15 @@ const XPDesktop = ({
 
   return (
     <div
-      className="absolute inset-0 bottom-[30px] overflow-hidden"
+      className="absolute inset-0 bottom-[30px] overflow-hidden select-none"
       style={{
         backgroundImage: `url(${isDark ? WallpaperDark : WallpaperLight})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
       }}
-      onClick={() => selectedIcon && setSelectedIcon(null)}
+      onClick={handleDesktopClick}
+      onContextMenu={handleDesktopContextMenu}
     >
       {/* Desktop Icons Grid */}
       <div
@@ -156,12 +174,23 @@ const XPDesktop = ({
             key={icon.id}
             icon={icon.icon}
             label={icon.label}
-            onClick={() => handleIconClick(icon.id)}
+            onClick={(e) => handleIconClick(icon.id, e as unknown as React.MouseEvent)}
             onDoubleClick={icon.onDoubleClick}
             selected={selectedIcon === icon.id}
           />
         ))}
       </div>
+
+      {/* Desktop Right Click Context Menu */}
+      {contextMenuPos && (
+        <XPDesktopContextMenu
+          x={contextMenuPos.x}
+          y={contextMenuPos.y}
+          onRefresh={() => setSelectedIcon(null)}
+          onOpenMyComputer={onOpenMyComputer}
+          onDismiss={() => setContextMenuPos(null)}
+        />
+      )}
     </div>
   );
 };

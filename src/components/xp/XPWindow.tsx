@@ -1,10 +1,12 @@
 import { ReactNode, useState, useRef, useCallback, useEffect } from 'react';
+import { XPSystemMenu } from './XPSystemMenu';
 
 const TASKBAR_HEIGHT = 30;
 const MIN_WIDTH = 320;
 const MIN_HEIGHT = 200;
 
 interface XPWindowProps {
+  id?: string;
   title: string;
   icon?: ReactNode;
   children: ReactNode;
@@ -24,6 +26,7 @@ interface XPWindowProps {
 type ResizeDir = 'n' | 's' | 'e' | 'w' | 'ne' | 'nw' | 'se' | 'sw';
 
 const XPWindow = ({
+  id,
   title,
   icon,
   children,
@@ -41,6 +44,9 @@ const XPWindow = ({
 }: XPWindowProps) => {
   const [internalMaximized, setInternalMaximized] = useState(false);
   const isMaximized = controlledMaximized !== undefined ? controlledMaximized : internalMaximized;
+
+  // System Menu state
+  const [systemMenuPos, setSystemMenuPos] = useState<{ x: number; y: number } | null>(null);
 
   // Drag state
   const isDragging = useRef(false);
@@ -62,13 +68,50 @@ const XPWindow = ({
 
   // Double click title bar to toggle maximize
   const handleTitleDoubleClick = (e: React.MouseEvent) => {
+    if ((e.target as HTMLElement).closest('button, .xp-caption-btn, .sys-icon')) return;
     e.stopPropagation();
     handleMaximize();
+  };
+
+  // Alt + Space to open system menu
+  useEffect(() => {
+    if (!isActive) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.altKey && e.code === 'Space') {
+        e.preventDefault();
+        const rect = windowRef.current?.getBoundingClientRect();
+        if (rect) {
+          setSystemMenuPos({ x: rect.left + 4, y: rect.top + 30 });
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isActive]);
+
+  // Context menu on titlebar
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSystemMenuPos({ x: e.clientX, y: e.clientY });
+  };
+
+  // Icon click (single click: open menu, double click: close window)
+  const handleIconMouseDown = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (e.detail >= 2) {
+      setSystemMenuPos(null);
+      onClose?.();
+    } else {
+      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      setSystemMenuPos({ x: rect.left, y: rect.bottom + 2 });
+    }
   };
 
   // --- Drag handlers ---
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (!draggable || isMaximized) return;
+    if ((e.target as HTMLElement).closest('button, .xp-caption-btn, .sys-icon')) return;
     e.preventDefault();
     isDragging.current = true;
     const parentRect = windowRef.current?.getBoundingClientRect();
@@ -184,81 +227,110 @@ const XPWindow = ({
   ];
 
   return (
-    <div
-      ref={windowRef}
-      className={`flex flex-col h-full overflow-hidden ${
-        isMaximized ? '' : 'xp-window-frame'
-      } ${!isActive ? 'inactive' : ''} ${className}`}
-      style={{
-        zIndex,
-        borderRadius: isMaximized ? '0' : '8px 8px 0 0',
-      }}
-      onMouseDown={onFocus}
-    >
-      {/* Resize handles - only show when not maximized */}
-      {!isMaximized && resizeHandles.map(h => (
-        <div
-          key={h.dir}
-          className={h.className}
-          style={{ cursor: h.cursor }}
-          onMouseDown={handleResizeMouseDown(h.dir)}
-        />
-      ))}
-
-      {/* Title Bar - Authentic Luna XP styling with drag and double-click support */}
+    <>
       <div
-        className={`h-[30px] flex items-center justify-between px-1.5 select-none shrink-0 ${
-          isActive ? 'xp-title-bar' : 'xp-title-bar-inactive'
-        }`}
-        onMouseDown={handleMouseDown}
-        onDoubleClick={handleTitleDoubleClick}
-        style={{ cursor: draggable && !isMaximized ? 'default' : 'default' }}
+        ref={windowRef}
+        data-win-id={id}
+        className={`flex flex-col h-full overflow-hidden ${
+          isMaximized ? '' : 'xp-window-frame'
+        } ${!isActive ? 'inactive' : ''} ${className}`}
+        style={{
+          zIndex,
+          borderRadius: isMaximized ? '0' : '8px 8px 0 0',
+        }}
+        onMouseDown={onFocus}
       >
-        <div className="flex items-center gap-1.5 ml-1 overflow-hidden pointer-events-none">
-          {icon && <div className="w-4 h-4 flex items-center justify-center shrink-0">{icon}</div>}
-          <span className="font-['Trebuchet_MS',Tahoma,sans-serif] font-bold text-[13px] text-white leading-tight line-clamp-1 whitespace-nowrap drop-shadow-[1px_1px_1px_rgba(15,16,137,0.8)]">
-            {title}
-          </span>
+        {/* Resize handles - only show when not maximized */}
+        {!isMaximized && resizeHandles.map(h => (
+          <div
+            key={h.dir}
+            className={h.className}
+            style={{ cursor: h.cursor }}
+            onMouseDown={handleResizeMouseDown(h.dir)}
+          />
+        ))}
+
+        {/* Title Bar - Authentic Luna XP styling with drag, double-click & context menu */}
+        <div
+          className={`h-[30px] flex items-center justify-between px-1.5 select-none shrink-0 ${
+            isActive ? 'xp-title-bar' : 'xp-title-bar-inactive'
+          }`}
+          onMouseDown={handleMouseDown}
+          onDoubleClick={handleTitleDoubleClick}
+          onContextMenu={handleContextMenu}
+          style={{ cursor: 'default' }}
+        >
+          <div className="flex items-center gap-1.5 ml-1 overflow-hidden pointer-events-auto">
+            {icon && (
+              <div
+                className="w-4 h-4 flex items-center justify-center shrink-0 cursor-pointer sys-icon"
+                onMouseDown={handleIconMouseDown}
+                title="System Menu (Double click to close)"
+              >
+                {icon}
+              </div>
+            )}
+            <span className="font-['Trebuchet_MS',Tahoma,sans-serif] font-bold text-[13px] text-white leading-tight line-clamp-1 whitespace-nowrap drop-shadow-[1px_1px_1px_rgba(15,16,137,0.8)] pointer-events-none">
+              {title}
+            </span>
+          </div>
+          <div className="flex items-center mr-1 shrink-0">
+            <button
+              className="xp-caption-btn xp-caption-min"
+              onClick={(e) => {
+                e.stopPropagation();
+                onMinimize?.();
+              }}
+              onMouseDown={(e) => e.stopPropagation()}
+              title="Minimize"
+              aria-label="Minimize"
+            />
+            <button
+              className={`xp-caption-btn ${isMaximized ? 'xp-caption-restore' : 'xp-caption-max'}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleMaximize();
+              }}
+              onMouseDown={(e) => e.stopPropagation()}
+              title={isMaximized ? "Restore" : "Maximize"}
+              aria-label={isMaximized ? "Restore" : "Maximize"}
+            />
+            <button
+              className="xp-caption-btn xp-caption-close"
+              onClick={(e) => {
+                e.stopPropagation();
+                onClose?.();
+              }}
+              onMouseDown={(e) => e.stopPropagation()}
+              title="Close"
+              aria-label="Close"
+            />
+          </div>
         </div>
-        <div className="flex items-center mr-1 shrink-0">
-          <button
-            className="xp-caption-btn xp-caption-min"
-            onClick={(e) => {
-              e.stopPropagation();
-              onMinimize?.();
-            }}
-            onMouseDown={(e) => e.stopPropagation()}
-            title="Minimize"
-            aria-label="Minimize"
-          />
-          <button
-            className={`xp-caption-btn ${isMaximized ? 'xp-caption-restore' : 'xp-caption-max'}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleMaximize();
-            }}
-            onMouseDown={(e) => e.stopPropagation()}
-            title={isMaximized ? "Restore" : "Maximize"}
-            aria-label={isMaximized ? "Restore" : "Maximize"}
-          />
-          <button
-            className="xp-caption-btn xp-caption-close"
-            onClick={(e) => {
-              e.stopPropagation();
-              onClose?.();
-            }}
-            onMouseDown={(e) => e.stopPropagation()}
-            title="Close"
-            aria-label="Close"
-          />
+
+        {/* Content - XP Yellow/Cream background */}
+        <div
+          className="flex-1 flex flex-col overflow-hidden bg-[#ece9d8] dark:bg-gray-900 border-l-[3px] border-r-[3px] border-b-[3px]"
+          style={{ borderColor: isActive ? '#0055ea' : '#7a96df' }}
+        >
+          {children}
         </div>
       </div>
 
-      {/* Content - XP Yellow/Cream background */}
-      <div className="flex-1 flex flex-col overflow-hidden bg-[#ece9d8] dark:bg-gray-900 border-l-[3px] border-r-[3px] border-b-[3px] border-[#0055ea] dark:border-[#4265a7]" style={{ borderColor: isActive ? '#0055ea' : '#7a96df' }}>
-        {children}
-      </div>
-    </div>
+      {/* System Context Menu */}
+      {systemMenuPos && (
+        <XPSystemMenu
+          x={systemMenuPos.x}
+          y={systemMenuPos.y}
+          isMaximized={!!isMaximized}
+          onRestore={() => handleMaximize()}
+          onMinimize={() => onMinimize?.()}
+          onMaximize={() => handleMaximize()}
+          onClose={() => onClose?.()}
+          onDismiss={() => setSystemMenuPos(null)}
+        />
+      )}
+    </>
   );
 };
 
