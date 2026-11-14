@@ -3,6 +3,7 @@ import XPWindow from './XPWindow';
 import NotepadIcon from '@/assets/xp/icons/notepad_icon.png';
 import { Save, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
+import { getAdminAuthHeaders } from '@/contexts/AuthContext';
 
 interface XPNotepadProps {
   onClose?: () => void;
@@ -62,13 +63,17 @@ const XPNotepad: React.FC<XPNotepadProps> = ({
     try {
       const res = await fetch('/api/documents?type=readme', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAdminAuthHeaders(),
+        },
         body: JSON.stringify({ content }),
       });
       if (res.ok) {
         toast.success('Document saved to Vercel Blob storage (readme.txt)');
       } else {
-        toast.error('Failed to save document');
+        const data = await res.json().catch(() => ({}));
+        toast.error(data.error || 'Admin credentials required to save changes to Vercel Blob');
       }
     } catch (err) {
       toast.error('Network error while saving to Vercel Blob');

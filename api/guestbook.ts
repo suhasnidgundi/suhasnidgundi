@@ -1,5 +1,6 @@
 // Serverless Guestbook API supporting Upstash Redis / Vercel Blob / Postgres
 import { put, list } from '@vercel/blob';
+import { verifyAdminRequest } from './_auth';
 
 export interface GuestbookEntry {
   id: string;
@@ -201,5 +202,45 @@ export async function GET(req: Request) {
     }
   );
 }
+
+export async function DELETE(req: Request) {
+  try {
+    const auth = verifyAdminRequest(req);
+    if (!auth.authorized) {
+      return new Response(JSON.stringify({ error: auth.reason || 'Unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    const url = new URL(req.url);
+    const id = url.searchParams.get('id');
+    if (!id) {
+      return new Response(JSON.stringify({ error: 'Missing entry id' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    const entries = (await getBlobGuestbook()) || inMemoryEntries;
+    const filtered = entries.filter((e) => e.id !== id);
+
+    if (process.env.BLOB_READ_WRITE_TOKEN) {
+      await saveBlobGuestbook(filtered);
+    }
+    inMemoryEntries = filtered;
+
+    return new Response(JSON.stringify({ success: true, deletedId: id }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (err: any) {
+    return new Response(JSON.stringify({ error: err.message || 'Failed to delete entry' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+}
+
 
 

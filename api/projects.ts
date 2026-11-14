@@ -1,5 +1,6 @@
 // Dynamic Projects API backed comprehensively by Vercel Blob Storage
 import { put, list } from '@vercel/blob';
+import { verifyAdminRequest } from './_auth';
 
 export interface Project {
   $id: string;
@@ -96,6 +97,14 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
+    const auth = verifyAdminRequest(req);
+    if (!auth.authorized) {
+      return new Response(JSON.stringify({ error: auth.reason || 'Unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
     const body = await req.json();
     const { title, description, tech_stack, impact_metric } = body;
 
@@ -139,6 +148,14 @@ export async function POST(req: Request) {
 
 export async function PUT(req: Request) {
   try {
+    const auth = verifyAdminRequest(req);
+    if (!auth.authorized) {
+      return new Response(JSON.stringify({ error: auth.reason || 'Unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
     const body = await req.json();
     let projects = await fetchBlobProjects();
 
@@ -181,6 +198,14 @@ export async function PUT(req: Request) {
 
 export async function DELETE(req: Request) {
   try {
+    const auth = verifyAdminRequest(req);
+    if (!auth.authorized) {
+      return new Response(JSON.stringify({ error: auth.reason || 'Unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
     const url = new URL(req.url);
     const id = url.searchParams.get('id');
 

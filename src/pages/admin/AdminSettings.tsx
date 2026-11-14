@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Upload, FileText, Loader2, CheckCircle2 } from 'lucide-react';
 import { useProfile, useUpdateProfile } from '@/hooks/useProfile';
 import { useToast } from '@/hooks/use-toast';
+import { getAdminAuthHeaders } from '@/contexts/AuthContext';
 
 const AdminSettings = () => {
   const { data: profile, isLoading } = useProfile();
@@ -56,6 +57,7 @@ const AdminSettings = () => {
     try {
       const res = await fetch(`/api/blob?filename=${encodeURIComponent(file.name)}`, {
         method: 'POST',
+        headers: getAdminAuthHeaders(),
         body: file,
       });
 

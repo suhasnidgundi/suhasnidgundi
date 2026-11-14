@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getAdminAuthHeaders } from '@/contexts/AuthContext';
 
 export interface DynamicProfile {
   name: string;
@@ -36,7 +37,10 @@ export const useUpdateProfile = () => {
     mutationFn: async (updated: Partial<DynamicProfile>) => {
       const res = await fetch('/api/config', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAdminAuthHeaders(),
+        },
         body: JSON.stringify(updated),
       });
       if (!res.ok) throw new Error('Failed to update profile');

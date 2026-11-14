@@ -1,6 +1,7 @@
 // Dynamic Configuration & Profile API fusing Vercel Edge Config and Vercel Blob Storage
 import { get } from '@vercel/edge-config';
 import { put, list } from '@vercel/blob';
+import { verifyAdminRequest } from './_auth';
 
 export interface ProfileData {
   openToWork: boolean;
@@ -127,6 +128,14 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
+    const auth = verifyAdminRequest(req);
+    if (!auth.authorized) {
+      return new Response(JSON.stringify({ error: auth.reason || 'Unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
     const body = await req.json();
     const current = (await fetchBlobProfile()) || {};
     const updated = {

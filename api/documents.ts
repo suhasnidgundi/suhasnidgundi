@@ -1,5 +1,6 @@
 // Dynamic Document Management API for Notepad and WordPad backed by Vercel Blob Storage
 import { put, list } from '@vercel/blob';
+import { verifyAdminRequest } from './_auth';
 
 const README_BLOB = 'readme.txt';
 const WORDPAD_BLOB = 'wordpad-story.json';
@@ -140,6 +141,14 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
+    const auth = verifyAdminRequest(req);
+    if (!auth.authorized) {
+      return new Response(JSON.stringify({ error: auth.reason || 'Admin login required to save document to Blob' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
     const url = new URL(req.url);
     const type = url.searchParams.get('type') || 'readme';
     const body = await req.json();

@@ -1,4 +1,5 @@
 import { put, list, del } from '@vercel/blob';
+import { verifyAdminRequest } from './_auth';
 
 export async function GET(req: Request) {
   try {
@@ -27,6 +28,14 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
+    const auth = verifyAdminRequest(req);
+    if (!auth.authorized) {
+      return new Response(JSON.stringify({ error: auth.reason || 'Unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
     if (!process.env.BLOB_READ_WRITE_TOKEN) {
       return new Response(
         JSON.stringify({ error: 'Vercel Blob token is not configured.' }),
@@ -72,6 +81,14 @@ export async function POST(req: Request) {
 
 export async function DELETE(req: Request) {
   try {
+    const auth = verifyAdminRequest(req);
+    if (!auth.authorized) {
+      return new Response(JSON.stringify({ error: auth.reason || 'Unauthorized' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
     if (!process.env.BLOB_READ_WRITE_TOKEN) {
       return new Response(
         JSON.stringify({ error: 'Vercel Blob token is not configured.' }),

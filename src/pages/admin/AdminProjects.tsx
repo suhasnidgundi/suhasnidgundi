@@ -11,6 +11,7 @@ import { type Project } from '@/data/portfolioData';
 import { useProjects } from '@/hooks/useProjects';
 import { useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
+import { getAdminAuthHeaders } from '@/contexts/AuthContext';
 import { Plus, Pencil, Trash2, ExternalLink, Github, Loader2 } from 'lucide-react';
 
 const AdminProjects = () => {
@@ -80,7 +81,10 @@ const AdminProjects = () => {
     try {
       const res = await fetch('/api/projects', {
         method: editingProject ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAdminAuthHeaders(),
+        },
         body: JSON.stringify(payload),
       });
 
@@ -108,7 +112,10 @@ const AdminProjects = () => {
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this project from Vercel Blob?')) return;
     try {
-      const res = await fetch(`/api/projects?id=${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/projects?id=${id}`, {
+        method: 'DELETE',
+        headers: getAdminAuthHeaders(),
+      });
       if (res.ok) {
         toast({ title: 'Deleted', description: 'Project removed from Vercel Blob.' });
         queryClient.invalidateQueries({ queryKey: ['projects'] });
