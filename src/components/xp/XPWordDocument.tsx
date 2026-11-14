@@ -39,6 +39,18 @@ const XPWordDocument = ({
   const isDragging = useRef(false);
   const dragOffset = useRef({ x: 0, y: 0 });
   const windowRef = useRef<HTMLDivElement>(null);
+  const [story, setStory] = useState<any>(null);
+
+  useEffect(() => {
+    fetch('/api/wordpad')
+      .then((r) => r.json())
+      .then((data) => {
+        if (data && data.sections) {
+          setStory(data);
+        }
+      })
+      .catch((err) => console.warn('Failed to load dynamic story from Vercel Blob:', err));
+  }, []);
 
   const handleTitleMouseDown = useCallback((e: React.MouseEvent) => {
     if (isMaximized || !onPositionChange) return;
@@ -239,17 +251,19 @@ const XPWordDocument = ({
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-[36px] font-bold text-[#0066CC] mb-3">
-              Suhas Nidgundi
+              {story?.title || 'Suhas Nidgundi'}
             </h1>
             <p className="text-[14px] text-gray-600 mb-2">
-              Final-year engineer building scalable systems, cloud-native
-              services, and empowering developers through thoughtful
-              engineering.
+              {story?.subtitle || 'Final-year engineer building scalable systems, cloud-native services, and empowering developers through thoughtful engineering.'}
             </p>
             <p className="text-[11px] text-gray-500">
-              📧 suhasnidgundi@gmail.com | 🔗 linkedin.com/in/suhasnidgundi |
-              💻 github.com/suhasnidgundi
+              {story?.contact || '📧 suhasnidgundi@gmail.com | 🔗 linkedin.com/in/suhasnidgundi | 💻 github.com/suhasnidgundi'}
             </p>
+            <div className="mt-1 flex items-center justify-center gap-2">
+              <span className="text-[10px] text-emerald-600 font-mono">
+                🟢 Powered dynamically by Vercel Blob (wordpad-story.json)
+              </span>
+            </div>
             <hr className="mt-4 border-t-2 border-[#0066CC]" />
           </div>
 

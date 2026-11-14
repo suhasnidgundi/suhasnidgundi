@@ -1,39 +1,50 @@
-import { useQuery } from '@tanstack/react-query';
-import { INITIAL_PROJECTS, type Project } from '@/data/portfolioData';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { type Project } from '@/data/portfolioData';
 
 export { type Project } from '@/data/portfolioData';
 
 export const useProjects = () => {
-  return useQuery({
+  return useQuery<Project[]>({
     queryKey: ['projects'],
     queryFn: async (): Promise<Project[]> => {
-      try {
-        const res = await fetch('/api/projects');
-        if (!res.ok) throw new Error('Failed to fetch from API');
-        const data = await res.json();
-        return Array.isArray(data) && data.length > 0 ? data : INITIAL_PROJECTS;
-      } catch {
-        return INITIAL_PROJECTS;
-      }
+      const res = await fetch('/api/projects');
+      if (!res.ok) throw new Error('Failed to fetch projects from Vercel');
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
     },
-    initialData: INITIAL_PROJECTS,
+    staleTime: 30 * 1000,
   });
 };
 
 export const useFeaturedProject = () => {
-  return useQuery({
+  return useQuery<Project | null>({
     queryKey: ['featured-project'],
     queryFn: async (): Promise<Project | null> => {
-      try {
-        const res = await fetch('/api/projects?featured=true');
-        if (!res.ok) throw new Error('Failed to fetch featured project');
-        const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) return data[0];
-        return INITIAL_PROJECTS.find((p) => p.is_featured) || INITIAL_PROJECTS[0];
-      } catch {
-        return INITIAL_PROJECTS.find((p) => p.is_featured) || INITIAL_PROJECTS[0];
-      }
+      const res = await fetch('/api/projects?featured=true');
+      if (!res.ok) throw new Error('Failed to fetch featured project');
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) return data[0];
+      return null;
     },
-    initialData: INITIAL_PROJECTS.find((p) => p.is_featured) || INITIAL_PROJECTS[0],
+    staleTime: 30 * 1000,
+  });
+};
+
+export const useSaveProject = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (project: Partial<Project>) => {
+      const res = await fetch('/api/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(project),
+      });
+      if (!res.ok) throw new Error('Failed to save project');
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
+      queryClient.invalidateQueries({ queryKey: ['featured-project'] });
+    },
   });
 };

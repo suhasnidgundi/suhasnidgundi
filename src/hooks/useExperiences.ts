@@ -1,56 +1,62 @@
-import { useQuery } from '@tanstack/react-query';
-import { INITIAL_EXPERIENCES, type Experience } from '@/data/portfolioData';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { type Experience } from '@/data/portfolioData';
 
 export { type Experience } from '@/data/portfolioData';
 
-export const useExperiences = () => {
-  return useQuery({
-    queryKey: ['experiences'],
+export const useExperiences = (type?: 'work' | 'education' | 'volunteer') => {
+  return useQuery<Experience[]>({
+    queryKey: ['experiences', type],
     queryFn: async (): Promise<Experience[]> => {
-      try {
-        const res = await fetch('/api/experiences');
-        if (!res.ok) throw new Error('Failed to fetch from API');
-        const data = await res.json();
-        return Array.isArray(data) && data.length > 0 ? data : INITIAL_EXPERIENCES;
-      } catch {
-        return INITIAL_EXPERIENCES;
-      }
+      const url = type ? `/api/experiences?type=${type}` : '/api/experiences';
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Failed to fetch experiences from Vercel');
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
     },
-    initialData: INITIAL_EXPERIENCES,
+    staleTime: 30 * 1000,
+  });
+};
+
+export const useCurrentExperiences = () => {
+  return useQuery<Experience[]>({
+    queryKey: ['experiences', 'current'],
+    queryFn: async (): Promise<Experience[]> => {
+      const res = await fetch('/api/experiences?current=true');
+      if (!res.ok) throw new Error('Failed to fetch current experiences');
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
+    },
+    staleTime: 30 * 1000,
   });
 };
 
 export const useCurrentExperience = () => {
-  return useQuery({
-    queryKey: ['current-experience'],
+  return useQuery<Experience | null>({
+    queryKey: ['experience', 'current-single'],
     queryFn: async (): Promise<Experience | null> => {
-      try {
-        const res = await fetch('/api/experiences?current=true');
-        if (!res.ok) throw new Error('Failed to fetch current experience');
-        const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) return data[0];
-        return INITIAL_EXPERIENCES.find((e) => e.is_current) || INITIAL_EXPERIENCES[0];
-      } catch {
-        return INITIAL_EXPERIENCES.find((e) => e.is_current) || INITIAL_EXPERIENCES[0];
-      }
+      const res = await fetch('/api/experiences?current=true');
+      if (!res.ok) throw new Error('Failed to fetch current experience');
+      const data = await res.json();
+      return Array.isArray(data) && data.length > 0 ? data[0] : null;
     },
-    initialData: INITIAL_EXPERIENCES.find((e) => e.is_current) || INITIAL_EXPERIENCES[0],
+    staleTime: 30 * 1000,
   });
 };
 
-export const useExperiencesByType = (type: 'work' | 'education' | 'volunteer') => {
-  return useQuery({
-    queryKey: ['experiences', type],
-    queryFn: async (): Promise<Experience[]> => {
-      try {
-        const res = await fetch(`/api/experiences?type=${type}`);
-        if (!res.ok) throw new Error('Failed to fetch experiences by type');
-        const data = await res.json();
-        return Array.isArray(data) ? data : INITIAL_EXPERIENCES.filter((e) => e.experience_type === type);
-      } catch {
-        return INITIAL_EXPERIENCES.filter((e) => e.experience_type === type);
-      }
+export const useSaveExperience = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (experience: Partial<Experience>) => {
+      const res = await fetch('/api/experiences', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(experience),
+      });
+      if (!res.ok) throw new Error('Failed to save experience');
+      return await res.json();
     },
-    initialData: INITIAL_EXPERIENCES.filter((e) => e.experience_type === type),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['experiences'] });
+    },
   });
 };

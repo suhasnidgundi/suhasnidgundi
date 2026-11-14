@@ -11,6 +11,7 @@ import WordIcon from '@/assets/xp/icons/ms_word_logo_icon.png';
 import PdfIcon from '@/assets/xp/icons/word_file_icon.png';
 import WallpaperDark from '@/assets/xp/wallpaper_dark.jpg';
 import { XPDesktopContextMenu } from './XPDesktopContextMenu';
+import { useProfile } from '@/hooks/useProfile';
 
 interface DesktopIconProps {
   id: string;
@@ -115,6 +116,7 @@ const XPDesktop: React.FC<XPDesktopProps> = ({
 }) => {
   const [selectedIcons, setSelectedIcons] = useState<Set<string>>(new Set());
   const [contextMenuPos, setContextMenuPos] = useState<{ x: number; y: number } | null>(null);
+  const { data: profile } = useProfile();
 
   // Marquee selection state
   const [marquee, setMarquee] = useState<{ startX: number; startY: number; currX: number; currY: number } | null>(null);
@@ -192,19 +194,19 @@ const XPDesktop: React.FC<XPDesktopProps> = ({
       id: 'internet-explorer',
       icon: InternetExplorerIcon,
       label: 'Internet Explorer',
-      onDoubleClick: () => onOpenBrowser('https://github.com/suhasnidgundi'),
+      onDoubleClick: () => onOpenBrowser(profile?.website || 'https://suhasnidgundi.tech'),
     },
     {
       id: 'github',
       icon: GithubIcon,
       label: 'GitHub',
-      onDoubleClick: () => onOpenBrowser('https://github.com/suhasnidgundi'),
+      onDoubleClick: () => onOpenBrowser(profile?.github || 'https://github.com/suhasnidgundi'),
     },
     {
       id: 'linkedin',
       icon: LinkedinIcon,
       label: 'LinkedIn',
-      onDoubleClick: () => onOpenBrowser('https://linkedin.com/in/suhasnidgundi'),
+      onDoubleClick: () => onOpenBrowser(profile?.linkedin || 'https://linkedin.com/in/suhasnidgundi'),
     },
     {
       id: 'blog',

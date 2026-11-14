@@ -10,6 +10,7 @@ import LogoutIcon from '@/assets/xp/icons/Logout.png';
 import WordIcon from '@/assets/xp/icons/ms_word_logo_icon.png';
 import SearchIcon from '@/assets/xp/icons/search_icon.png';
 import { useEdgeConfig } from '@/hooks/useEdgeConfig';
+import { useProfile } from '@/hooks/useProfile';
 
 interface StartMenuProps {
   isOpen: boolean;
@@ -42,6 +43,7 @@ const StartMenu = ({
 }: StartMenuProps) => {
   const navigate = useNavigate();
   const { data: edgeConfig } = useEdgeConfig();
+  const { data: profile } = useProfile();
 
   if (!isOpen) return null;
 
@@ -85,10 +87,10 @@ const StartMenu = ({
           </div>
           <div className="flex flex-col min-w-0">
             <span className="text-white font-bold text-[16px] font-['Trebuchet_MS',Tahoma,sans-serif] drop-shadow-[1px_1px_2px_#0a1883b3] truncate">
-              Suhas Nidgundi
+              {profile?.name || 'Suhas Nidgundi'}
             </span>
             <span className="text-[10px] text-emerald-200 font-medium font-['MSSans',Tahoma,sans-serif] drop-shadow-[0_1px_1px_#000]">
-              {edgeConfig?.openToWork ? '🟢 Available for Hire' : '💻 Full Stack Engineer'}
+              {edgeConfig?.openToWork || profile?.openToWork ? '🟢 Available for Hire' : '💻 Full Stack Engineer'}
             </span>
           </div>
         </div>

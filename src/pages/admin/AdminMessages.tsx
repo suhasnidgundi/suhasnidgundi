@@ -1,95 +1,98 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Mail, Calendar, Check, Trash2 } from 'lucide-react';
+import { Mail, Calendar, MessageSquare, Loader2, RefreshCw } from 'lucide-react';
 
-interface ContactMessage {
-  $id: string;
+interface GuestbookMessage {
+  id: string;
   name: string;
-  email: string;
+  company?: string;
   message: string;
-  is_read: boolean;
   createdAt: string;
+  badge?: string;
 }
 
-const INITIAL_MESSAGES: ContactMessage[] = [
-  {
-    $id: 'msg-1',
-    name: 'Sarah Jenkins',
-    email: 'sarah.j@techrecruiter.com',
-    message: 'Hi Suhas, loved your Windows XP portfolio! We have an exciting Senior Full Stack role. Would love to connect.',
-    is_read: false,
-    createdAt: new Date(Date.now() - 3600000 * 2).toISOString(),
-  },
-  {
-    $id: 'msg-2',
-    name: 'Alex Rivera',
-    email: 'alex@innovatecorp.io',
-    message: 'Hello Suhas, impressive work on the Digital Campus Inventory system. Are you available for contract development?',
-    is_read: true,
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-  },
-];
-
 const AdminMessages = () => {
-  const [messages, setMessages] = useState<ContactMessage[]>(INITIAL_MESSAGES);
+  const [messages, setMessages] = useState<GuestbookMessage[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
-  const markAsRead = (id: string) => {
-    setMessages((prev) =>
-      prev.map((m) => (m.$id === id ? { ...m, is_read: true } : m))
-    );
-    toast({ title: 'Marked as read' });
+  const fetchMessages = async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch('/api/guestbook');
+      if (res.ok) {
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : (data.entries || []);
+        setMessages(list);
+      }
+    } catch (err) {
+      toast({ title: 'Error', description: 'Failed to load guestbook messages', variant: 'destructive' });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const deleteMessage = (id: string) => {
-    setMessages((prev) => prev.filter((m) => m.$id !== id));
-    toast({ title: 'Message deleted' });
-  };
+  useEffect(() => {
+    fetchMessages();
+  }, []);
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Contact Inquiries</h1>
-        <p className="text-muted-foreground">Inquiries submitted via your Vercel serverless contact form.</p>
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">Guestbook & Contact Messages</h2>
+          <p className="text-muted-foreground">
+            Live visitor feedback and contact inquiries stored in Vercel Blob cloud storage.
+          </p>
+        </div>
+        <Button variant="outline" size="sm" onClick={fetchMessages} disabled={isLoading}>
+          <RefreshCw className={`mr-2 h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} /> Refresh
+        </Button>
       </div>
 
-      <div className="space-y-4">
-        {messages.map((message) => (
-          <Card key={message.$id} className={message.is_read ? 'opacity-80' : 'border-primary/50'}>
-            <CardHeader className="pb-2">
-              <div className="flex justify-between items-start">
+      {isLoading ? (
+        <div className="flex items-center justify-center p-12 text-muted-foreground">
+          <Loader2 className="mr-2 h-6 w-6 animate-spin" /> Loading live messages from Vercel Blob...
+        </div>
+      ) : messages.length === 0 ? (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <MessageSquare className="h-12 w-12 text-muted-foreground mb-4" />
+            <p className="text-muted-foreground">No guestbook messages yet.</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          {messages.map((msg) => (
+            <Card key={msg.id}>
+              <CardHeader className="flex flex-row items-start justify-between pb-2">
                 <div>
-                  <CardTitle className="text-base flex items-center gap-2">
-                    {message.name}
-                    {!message.is_read && <Badge variant="default" className="text-xs">New</Badge>}
-                  </CardTitle>
-                  <CardDescription className="flex items-center gap-1 text-xs">
-                    <Mail className="h-3 w-3" />
-                    {message.email}
-                  </CardDescription>
-                </div>
-                <div className="flex items-center gap-2">
-                  {!message.is_read && (
-                    <Button variant="ghost" size="sm" onClick={() => markAsRead(message.$id)}>
-                      <Check className="h-4 w-4 mr-1" />
-                      Mark Read
-                    </Button>
+                  <div className="flex items-center gap-2">
+                    <CardTitle className="text-base">{msg.name}</CardTitle>
+                    {msg.badge && <Badge variant="secondary">{msg.badge}</Badge>}
+                  </div>
+                  {msg.company && (
+                    <CardDescription className="text-sm font-medium text-emerald-600">
+                      {msg.company}
+                    </CardDescription>
                   )}
-                  <Button variant="ghost" size="icon" onClick={() => deleteMessage(message.$id)}>
-                    <Trash2 className="h-4 w-4 text-destructive" />
-                  </Button>
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-foreground bg-muted/40 p-3 rounded">{message.message}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                <div className="flex items-center text-xs text-muted-foreground gap-1">
+                  <Calendar className="h-3 w-3" />
+                  {new Date(msg.createdAt).toLocaleDateString()} at{' '}
+                  {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-foreground/90 whitespace-pre-wrap">{msg.message}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

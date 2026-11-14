@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
@@ -49,7 +49,16 @@ const AdminAnalytics = () => {
   const [dailyData] = useState<AnalyticsData[]>(MOCK_DAILY);
   const [pageData] = useState<PageVisit[]>(MOCK_PAGES);
   const [locationData] = useState<LocationData[]>(MOCK_COUNTRIES);
-  const totalVisitors = 1247;
+  const [totalVisitors, setTotalVisitors] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetch('/api/visitor-counter')
+      .then((r) => r.json())
+      .then((data) => {
+        if (typeof data.total === 'number') setTotalVisitors(data.total);
+      })
+      .catch(console.warn);
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -66,7 +75,9 @@ const AdminAnalytics = () => {
             <CardTitle className="text-sm font-medium">Total Page Views</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalVisitors.toLocaleString()}</div>
+            <div className="text-2xl font-bold">
+              {totalVisitors !== null ? totalVisitors.toLocaleString() : 'Loading...'}
+            </div>
             <p className="text-xs text-emerald-500 font-medium">+18.2% from last week</p>
           </CardContent>
         </Card>
