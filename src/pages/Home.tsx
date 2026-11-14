@@ -38,6 +38,7 @@ const HomeContent: React.FC<HomeProps> = ({ isDark, toggleTheme }) => {
     minimizeWindow,
     toggleMaximizeWindow,
     updateWindowBounds,
+    updateWindowTitle,
     taskbarItemClick,
     minimizeAll,
     undoMinimizeAll,
@@ -144,6 +145,8 @@ const HomeContent: React.FC<HomeProps> = ({ isDark, toggleTheme }) => {
           <div key={win.id} data-win-id={win.id} style={windowStyle}>
             <XPMyComputerWindow
               isDark={isDark}
+              currentFolderProp={win.data?.folder}
+              onTitleChange={(title) => updateWindowTitle(win.id, title)}
               onMinimize={commonProps.onMinimize}
               onMaximize={commonProps.onMaximize}
               onClose={commonProps.onClose}
@@ -244,8 +247,8 @@ const HomeContent: React.FC<HomeProps> = ({ isDark, toggleTheme }) => {
       <XPDesktop
         onOpenMyComputer={handleOpenMyComputer}
         onOpenBrowser={handleOpenBrowser}
-        onNavigateToProjects={() => navigate('/projects')}
-        onNavigateToExperience={() => navigate('/experience')}
+        onNavigateToProjects={() => openWindow({ appId: 'my-computer', data: { folder: 'projects' } })}
+        onNavigateToExperience={() => openWindow({ appId: 'my-computer', data: { folder: 'experience' } })}
         onOpenAIChat={handleOpenAIChat}
         onUnfocusAll={unfocusAll}
         isDark={isDark}
@@ -267,6 +270,7 @@ const HomeContent: React.FC<HomeProps> = ({ isDark, toggleTheme }) => {
         }))}
         onWindowClick={taskbarItemClick}
         onOpenMyComputer={handleOpenMyComputer}
+        onOpenFolder={(folder) => openWindow({ appId: 'my-computer', data: { folder } })}
         onOpenWordDoc={handleOpenWordDoc}
         onOpenBrowser={handleOpenBrowser}
         onOpenAIChat={handleOpenAIChat}

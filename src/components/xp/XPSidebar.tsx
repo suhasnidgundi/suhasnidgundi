@@ -20,10 +20,10 @@ const SidebarSection = ({ title, children, defaultOpen = true }: SidebarSectionP
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="mb-3">
+    <div className="mb-3 select-none">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="xp-sidebar-header w-full flex justify-between items-center"
+        className="xp-sidebar-header w-full flex justify-between items-center cursor-pointer"
       >
         <span>{title}</span>
         {isOpen ? (
@@ -46,13 +46,14 @@ interface SidebarLinkProps {
   label: string;
   onClick?: () => void;
   href?: string;
+  active?: boolean;
 }
 
-const SidebarLink = ({ icon, label, onClick, href }: SidebarLinkProps) => {
+const SidebarLink = ({ icon, label, onClick, href, active }: SidebarLinkProps) => {
   const content = (
     <>
-      <span className="">{icon}</span>
-      <span className="xp-link">{label}</span>
+      <span className="shrink-0">{icon}</span>
+      <span className={`xp-link ${active ? 'font-bold underline' : ''}`}>{label}</span>
     </>
   );
 
@@ -62,7 +63,7 @@ const SidebarLink = ({ icon, label, onClick, href }: SidebarLinkProps) => {
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center gap-2 text-primary-foreground hover:text-primary-foreground/80 cursor-pointer"
+        className="flex items-center gap-2 text-primary-foreground hover:text-primary-foreground/80 cursor-pointer py-0.5"
       >
         {content}
       </a>
@@ -72,7 +73,9 @@ const SidebarLink = ({ icon, label, onClick, href }: SidebarLinkProps) => {
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-2 text-primary-foreground hover:text-primary-foreground/80 cursor-pointer w-full text-left"
+      className={`flex items-center gap-2 text-primary-foreground hover:text-primary-foreground/80 cursor-pointer w-full text-left py-0.5 ${
+        active ? 'bg-blue-600/20 rounded-sm' : ''
+      }`}
     >
       {content}
     </button>
@@ -82,14 +85,15 @@ const SidebarLink = ({ icon, label, onClick, href }: SidebarLinkProps) => {
 interface XPSidebarProps {
   onViewAboutMe?: () => void;
   onDownloadResume?: () => void;
+  onNavigateFolder?: (folder: 'root' | 'projects' | 'experience') => void;
+  currentFolder?: 'root' | 'projects' | 'experience';
 }
 
-const XPSidebar = ({ onViewAboutMe, onDownloadResume }: XPSidebarProps) => {
+const XPSidebar = ({ onViewAboutMe, onDownloadResume, onNavigateFolder, currentFolder = 'root' }: XPSidebarProps) => {
   const handleDownloadResume = () => {
     if (onDownloadResume) {
       onDownloadResume();
     } else {
-      // Fallback to direct download
       const link = document.createElement('a');
       link.href = '/resume.pdf';
       link.download = 'resume.pdf';
@@ -103,8 +107,18 @@ const XPSidebar = ({ onViewAboutMe, onDownloadResume }: XPSidebarProps) => {
     }
   };
 
+  const handleNavigate = (folder: 'root' | 'projects' | 'experience') => {
+    if (onNavigateFolder) {
+      onNavigateFolder(folder);
+    } else {
+      if (folder === 'projects') window.location.href = '/projects';
+      else if (folder === 'experience') window.location.href = '/experience';
+      else window.location.href = '/';
+    }
+  };
+
   return (
-    <div className="w-[180px] xp-sidebar flex-shrink-0 overflow-y-auto">
+    <div className="w-[180px] xp-sidebar flex-shrink-0 overflow-y-auto select-none">
       <SidebarSection title="Quick Actions">
         <SidebarLink 
           icon={<img src={UserIcon} alt="User" className="w-4 h-4 text-yellow-300" />} 
@@ -123,6 +137,27 @@ const XPSidebar = ({ onViewAboutMe, onDownloadResume }: XPSidebarProps) => {
         />
       </SidebarSection>
 
+      <SidebarSection title="Navigate To">
+        <SidebarLink 
+          icon={<img src={GlobeIcon} alt="Globe" className="w-4 h-4 text-yellow-500" />} 
+          label="My Portfolio" 
+          onClick={() => handleNavigate('root')}
+          active={currentFolder === 'root'}
+        />
+        <SidebarLink 
+          icon={<img src={FolderOpenIcon} alt="Folder Open" className="w-4 h-4 text-yellow-500" />} 
+          label="Projects" 
+          onClick={() => handleNavigate('projects')}
+          active={currentFolder === 'projects'}
+        />
+        <SidebarLink 
+          icon={<img src={BriefCaseIcon} alt="Briefcase" className="w-4 h-4 text-yellow-500" />} 
+          label="Experience" 
+          onClick={() => handleNavigate('experience')}
+          active={currentFolder === 'experience'}
+        />
+      </SidebarSection>
+
       <SidebarSection title="Social Links">
         <SidebarLink 
           icon={<img src={GithubIcon} alt="GitHub" className="w-4 h-4 text-yellow-300" />} 
@@ -138,24 +173,6 @@ const XPSidebar = ({ onViewAboutMe, onDownloadResume }: XPSidebarProps) => {
           icon={<img src={MediumBlogLogo} alt="Medium Blog" className="w-4 h-4 text-yellow-300" />} 
           label="Medium Blog" 
           href="https://medium.com/@suhasnidgundi"
-        />
-      </SidebarSection>
-
-      <SidebarSection title="Navigate To">
-        <SidebarLink 
-          icon={<img src={FolderOpenIcon} alt="Folder Open" className="w-4 h-4 text-yellow-500" />} 
-          label="Projects" 
-          onClick={() => window.location.href = '/projects'}
-        />
-        <SidebarLink 
-          icon={<img src={BriefCaseIcon} alt="Briefcase" className="w-4 h-4 text-yellow-500" />} 
-          label="Experience" 
-          onClick={() => window.location.href = '/experience'}
-        />
-        <SidebarLink 
-          icon={<img src={GlobeIcon} alt="Globe" className="w-4 h-4 text-yellow-500" />} 
-          label="My Portfolio" 
-          onClick={() => window.location.href = '/'}
         />
       </SidebarSection>
     </div>

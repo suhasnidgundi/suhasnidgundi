@@ -18,6 +18,7 @@ interface StartMenuProps {
   onOpenBrowser: (url: string) => void;
   onOpenAIChat?: () => void;
   onLogOff: () => void;
+  onOpenFolder?: (folder: 'root' | 'projects' | 'experience') => void;
 }
 
 const StartMenu = ({
@@ -27,7 +28,8 @@ const StartMenu = ({
   onOpenWordDoc,
   onOpenBrowser,
   onOpenAIChat,
-  onLogOff
+  onLogOff,
+  onOpenFolder,
 }: StartMenuProps) => {
   const navigate = useNavigate();
 
@@ -114,12 +116,12 @@ const StartMenu = ({
               <MenuItem
                 icon={FolderIcon}
                 title="Projects"
-                onClick={() => handleItemClick(() => navigate('/projects'))}
+                onClick={() => handleItemClick(() => (onOpenFolder ? onOpenFolder('projects') : navigate('/projects')))}
               />
               <MenuItem
                 icon={BriefcaseIcon}
                 title="Experience"
-                onClick={() => handleItemClick(() => navigate('/experience'))}
+                onClick={() => handleItemClick(() => (onOpenFolder ? onOpenFolder('experience') : navigate('/experience')))}
               />
               <MenuItem
                 icon={NotepadIcon}
@@ -153,12 +155,12 @@ const StartMenu = ({
             <RightMenuItem
               icon={FolderIcon}
               title="My Documents"
-              onClick={() => handleItemClick(onOpenMyComputer)}
+              onClick={() => handleItemClick(() => (onOpenFolder ? onOpenFolder('root') : onOpenMyComputer()))}
             />
             <RightMenuItem
               icon={FolderIcon}
               title="My Projects"
-              onClick={() => handleItemClick(() => navigate('/projects'))}
+              onClick={() => handleItemClick(() => (onOpenFolder ? onOpenFolder('projects') : navigate('/projects')))}
             />
 
             <div className="my-2 mx-3 h-[1px] bg-[#95b4e0]" />

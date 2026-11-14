@@ -48,6 +48,7 @@ interface WindowManagerContextType {
   minimizeWindow: (id: string) => void;
   toggleMaximizeWindow: (id: string) => void;
   updateWindowBounds: (id: string, bounds: { x?: number; y?: number; w?: number; h?: number }) => void;
+  updateWindowTitle: (id: string, title: string) => void;
   taskbarItemClick: (id: string) => void;
   minimizeAll: () => void;
   undoMinimizeAll: () => void;
@@ -250,7 +251,7 @@ export const WindowManagerProvider: React.FC<{ children: ReactNode }> = ({ child
                 ...w,
                 state: wasMinimized ? w.restoreState : w.state,
                 focused: true,
-                data: opts.data || w.data,
+                data: opts.data !== undefined ? { ...w.data, ...opts.data } : w.data,
               };
             }
             return { ...w, focused: false };
@@ -551,6 +552,10 @@ export const WindowManagerProvider: React.FC<{ children: ReactNode }> = ({ child
     });
   }, []);
 
+  const updateWindowTitle = useCallback((id: string, title: string) => {
+    setWindows(prev => prev.map(w => (w.id === id ? { ...w, title } : w)));
+  }, []);
+
   return (
     <WindowManagerContext.Provider
       value={{
@@ -563,6 +568,7 @@ export const WindowManagerProvider: React.FC<{ children: ReactNode }> = ({ child
         minimizeWindow,
         toggleMaximizeWindow,
         updateWindowBounds,
+        updateWindowTitle,
         taskbarItemClick,
         minimizeAll,
         undoMinimizeAll,

@@ -23,6 +23,7 @@ interface XPTaskbarProps {
   onOpenBrowser?: (url: string) => void;
   onOpenAIChat?: () => void;
   onLogOff?: () => void;
+  onOpenFolder?: (folder: 'root' | 'projects' | 'experience') => void;
   isMuted?: boolean;
   onToggleMute?: () => void;
   playSound?: (type: string) => void;
@@ -42,6 +43,7 @@ const XPTaskbar = ({
   onOpenBrowser,
   onOpenAIChat,
   onLogOff,
+  onOpenFolder,
   isMuted = false,
   onToggleMute,
   playSound,
@@ -229,6 +231,10 @@ const XPTaskbar = ({
         onClose={handleCloseStartMenu}
         onOpenMyComputer={() => {
           onOpenMyComputer?.();
+          handleCloseStartMenu();
+        }}
+        onOpenFolder={(folder) => {
+          onOpenFolder?.(folder);
           handleCloseStartMenu();
         }}
         onOpenWordDoc={() => {
