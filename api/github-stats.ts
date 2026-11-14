@@ -50,6 +50,4 @@ export async function GET(req: Request) {
   }
 }
 
-export default async function handler(req: Request) {
-  return GET(req);
-}
+

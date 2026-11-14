@@ -1,4 +1,4 @@
-export default function handler(request: Request) {
+export function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const title = searchParams.get('title') || 'Suhas Nidgundi';
   const role = searchParams.get('role') || 'Full Stack Engineer & System Designer';

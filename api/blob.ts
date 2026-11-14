@@ -101,8 +101,4 @@ export async function DELETE(req: Request) {
   }
 }
 
-export default async function handler(req: Request) {
-  if (req.method === 'POST') return POST(req);
-  if (req.method === 'DELETE') return DELETE(req);
-  return GET(req);
-}
+
