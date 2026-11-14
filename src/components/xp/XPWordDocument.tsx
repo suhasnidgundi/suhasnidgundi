@@ -42,7 +42,7 @@ const XPWordDocument = ({
   const [story, setStory] = useState<any>(null);
 
   useEffect(() => {
-    fetch('/api/wordpad')
+    fetch('/api/documents?type=wordpad')
       .then((r) => r.json())
       .then((data) => {
         if (data && data.sections) {

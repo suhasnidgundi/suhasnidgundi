@@ -38,14 +38,14 @@ const XPNotepad: React.FC<XPNotepadProps> = ({
   const fetchDocument = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/notepad');
+      const res = await fetch('/api/documents?type=readme');
       if (res.ok) {
         const data = await res.json();
         setContent(data.content || '');
         setSource(data.source || 'blob');
       }
     } catch (err) {
-      console.warn('Failed to fetch from /api/notepad:', err);
+      console.warn('Failed to fetch from /api/documents:', err);
     } finally {
       setLoading(false);
     }
@@ -60,7 +60,7 @@ const XPNotepad: React.FC<XPNotepadProps> = ({
   const handleSave = async () => {
     setSaving(true);
     try {
-      const res = await fetch('/api/notepad', {
+      const res = await fetch('/api/documents?type=readme', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content }),

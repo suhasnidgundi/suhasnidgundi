@@ -22,7 +22,7 @@ export const useProfile = () => {
   return useQuery<DynamicProfile>({
     queryKey: ['profile'],
     queryFn: async (): Promise<DynamicProfile> => {
-      const res = await fetch('/api/profile');
+      const res = await fetch('/api/config');
       if (!res.ok) throw new Error('Failed to fetch profile from Vercel');
       return await res.json();
     },
@@ -34,7 +34,7 @@ export const useUpdateProfile = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (updated: Partial<DynamicProfile>) => {
-      const res = await fetch('/api/profile', {
+      const res = await fetch('/api/config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updated),
