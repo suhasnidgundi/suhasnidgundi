@@ -132,8 +132,12 @@ const HomeContent: React.FC<HomeProps> = ({ isDark, toggleTheme }) => {
           left: 0,
           right: 0,
           bottom: TASKBAR_HEIGHT,
+          width: '100vw',
+          height: `calc(100vh - ${TASKBAR_HEIGHT}px)`,
           zIndex: win.zIndex,
           display: isMinimized ? 'none' : 'flex',
+          flexDirection: 'column',
+          alignItems: 'stretch',
         }
       : {
           position: 'fixed',
@@ -143,6 +147,8 @@ const HomeContent: React.FC<HomeProps> = ({ isDark, toggleTheme }) => {
           height: `${win.h}px`,
           zIndex: win.zIndex,
           display: isMinimized ? 'none' : 'flex',
+          flexDirection: 'column',
+          alignItems: 'stretch',
         };
 
     const commonProps = {
@@ -159,174 +165,180 @@ const HomeContent: React.FC<HomeProps> = ({ isDark, toggleTheme }) => {
         updateWindowBounds(win.id, { w: size.width, h: size.height }),
     };
 
+    let content: React.ReactNode = null;
+
     switch (win.appId) {
       case 'my-computer':
-        return (
-          <div key={win.id} data-win-id={win.id} style={windowStyle}>
-            <XPMyComputerWindow
-              isDark={isDark}
-              currentFolderProp={win.data?.folder}
-              onTitleChange={(title) => updateWindowTitle(win.id, title)}
-              onMinimize={commonProps.onMinimize}
-              onMaximize={commonProps.onMaximize}
-              onClose={commonProps.onClose}
-              onOpenWordDoc={handleOpenWordDoc}
-              onOpenPdfViewer={handleOpenPdfViewer}
-              onOpenBrowser={handleOpenBrowser}
-              zIndex={win.zIndex}
-              onFocus={commonProps.onFocus}
-              isMaximized={isMaximized}
-              isActive={win.focused}
-              onPositionChange={commonProps.onPositionChange}
-              onSizeChange={commonProps.onSizeChange}
-            />
-          </div>
+        content = (
+          <XPMyComputerWindow
+            isDark={isDark}
+            currentFolderProp={win.data?.folder}
+            onTitleChange={(title) => updateWindowTitle(win.id, title)}
+            onMinimize={commonProps.onMinimize}
+            onMaximize={commonProps.onMaximize}
+            onClose={commonProps.onClose}
+            onOpenWordDoc={handleOpenWordDoc}
+            onOpenPdfViewer={handleOpenPdfViewer}
+            onOpenBrowser={handleOpenBrowser}
+            zIndex={win.zIndex}
+            onFocus={commonProps.onFocus}
+            isMaximized={isMaximized}
+            isActive={win.focused}
+            onPositionChange={commonProps.onPositionChange}
+            onSizeChange={commonProps.onSizeChange}
+          />
         );
+        break;
 
       case 'browser':
-        return (
-          <div key={win.id} data-win-id={win.id} style={windowStyle}>
-            <XPBrowser
-              initialUrl={win.data?.url || 'https://www.bing.com/'}
-              onClose={commonProps.onClose}
-              onMinimize={commonProps.onMinimize}
-              onMaximize={commonProps.onMaximize}
-              onFocus={commonProps.onFocus}
-              zIndex={win.zIndex}
-              isMaximized={isMaximized}
-              isActive={win.focused}
-              onPositionChange={commonProps.onPositionChange}
-              onSizeChange={commonProps.onSizeChange}
-            />
-          </div>
+        content = (
+          <XPBrowser
+            initialUrl={win.data?.url || 'https://www.bing.com/'}
+            onClose={commonProps.onClose}
+            onMinimize={commonProps.onMinimize}
+            onMaximize={commonProps.onMaximize}
+            onFocus={commonProps.onFocus}
+            zIndex={win.zIndex}
+            isMaximized={isMaximized}
+            isActive={win.focused}
+            onPositionChange={commonProps.onPositionChange}
+            onSizeChange={commonProps.onSizeChange}
+          />
         );
+        break;
 
       case 'word-doc':
-        return (
-          <div key={win.id} data-win-id={win.id} style={windowStyle}>
-            <XPWordDocument
-              onClose={commonProps.onClose}
-              onMinimize={commonProps.onMinimize}
-              onMaximize={commonProps.onMaximize}
-              onFocus={commonProps.onFocus}
-              zIndex={win.zIndex}
-              isMaximized={isMaximized}
-              isActive={win.focused}
-              onPositionChange={commonProps.onPositionChange}
-              onSizeChange={commonProps.onSizeChange}
-            />
-          </div>
+        content = (
+          <XPWordDocument
+            onClose={commonProps.onClose}
+            onMinimize={commonProps.onMinimize}
+            onMaximize={commonProps.onMaximize}
+            onFocus={commonProps.onFocus}
+            zIndex={win.zIndex}
+            isMaximized={isMaximized}
+            isActive={win.focused}
+            onPositionChange={commonProps.onPositionChange}
+            onSizeChange={commonProps.onSizeChange}
+          />
         );
+        break;
 
       case 'pdf-viewer':
-        return (
-          <div key={win.id} data-win-id={win.id} style={windowStyle}>
-            <XPPdfViewer
-              onClose={commonProps.onClose}
-              onDownload={() => {
-                const link = document.createElement('a');
-                link.href = '/resume.pdf';
-                link.download = 'Suhas_Nidgundi_Resume.pdf';
-                link.click();
-              }}
-              onMinimize={commonProps.onMinimize}
-              onMaximize={commonProps.onMaximize}
-              onFocus={commonProps.onFocus}
-              zIndex={win.zIndex}
-              isMaximized={isMaximized}
-              isActive={win.focused}
-              onPositionChange={commonProps.onPositionChange}
-              onSizeChange={commonProps.onSizeChange}
-            />
-          </div>
+        content = (
+          <XPPdfViewer
+            onClose={commonProps.onClose}
+            onDownload={() => {
+              const link = document.createElement('a');
+              link.href = '/resume.pdf';
+              link.download = 'Suhas_Nidgundi_Resume.pdf';
+              link.click();
+            }}
+            onMinimize={commonProps.onMinimize}
+            onMaximize={commonProps.onMaximize}
+            onFocus={commonProps.onFocus}
+            zIndex={win.zIndex}
+            isMaximized={isMaximized}
+            isActive={win.focused}
+            onPositionChange={commonProps.onPositionChange}
+            onSizeChange={commonProps.onSizeChange}
+          />
         );
+        break;
 
       case 'ai-chat':
-        return (
-          <div key={win.id} data-win-id={win.id} style={windowStyle}>
-            <XPAIChatWindow
-              onClose={commonProps.onClose}
-              onMinimize={commonProps.onMinimize}
-              onMaximize={commonProps.onMaximize}
-              onFocus={commonProps.onFocus}
-              zIndex={win.zIndex}
-              isMaximized={isMaximized}
-              isActive={win.focused}
-            />
-          </div>
+        content = (
+          <XPAIChatWindow
+            onClose={commonProps.onClose}
+            onMinimize={commonProps.onMinimize}
+            onMaximize={commonProps.onMaximize}
+            onFocus={commonProps.onFocus}
+            zIndex={win.zIndex}
+            isMaximized={isMaximized}
+            isActive={win.focused}
+          />
         );
+        break;
 
       case 'notepad':
-        return (
-          <div key={win.id} data-win-id={win.id} style={windowStyle}>
-            <XPNotepad
-              onClose={commonProps.onClose}
-              onMinimize={commonProps.onMinimize}
-              onMaximize={commonProps.onMaximize}
-              onFocus={commonProps.onFocus}
-              zIndex={win.zIndex}
-              isMaximized={isMaximized}
-              isActive={win.focused}
-              onPositionChange={commonProps.onPositionChange}
-              onSizeChange={commonProps.onSizeChange}
-            />
-          </div>
+        content = (
+          <XPNotepad
+            onClose={commonProps.onClose}
+            onMinimize={commonProps.onMinimize}
+            onMaximize={commonProps.onMaximize}
+            onFocus={commonProps.onFocus}
+            zIndex={win.zIndex}
+            isMaximized={isMaximized}
+            isActive={win.focused}
+            onPositionChange={commonProps.onPositionChange}
+            onSizeChange={commonProps.onSizeChange}
+          />
         );
+        break;
 
       case 'calculator':
-        return (
-          <div key={win.id} data-win-id={win.id} style={windowStyle}>
-            <XPCalculator
-              onClose={commonProps.onClose}
-              onMinimize={commonProps.onMinimize}
-              onMaximize={commonProps.onMaximize}
-              onFocus={commonProps.onFocus}
-              zIndex={win.zIndex}
-              isMaximized={isMaximized}
-              isActive={win.focused}
-              onPositionChange={commonProps.onPositionChange}
-              onSizeChange={commonProps.onSizeChange}
-            />
-          </div>
+        content = (
+          <XPCalculator
+            onClose={commonProps.onClose}
+            onMinimize={commonProps.onMinimize}
+            onMaximize={commonProps.onMaximize}
+            onFocus={commonProps.onFocus}
+            zIndex={win.zIndex}
+            isMaximized={isMaximized}
+            isActive={win.focused}
+            onPositionChange={commonProps.onPositionChange}
+            onSizeChange={commonProps.onSizeChange}
+          />
         );
+        break;
 
       case 'minesweeper':
-        return (
-          <div key={win.id} data-win-id={win.id} style={windowStyle}>
-            <XPMinesweeper
-              onClose={commonProps.onClose}
-              onMinimize={commonProps.onMinimize}
-              onMaximize={commonProps.onMaximize}
-              onFocus={commonProps.onFocus}
-              zIndex={win.zIndex}
-              isMaximized={isMaximized}
-              isActive={win.focused}
-              onPositionChange={commonProps.onPositionChange}
-              onSizeChange={commonProps.onSizeChange}
-            />
-          </div>
+        content = (
+          <XPMinesweeper
+            onClose={commonProps.onClose}
+            onMinimize={commonProps.onMinimize}
+            onMaximize={commonProps.onMaximize}
+            onFocus={commonProps.onFocus}
+            zIndex={win.zIndex}
+            isMaximized={isMaximized}
+            isActive={win.focused}
+            onPositionChange={commonProps.onPositionChange}
+            onSizeChange={commonProps.onSizeChange}
+          />
         );
+        break;
 
       case 'guestbook':
-        return (
-          <div key={win.id} data-win-id={win.id} style={windowStyle}>
-            <XPGuestbook
-              onClose={commonProps.onClose}
-              onMinimize={commonProps.onMinimize}
-              onMaximize={commonProps.onMaximize}
-              onFocus={commonProps.onFocus}
-              zIndex={win.zIndex}
-              isMaximized={isMaximized}
-              isActive={win.focused}
-              onPositionChange={commonProps.onPositionChange}
-              onSizeChange={commonProps.onSizeChange}
-            />
-          </div>
+        content = (
+          <XPGuestbook
+            onClose={commonProps.onClose}
+            onMinimize={commonProps.onMinimize}
+            onMaximize={commonProps.onMaximize}
+            onFocus={commonProps.onFocus}
+            zIndex={win.zIndex}
+            isMaximized={isMaximized}
+            isActive={win.focused}
+            onPositionChange={commonProps.onPositionChange}
+            onSizeChange={commonProps.onSizeChange}
+          />
         );
+        break;
 
       default:
         return null;
     }
+
+    if (!content) return null;
+
+    return (
+      <div
+        key={win.id}
+        data-win-id={win.id}
+        style={windowStyle}
+        className="w-full h-full flex flex-col items-stretch"
+      >
+        {content}
+      </div>
+    );
   };
 
   return (

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { type Project } from '@/data/portfolioData';
+import { type Project, INITIAL_PROJECTS } from '@/data/portfolioData';
 
 export { type Project } from '@/data/portfolioData';
 
@@ -7,11 +7,16 @@ export const useProjects = () => {
   return useQuery<Project[]>({
     queryKey: ['projects'],
     queryFn: async (): Promise<Project[]> => {
-      const res = await fetch('/api/projects');
-      if (!res.ok) throw new Error('Failed to fetch projects from Vercel');
-      const data = await res.json();
-      return Array.isArray(data) ? data : [];
+      try {
+        const res = await fetch('/api/projects');
+        if (!res.ok) return INITIAL_PROJECTS;
+        const data = await res.json();
+        return Array.isArray(data) && data.length > 0 ? data : INITIAL_PROJECTS;
+      } catch (err) {
+        return INITIAL_PROJECTS;
+      }
     },
+    initialData: INITIAL_PROJECTS,
     staleTime: 30 * 1000,
   });
 };
@@ -20,12 +25,17 @@ export const useFeaturedProject = () => {
   return useQuery<Project | null>({
     queryKey: ['featured-project'],
     queryFn: async (): Promise<Project | null> => {
-      const res = await fetch('/api/projects?featured=true');
-      if (!res.ok) throw new Error('Failed to fetch featured project');
-      const data = await res.json();
-      if (Array.isArray(data) && data.length > 0) return data[0];
-      return null;
+      try {
+        const res = await fetch('/api/projects?featured=true');
+        if (!res.ok) return INITIAL_PROJECTS[0] || null;
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) return data[0];
+        return INITIAL_PROJECTS[0] || null;
+      } catch (err) {
+        return INITIAL_PROJECTS[0] || null;
+      }
     },
+    initialData: INITIAL_PROJECTS[0] || null,
     staleTime: 30 * 1000,
   });
 };

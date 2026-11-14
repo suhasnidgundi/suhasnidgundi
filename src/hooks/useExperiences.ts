@@ -1,44 +1,65 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { type Experience } from '@/data/portfolioData';
+import { type Experience, INITIAL_EXPERIENCES } from '@/data/portfolioData';
 
 export { type Experience } from '@/data/portfolioData';
 
 export const useExperiences = (type?: 'work' | 'education' | 'volunteer') => {
+  const filteredInitial = type
+    ? INITIAL_EXPERIENCES.filter((e) => e.experience_type === type)
+    : INITIAL_EXPERIENCES;
+
   return useQuery<Experience[]>({
     queryKey: ['experiences', type],
     queryFn: async (): Promise<Experience[]> => {
-      const url = type ? `/api/experiences?type=${type}` : '/api/experiences';
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('Failed to fetch experiences from Vercel');
-      const data = await res.json();
-      return Array.isArray(data) ? data : [];
+      try {
+        const url = type ? `/api/experiences?type=${type}` : '/api/experiences';
+        const res = await fetch(url);
+        if (!res.ok) return filteredInitial;
+        const data = await res.json();
+        return Array.isArray(data) && data.length > 0 ? data : filteredInitial;
+      } catch (err) {
+        return filteredInitial;
+      }
     },
+    initialData: filteredInitial,
     staleTime: 30 * 1000,
   });
 };
 
 export const useCurrentExperiences = () => {
+  const currentInitial = INITIAL_EXPERIENCES.filter((e) => e.is_current);
   return useQuery<Experience[]>({
     queryKey: ['experiences', 'current'],
     queryFn: async (): Promise<Experience[]> => {
-      const res = await fetch('/api/experiences?current=true');
-      if (!res.ok) throw new Error('Failed to fetch current experiences');
-      const data = await res.json();
-      return Array.isArray(data) ? data : [];
+      try {
+        const res = await fetch('/api/experiences?current=true');
+        if (!res.ok) return currentInitial;
+        const data = await res.json();
+        return Array.isArray(data) && data.length > 0 ? data : currentInitial;
+      } catch (err) {
+        return currentInitial;
+      }
     },
+    initialData: currentInitial,
     staleTime: 30 * 1000,
   });
 };
 
 export const useCurrentExperience = () => {
+  const firstCurrent = INITIAL_EXPERIENCES.find((e) => e.is_current) || null;
   return useQuery<Experience | null>({
     queryKey: ['experience', 'current-single'],
     queryFn: async (): Promise<Experience | null> => {
-      const res = await fetch('/api/experiences?current=true');
-      if (!res.ok) throw new Error('Failed to fetch current experience');
-      const data = await res.json();
-      return Array.isArray(data) && data.length > 0 ? data[0] : null;
+      try {
+        const res = await fetch('/api/experiences?current=true');
+        if (!res.ok) return firstCurrent;
+        const data = await res.json();
+        return Array.isArray(data) && data.length > 0 ? data[0] : firstCurrent;
+      } catch (err) {
+        return firstCurrent;
+      }
     },
+    initialData: firstCurrent,
     staleTime: 30 * 1000,
   });
 };
@@ -57,6 +78,7 @@ export const useSaveExperience = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['experiences'] });
+      queryClient.invalidateQueries({ queryKey: ['experience'] });
     },
   });
 };

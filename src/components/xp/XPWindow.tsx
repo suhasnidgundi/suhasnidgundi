@@ -231,10 +231,12 @@ const XPWindow = ({
       <div
         ref={windowRef}
         data-win-id={id}
-        className={`flex flex-col h-full overflow-hidden ${
+        className={`flex flex-col w-full h-full overflow-hidden ${
           isMaximized ? '' : 'xp-window-frame'
         } ${!isActive ? 'inactive' : ''} ${className}`}
         style={{
+          width: '100%',
+          height: '100%',
           zIndex,
           borderRadius: isMaximized ? '0' : '8px 8px 0 0',
         }}
