@@ -7,14 +7,7 @@ const ContactSchema = z.object({
   subject: z.string().optional(),
 });
 
-export default async function handler(req: Request) {
-  if (req.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-      status: 405,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
+export async function POST(req: Request) {
   try {
     const body = await req.json();
     const result = ContactSchema.safeParse(body);
@@ -51,21 +44,20 @@ export default async function handler(req: Request) {
             template_params: {
               from_name: name,
               from_email: email,
-              subject: subject || 'Portfolio Contact',
               message,
+              subject: subject || 'Portfolio Contact Message',
             },
           }),
         });
       } catch (err) {
-        console.error('EmailJS forwarding error:', err);
+        console.warn('EmailJS forward failed:', err);
       }
     }
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: 'Message received successfully! Suhas will get back to you soon.',
-        timestamp: new Date().toISOString(),
+        message: 'Message received successfully!',
       }),
       {
         status: 200,
@@ -74,11 +66,21 @@ export default async function handler(req: Request) {
     );
   } catch (err: any) {
     return new Response(
-      JSON.stringify({ error: err.message || 'Internal Server Error' }),
+      JSON.stringify({ error: err.message || 'Server error' }),
       {
         status: 500,
         headers: { 'Content-Type': 'application/json' },
       }
     );
   }
+}
+
+export default async function handler(req: Request) {
+  if (req.method !== 'POST') {
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+      status: 405,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+  return POST(req);
 }

@@ -38,12 +38,17 @@ async function saveBlobCounterData(data: { total: number; today: number; date: s
   }
 }
 
-export default async function handler(req: Request) {
+function checkReset() {
   const currentDate = new Date().toDateString();
   if (currentDate !== lastResetDate) {
     memoryToday = 0;
     lastResetDate = currentDate;
   }
+  return currentDate;
+}
+
+export async function POST(req: Request) {
+  const currentDate = checkReset();
 
   // 1. Upstash Redis or Vercel KV credentials
   const redisUrl =
@@ -53,85 +58,91 @@ export default async function handler(req: Request) {
     process.env.UPSTASH_REDIS_REST_TOKEN ||
     process.env.KV_REST_API_TOKEN;
 
-  // POST: Increment count
-  if (req.method === 'POST') {
-    // Attempt Upstash Redis first
-    if (redisUrl && redisToken) {
-      try {
-        const todayKey = `visitors:${new Date().toISOString().slice(0, 10)}`;
-        const [totalRes, todayRes] = await Promise.all([
-          fetch(`${redisUrl}/incr/portfolio_visitors_total`, {
-            headers: { Authorization: `Bearer ${redisToken}` },
-          }).then((r) => r.json()),
-          fetch(`${redisUrl}/incr/${todayKey}`, {
-            headers: { Authorization: `Bearer ${redisToken}` },
-          }).then((r) => r.json()),
-        ]);
+  if (redisUrl && redisToken) {
+    try {
+      const todayKey = `visitors:${new Date().toISOString().slice(0, 10)}`;
+      const [totalRes, todayRes] = await Promise.all([
+        fetch(`${redisUrl}/incr/portfolio_visitors_total`, {
+          headers: { Authorization: `Bearer ${redisToken}` },
+        }).then((r) => r.json()),
+        fetch(`${redisUrl}/incr/${todayKey}`, {
+          headers: { Authorization: `Bearer ${redisToken}` },
+        }).then((r) => r.json()),
+      ]);
 
-        return new Response(
-          JSON.stringify({
-            total: totalRes?.result || 1,
-            today: todayRes?.result || 1,
-            source: 'upstash',
-          }),
-          {
-            status: 200,
-            headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
-          }
-        );
-      } catch (e) {
-        console.warn('Upstash Redis error, falling back to Blob/memory:', e);
-      }
-    }
-
-    // Attempt Vercel Blob persistence
-    if (process.env.BLOB_READ_WRITE_TOKEN) {
-      try {
-        const current = await getBlobCounterData();
-        let total = current?.total ? Number(current.total) + 1 : 1;
-        let today = 1;
-
-        if (current && current.date === currentDate) {
-          today = Number(current.today || 0) + 1;
+      return new Response(
+        JSON.stringify({
+          total: totalRes?.result || 1,
+          today: todayRes?.result || 1,
+          source: 'upstash',
+        }),
+        {
+          status: 200,
+          headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
         }
-
-        const updatedData = { total, today, date: currentDate };
-        await saveBlobCounterData(updatedData);
-
-        return new Response(
-          JSON.stringify({
-            total,
-            today,
-            source: 'blob',
-          }),
-          {
-            status: 200,
-            headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
-          }
-        );
-      } catch (e) {
-        console.warn('Vercel Blob counter error, falling back to memory:', e);
-      }
+      );
+    } catch (e) {
+      console.warn('Upstash Redis error, falling back to Blob/memory:', e);
     }
-
-    // In-memory serverless counter fallback
-    memoryTotal += 1;
-    memoryToday += 1;
-
-    return new Response(
-      JSON.stringify({
-        total: memoryTotal,
-        today: memoryToday,
-        source: 'memory',
-      }),
-      {
-        status: 200,
-        headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
-      }
-    );
   }
 
-  // GET: Read count
+  // 2. Attempt Vercel Blob persistence
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    try {
+      const current = await getBlobCounterData();
+      let total = current?.total ? Number(current.total) + 1 : 1;
+      let today = 1;
+
+      if (current && current.date === currentDate) {
+        today = Number(current.today || 0) + 1;
+      }
+
+      const updatedData = { total, today, date: currentDate };
+      await saveBlobCounterData(updatedData);
+
+      return new Response(
+        JSON.stringify({
+          total,
+          today,
+          source: 'blob',
+        }),
+        {
+          status: 200,
+          headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
+        }
+      );
+    } catch (e) {
+      console.warn('Vercel Blob counter error, falling back to memory:', e);
+    }
+  }
+
+  // 3. In-memory serverless counter fallback
+  memoryTotal += 1;
+  memoryToday += 1;
+
+  return new Response(
+    JSON.stringify({
+      total: memoryTotal,
+      today: memoryToday,
+      source: 'memory',
+    }),
+    {
+      status: 200,
+      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
+    }
+  );
+}
+
+export async function GET(req: Request) {
+  const currentDate = checkReset();
+
+  const redisUrl =
+    process.env.UPSTASH_REDIS_REST_URL ||
+    process.env.KV_REST_API_URL;
+  const redisToken =
+    process.env.UPSTASH_REDIS_REST_TOKEN ||
+    process.env.KV_REST_API_TOKEN;
+
   if (redisUrl && redisToken) {
     try {
       const todayKey = `visitors:${new Date().toISOString().slice(0, 10)}`;
@@ -207,4 +218,10 @@ export default async function handler(req: Request) {
       },
     }
   );
+}
+
+// Keep default export for backward compatibility
+export default async function handler(req: Request) {
+  if (req.method === 'POST') return POST(req);
+  return GET(req);
 }

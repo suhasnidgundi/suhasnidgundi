@@ -71,74 +71,73 @@ async function saveBlobGuestbook(entries: GuestbookEntry[]) {
   }
 }
 
-export default async function handler(req: Request) {
-  if (req.method === 'POST') {
-    try {
-      const body = await req.json();
-      const { name, company, message } = body;
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+    const { name, company, message } = body;
 
-      if (!name || !message) {
-        return new Response(
-          JSON.stringify({ error: 'Name and message are required.' }),
-          { status: 400, headers: { 'Content-Type': 'application/json' } }
-        );
-      }
-
-      const newEntry: GuestbookEntry = {
-        id: `gb-${Date.now()}`,
-        name: String(name).slice(0, 60).trim(),
-        company: company ? String(company).slice(0, 80).trim() : undefined,
-        message: String(message).slice(0, 500).trim(),
-        createdAt: new Date().toISOString(),
-        badge: 'New Signer',
-      };
-
-      // 1. Upstash Redis
-      const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
-      const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
-
-      if (redisUrl && redisToken) {
-        try {
-          await fetch(`${redisUrl}/lpush/portfolio_guestbook/${encodeURIComponent(JSON.stringify(newEntry))}`, {
-            headers: { Authorization: `Bearer ${redisToken}` },
-          });
-        } catch (e) {
-          console.warn('Failed to save to Redis:', e);
-        }
-      }
-
-      // 2. Vercel Blob
-      if (process.env.BLOB_READ_WRITE_TOKEN) {
-        try {
-          const current = (await getBlobGuestbook()) || inMemoryEntries;
-          const updated = [newEntry, ...current];
-          await saveBlobGuestbook(updated);
-          inMemoryEntries = updated;
-
-          return new Response(JSON.stringify({ success: true, entry: newEntry, source: 'blob' }), {
-            status: 201,
-            headers: { 'Content-Type': 'application/json' },
-          });
-        } catch (e) {
-          console.warn('Failed to save to Blob, fallback to memory:', e);
-        }
-      }
-
-      inMemoryEntries = [newEntry, ...inMemoryEntries];
-
-      return new Response(JSON.stringify({ success: true, entry: newEntry, source: 'memory' }), {
-        status: 201,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    } catch (e: any) {
+    if (!name || !message) {
       return new Response(
-        JSON.stringify({ error: e.message || 'Failed to submit signature' }),
-        { status: 500, headers: { 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'Name and message are required.' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
       );
     }
-  }
 
-  // GET request
+    const newEntry: GuestbookEntry = {
+      id: `gb-${Date.now()}`,
+      name: String(name).slice(0, 60).trim(),
+      company: company ? String(company).slice(0, 80).trim() : undefined,
+      message: String(message).slice(0, 500).trim(),
+      createdAt: new Date().toISOString(),
+      badge: 'New Signer',
+    };
+
+    // 1. Upstash Redis
+    const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
+    const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+    if (redisUrl && redisToken) {
+      try {
+        await fetch(`${redisUrl}/lpush/portfolio_guestbook/${encodeURIComponent(JSON.stringify(newEntry))}`, {
+          headers: { Authorization: `Bearer ${redisToken}` },
+        });
+      } catch (e) {
+        console.warn('Failed to save to Redis:', e);
+      }
+    }
+
+    // 2. Vercel Blob
+    if (process.env.BLOB_READ_WRITE_TOKEN) {
+      try {
+        const current = (await getBlobGuestbook()) || inMemoryEntries;
+        const updated = [newEntry, ...current];
+        await saveBlobGuestbook(updated);
+        inMemoryEntries = updated;
+
+        return new Response(JSON.stringify({ success: true, entry: newEntry, source: 'blob' }), {
+          status: 201,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      } catch (e) {
+        console.warn('Failed to save to Blob, fallback to memory:', e);
+      }
+    }
+
+    inMemoryEntries = [newEntry, ...inMemoryEntries];
+
+    return new Response(JSON.stringify({ success: true, entry: newEntry, source: 'memory' }), {
+      status: 201,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (e: any) {
+    return new Response(
+      JSON.stringify({ error: e.message || 'Failed to submit signature' }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+}
+
+export async function GET(req: Request) {
   const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
   const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
 
@@ -201,4 +200,9 @@ export default async function handler(req: Request) {
       },
     }
   );
+}
+
+export default async function handler(req: Request) {
+  if (req.method === 'POST') return POST(req);
+  return GET(req);
 }

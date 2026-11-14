@@ -1,6 +1,6 @@
 import { get } from '@vercel/edge-config';
 
-export default async function handler(req: Request) {
+export async function GET(req: Request) {
   try {
     let edgeConfigData: any = null;
 

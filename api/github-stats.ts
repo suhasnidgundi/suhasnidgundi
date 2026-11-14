@@ -1,4 +1,4 @@
-export default async function handler(req: Request) {
+export async function GET(req: Request) {
   try {
     const username = 'suhasnidgundi';
     const [userRes, reposRes] = await Promise.all([
@@ -48,4 +48,8 @@ export default async function handler(req: Request) {
       headers: { 'Content-Type': 'application/json' },
     });
   }
+}
+
+export default async function handler(req: Request) {
+  return GET(req);
 }
