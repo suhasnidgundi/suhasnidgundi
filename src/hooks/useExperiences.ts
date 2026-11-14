@@ -1,65 +1,59 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { type Experience, INITIAL_EXPERIENCES } from '@/data/portfolioData';
+import { type Experience } from '@/data/portfolioData';
 
 export { type Experience } from '@/data/portfolioData';
 
 export const useExperiences = (type?: 'work' | 'education' | 'volunteer') => {
-  const filteredInitial = type
-    ? INITIAL_EXPERIENCES.filter((e) => e.experience_type === type)
-    : INITIAL_EXPERIENCES;
-
   return useQuery<Experience[]>({
     queryKey: ['experiences', type],
     queryFn: async (): Promise<Experience[]> => {
       try {
         const url = type ? `/api/experiences?type=${type}` : '/api/experiences';
         const res = await fetch(url);
-        if (!res.ok) return filteredInitial;
+        if (!res.ok) return [];
         const data = await res.json();
-        return Array.isArray(data) && data.length > 0 ? data : filteredInitial;
+        return Array.isArray(data) ? data : [];
       } catch (err) {
-        return filteredInitial;
+        return [];
       }
     },
-    initialData: filteredInitial,
+    initialData: [],
     staleTime: 30 * 1000,
   });
 };
 
 export const useCurrentExperiences = () => {
-  const currentInitial = INITIAL_EXPERIENCES.filter((e) => e.is_current);
   return useQuery<Experience[]>({
     queryKey: ['experiences', 'current'],
     queryFn: async (): Promise<Experience[]> => {
       try {
         const res = await fetch('/api/experiences?current=true');
-        if (!res.ok) return currentInitial;
+        if (!res.ok) return [];
         const data = await res.json();
-        return Array.isArray(data) && data.length > 0 ? data : currentInitial;
+        return Array.isArray(data) ? data : [];
       } catch (err) {
-        return currentInitial;
+        return [];
       }
     },
-    initialData: currentInitial,
+    initialData: [],
     staleTime: 30 * 1000,
   });
 };
 
 export const useCurrentExperience = () => {
-  const firstCurrent = INITIAL_EXPERIENCES.find((e) => e.is_current) || null;
   return useQuery<Experience | null>({
     queryKey: ['experience', 'current-single'],
     queryFn: async (): Promise<Experience | null> => {
       try {
         const res = await fetch('/api/experiences?current=true');
-        if (!res.ok) return firstCurrent;
+        if (!res.ok) return null;
         const data = await res.json();
-        return Array.isArray(data) && data.length > 0 ? data[0] : firstCurrent;
+        return Array.isArray(data) && data.length > 0 ? data[0] : null;
       } catch (err) {
-        return firstCurrent;
+        return null;
       }
     },
-    initialData: firstCurrent,
+    initialData: null,
     staleTime: 30 * 1000,
   });
 };

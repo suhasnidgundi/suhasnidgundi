@@ -58,60 +58,22 @@ export interface Experience {
 
 const BLOB_NAME = 'experiences.json';
 
-const BASELINE_EXPERIENCES: Experience[] = [
-  {
-    $id: 'exp-1',
-    role: 'Full Stack Software Engineer',
-    company: 'Independent Consultant / Freelance',
-    description: 'Designing and deploying end-to-end web applications, automated workflow systems, and cloud infrastructure on Vercel and AWS for enterprise, healthcare, and education clients.',
-    start_date: '2023',
-    is_current: true,
-    experience_type: 'work',
-    skills: ['React', 'TypeScript', 'Node.js', 'Python', 'Tailwind CSS', 'Vercel', 'PostgreSQL', 'Docker'],
-    display_order: 1,
-  },
-  {
-    $id: 'exp-2',
-    role: 'Software Systems Developer',
-    company: 'Digital Campus Solutions',
-    description: 'Built asset tracking architectures, automated database reporting pipelines, and responsive management dashboards for campus inventory management.',
-    start_date: '2022',
-    end_date: '2023',
-    is_current: false,
-    experience_type: 'work',
-    skills: ['TypeScript', 'React', 'REST APIs', 'PostgreSQL', 'Vite', 'Git'],
-    display_order: 2,
-  },
-  {
-    $id: 'exp-3',
-    role: 'Bachelor of Engineering (Computer Science)',
-    company: 'Visvesvaraya Technological University (VTU)',
-    description: 'Focused on Distributed Systems, Algorithms, Software Engineering, Database Management, and Network Security.',
-    start_date: '2019',
-    end_date: '2023',
-    is_current: false,
-    experience_type: 'education',
-    skills: ['Algorithms', 'Data Structures', 'Database Design', 'System Architecture'],
-    display_order: 3,
-  },
-];
-
 async function fetchBlobExperiences(): Promise<Experience[]> {
-  if (!process.env.BLOB_READ_WRITE_TOKEN) return BASELINE_EXPERIENCES;
+  if (!process.env.BLOB_READ_WRITE_TOKEN) return [];
   try {
     const { blobs } = await list({ prefix: BLOB_NAME });
     const match = blobs.find((b) => b.pathname === BLOB_NAME);
-    if (!match) return BASELINE_EXPERIENCES;
+    if (!match) return [];
     const res = await fetch(`${match.url}?t=${Date.now()}`, {
       cache: 'no-store',
       signal: AbortSignal.timeout(8000),
     });
-    if (!res.ok) return BASELINE_EXPERIENCES;
+    if (!res.ok) return [];
     const data = await res.json();
-    return Array.isArray(data) && data.length > 0 ? data : BASELINE_EXPERIENCES;
+    return Array.isArray(data) ? data : [];
   } catch (err) {
     console.warn('Vercel Blob experiences read error:', err);
-    return BASELINE_EXPERIENCES;
+    return [];
   }
 }
 

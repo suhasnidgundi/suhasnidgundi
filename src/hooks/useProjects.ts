@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { type Project, INITIAL_PROJECTS } from '@/data/portfolioData';
+import { type Project } from '@/data/portfolioData';
 
 export { type Project } from '@/data/portfolioData';
 
@@ -9,14 +9,14 @@ export const useProjects = () => {
     queryFn: async (): Promise<Project[]> => {
       try {
         const res = await fetch('/api/projects');
-        if (!res.ok) return INITIAL_PROJECTS;
+        if (!res.ok) return [];
         const data = await res.json();
-        return Array.isArray(data) && data.length > 0 ? data : INITIAL_PROJECTS;
+        return Array.isArray(data) ? data : [];
       } catch (err) {
-        return INITIAL_PROJECTS;
+        return [];
       }
     },
-    initialData: INITIAL_PROJECTS,
+    initialData: [],
     staleTime: 30 * 1000,
   });
 };
@@ -27,15 +27,15 @@ export const useFeaturedProject = () => {
     queryFn: async (): Promise<Project | null> => {
       try {
         const res = await fetch('/api/projects?featured=true');
-        if (!res.ok) return INITIAL_PROJECTS[0] || null;
+        if (!res.ok) return null;
         const data = await res.json();
         if (Array.isArray(data) && data.length > 0) return data[0];
-        return INITIAL_PROJECTS[0] || null;
+        return null;
       } catch (err) {
-        return INITIAL_PROJECTS[0] || null;
+        return null;
       }
     },
-    initialData: INITIAL_PROJECTS[0] || null,
+    initialData: null,
     staleTime: 30 * 1000,
   });
 };

@@ -1,8 +1,8 @@
 // Serverless Visitor Counter API with Upstash Redis / Vercel KV / Vercel Blob persistence
 import { put, list } from '@vercel/blob';
 
-let memoryTotal = 1;
-let memoryToday = 1;
+let memoryTotal = 0;
+let memoryToday = 0;
 let lastResetDate = new Date().toDateString();
 
 async function getBlobCounterData() {
@@ -182,8 +182,8 @@ export async function GET(req: Request) {
     try {
       const current = await getBlobCounterData();
       if (current) {
-        const total = current.total || 1;
-        const today = current.date === currentDate ? current.today || 1 : 0;
+        const total = current.total ?? 0;
+        const today = current.date === currentDate ? (current.today ?? 0) : 0;
         return new Response(
           JSON.stringify({
             total,
