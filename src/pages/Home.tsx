@@ -119,6 +119,10 @@ const HomeContent: React.FC<HomeProps> = ({ isDark, toggleTheme }) => {
     openWindow({ appId: 'guestbook' });
   }, [openWindow]);
 
+  const handleOpenWindowsPhone = useCallback(() => {
+    openWindow({ appId: 'windows-phone' });
+  }, [openWindow]);
+
   // Render individual windows according to their appId
   const renderWindow = (win: ManagedWindow) => {
     const isMaximized = win.state === 'maximized';
@@ -323,6 +327,28 @@ const HomeContent: React.FC<HomeProps> = ({ isDark, toggleTheme }) => {
         );
         break;
 
+      case 'windows-phone':
+        content = (
+          <XPWindow
+            id={win.id}
+            title={win.title}
+            onMinimize={commonProps.onMinimize}
+            onMaximize={commonProps.onMaximize}
+            onClose={commonProps.onClose}
+            zIndex={win.zIndex}
+            isMaximized={isMaximized}
+            isActive={win.focused}
+            onFocus={commonProps.onFocus}
+            onPositionChange={commonProps.onPositionChange}
+            onSizeChange={commonProps.onSizeChange}
+          >
+            <div className="w-full h-full bg-black overflow-hidden flex flex-col">
+              <WPHome isDark={isDark} toggleTheme={toggleTheme} />
+            </div>
+          </XPWindow>
+        );
+        break;
+
       default:
         return null;
     }
@@ -356,6 +382,7 @@ const HomeContent: React.FC<HomeProps> = ({ isDark, toggleTheme }) => {
         onOpenCalculator={handleOpenCalculator}
         onOpenMinesweeper={handleOpenMinesweeper}
         onOpenGuestbook={handleOpenGuestbook}
+        onOpenWindowsPhone={handleOpenWindowsPhone}
         onUnfocusAll={unfocusAll}
         isDark={isDark}
       />

@@ -15,7 +15,8 @@ export type WindowAppId =
   | 'notepad'
   | 'calculator'
   | 'minesweeper'
-  | 'guestbook';
+  | 'guestbook'
+  | 'windows-phone';
 
 export interface ManagedWindow {
   id: string;
@@ -225,6 +226,14 @@ function getDefaultAppMeta(appId: WindowAppId) {
         icon: '/icons/display_properties_32.png',
         w: 740,
         h: 520,
+        resizable: true,
+      };
+    case 'windows-phone':
+      return {
+        title: 'Windows Phone 8.1 — Lumia Simulator',
+        icon: '/icons/display_properties_32.png',
+        w: 420,
+        h: 740,
         resizable: true,
       };
   }

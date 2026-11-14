@@ -1,17 +1,17 @@
 import { useNavigate } from "react-router-dom";
 import {
-  ArrowLeft,
   Github,
   Linkedin,
   Mail,
   FileText,
-  MailIcon,
-  LinkedinIcon,
-  GithubIcon,
-  FileIcon,
+  MapPin,
+  Sparkles,
+  Download,
+  BookOpen,
 } from "lucide-react";
 import WPStatusBar from "@/components/wp/WPStatusBar";
-import WPAppBar from "@/components/wp/WPAppBar";
+import WPNavBar from "@/components/wp/WPNavBar";
+import { useEdgeConfig } from "@/hooks/useEdgeConfig";
 import profilePhoto from "@/assets/profile-photo.jpg";
 
 interface WPAboutMeProps {
@@ -19,122 +19,99 @@ interface WPAboutMeProps {
   toggleTheme: () => void;
 }
 
-const WPAboutMe = ({ isDark, toggleTheme }: WPAboutMeProps) => {
+const WPAboutMe = ({ isDark }: WPAboutMeProps) => {
   const navigate = useNavigate();
+  const { data: config } = useEdgeConfig();
 
   const openUrl = (url: string) => window.open(url, "_blank");
 
-  const appBarButtons = [
-    {
-      icon: <ArrowLeft className="w-5 h-5" />,
-      label: "Back",
-      onClick: () => navigate("/"),
-    },
-    {
-      icon: <Github className="w-5 h-5" />,
-      label: "GitHub",
-      onClick: () => openUrl("https://github.com/suhasnidgundi"),
-    },
-    {
-      icon: <Linkedin className="w-5 h-5" />,
-      label: "LinkedIn",
-      onClick: () => openUrl("https://linkedin.com/in/suhasnidgundi"),
-    },
-    {
-      icon: <Mail className="w-5 h-5" />,
-      label: "Contact",
-      onClick: () => openUrl("mailto:suhasnidgundi@gmail.com"),
-    },
-  ];
-
   return (
-    <div className="min-h-screen bg-wp-bg flex flex-col">
+    <div className="min-h-screen bg-black text-white font-['Segoe_UI',sans-serif] flex flex-col select-none">
       <WPStatusBar />
 
-      {/* Panorama-style header */}
-      <div className="relative h-80 overflow-hidden">
+      {/* Panorama-style Hero Header */}
+      <div className="relative h-72 overflow-hidden bg-neutral-900">
         <img
           src={profilePhoto}
-          alt="Suhas"
-          className="w-full h-full object-cover object-center"
+          alt={config?.name || "Suhas"}
+          className="w-full h-full object-cover object-top opacity-85"
         />
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-wp-accent/40 via-transparent to-wp-bg" />
+        {/* Windows Phone Panorama Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
 
-        <div className="absolute bottom-8 left-5 right-5">
-          <h1 className="text-[42px] font-light tracking-tight text-wp-text wp-list-enter">
-            about me
+        <div className="absolute bottom-5 left-5 right-5">
+          <h1 className="text-[44px] font-extralight tracking-tight text-white leading-none lowercase">
+            {config?.name ? config.name.toLowerCase() : "about me"}
           </h1>
-          {/* Tagline */}
-          <p className="text-wp-accent text-[15px] font-semibold wp-list-enter">
-            Final-Year Computer Engineer | Software Engineer (Freelance +
-            Community)
+          <p className="text-[hsl(var(--wp-accent))] text-[14px] font-semibold tracking-wide mt-1">
+            {config?.role || "Full Stack Engineer & System Designer"}
           </p>
         </div>
       </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto px-5 pt-6 pb-24 space-y-8">
-        {/* Bio */}
-        <p className="text-wp-text/80 text-[14px] leading-relaxed font-light wp-list-enter wp-delay-1">
-          engineer building scalable systems, cloud-native services,
-          and empowering developers through thoughtful engineering.
-        </p>
-
-        {/* Quick Actions — Icon Only */}
-        <div className="flex flex-row items-center gap-4 mt-5 wp-list-enter">
-          {/* Email */}
+      {/* Content Area */}
+      <div className="flex-1 overflow-y-auto px-5 pt-4 pb-24 space-y-6">
+        {/* Quick Contact & Action Buttons */}
+        <div className="flex items-center gap-3">
           <button
-            onClick={() => window.open("mailto:suhasnidgundi@gmail.com")}
-            className="w-14 h-14 rounded-full bg-wp-chrome flex items-center justify-center text-wp-text active:bg-wp-text/20"
+            onClick={() => openUrl(`mailto:${config?.email || "suhasnidgundi@gmail.com"}`)}
+            className="flex-1 py-2.5 bg-[hsl(var(--wp-accent))] text-white rounded font-medium text-[13px] flex items-center justify-center gap-2 active:scale-95 shadow transition-transform"
           >
-            <MailIcon className="w-6 h-6" />
+            <Mail className="w-4 h-4" /> Email Me
           </button>
-
-          {/* LinkedIn */}
           <button
-            onClick={() => window.open("https://linkedin.com/in/suhasnidgundi")}
-            className="w-14 h-14 rounded-full bg-wp-chrome flex items-center justify-center text-wp-text active:bg-wp-text/20"
+            onClick={() => openUrl(config?.linkedin || "https://linkedin.com/in/suhasnidgundi")}
+            className="flex-1 py-2.5 bg-[#0077b5] text-white rounded font-medium text-[13px] flex items-center justify-center gap-2 active:scale-95 shadow transition-transform"
           >
-            <LinkedinIcon className="w-6 h-6" />
+            <Linkedin className="w-4 h-4" /> LinkedIn
           </button>
-
-          {/* GitHub */}
           <button
-            onClick={() => window.open("https://github.com/suhasnidgundi")}
-            className="w-14 h-14 rounded-full bg-wp-chrome flex items-center justify-center text-wp-text active:bg-wp-text/20"
+            onClick={() => openUrl(config?.github || "https://github.com/suhasnidgundi")}
+            className="w-10 h-10 bg-white/10 rounded flex items-center justify-center text-white active:bg-white/20 transition-colors"
+            title="GitHub"
           >
-            <GithubIcon className="w-6 h-6" />
-          </button>
-
-          {/* Resume */}
-          <button
-            onClick={() => window.open("/resume.pdf")}
-            className="w-14 h-14 rounded-full bg-wp-chrome flex items-center justify-center text-wp-text active:bg-wp-text/20"
-          >
-            <FileIcon className="w-6 h-6" />
+            <Github className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Skills */}
-        <section className="wp-list-enter wp-delay-2">
-          <h2 className="text-wp-text/60 uppercase tracking-wide text-[15px] mb-3">
-            skills
+        {/* Bio / Headline */}
+        <div className="p-4 bg-white/5 border-l-4 border-[hsl(var(--wp-accent))] rounded-r space-y-2">
+          <h2 className="text-[13px] uppercase tracking-wider text-white/50 font-semibold">
+            Engineering Philosophy
           </h2>
-          <div className="flex flex-wrap gap-2">
+          <p className="text-[14px] text-white/90 leading-relaxed font-light">
+            {config?.headline ||
+              "Building high-impact systems, distributed architectures, and nostalgic web experiences."}
+          </p>
+          <div className="flex items-center gap-1.5 text-[12px] text-white/60 pt-1">
+            <MapPin className="w-3.5 h-3.5 text-[hsl(var(--wp-accent))]" />
+            <span>{config?.location || "Belgaum / Pune, India"}</span>
+          </div>
+        </div>
+
+        {/* Core Skills */}
+        <section className="space-y-2">
+          <h2 className="text-white/60 uppercase tracking-wide text-[13px] font-semibold">
+            Core Technologies & Stack
+          </h2>
+          <div className="flex flex-wrap gap-1.5">
             {[
               "React",
               "TypeScript",
+              "Next.js",
               "Node.js",
-              "AWS",
-              "Docker",
-              "Kubernetes",
-              "PostgreSQL",
               "Python",
+              "Tailwind CSS",
+              "PostgreSQL",
+              "Vercel Cloud",
+              "Docker",
+              "Git",
+              "Distributed Systems",
+              "REST APIs",
             ].map((skill) => (
               <span
                 key={skill}
-                className="px-3 py-1 bg-wp-accent text-wp-bg text-[12px] font-medium"
+                className="px-3 py-1 bg-[hsl(var(--wp-accent))] text-white text-[12px] font-medium shadow-sm"
               >
                 {skill}
               </span>
@@ -143,46 +120,48 @@ const WPAboutMe = ({ isDark, toggleTheme }: WPAboutMeProps) => {
         </section>
 
         {/* Education */}
-        <section className="wp-list-enter wp-delay-3">
-          <h2 className="text-wp-text/60 uppercase tracking-wide text-[15px] mb-3">
-            education
+        <section className="space-y-2">
+          <h2 className="text-white/60 uppercase tracking-wide text-[13px] font-semibold">
+            Education
           </h2>
-          <div className="bg-wp-chrome p-4 relative">
-            <div className="wp-accent-bar" />
-            <p className="text-wp-text text-[16px] font-semibold">
-              Bachelor of Engineering - Computer Engineering
+          <div className="bg-white/5 p-4 rounded border-l-4 border-indigo-500">
+            <p className="text-white text-[15px] font-semibold">
+              Bachelor of Engineering — Computer Science & Engineering
             </p>
-            <p className="text-wp-text/60 text-[13px]" onClick={() => window.open("https://www.dypcoei.edu.in")}>DYPCOEI</p>
-            <p className="text-wp-text/40 text-[12px] mt-1">Expected 2026</p>
+            <p className="text-white/60 text-[13px] mt-0.5">
+              Visvesvaraya Technological University (VTU)
+            </p>
+            <span className="text-white/40 text-[11px] block mt-1 font-mono">
+              Class of 2023
+            </span>
           </div>
         </section>
 
-        {/* Fun Facts / Beyond Tech */}
-        <section className="mt-10 wp-list-enter wp-delay-1">
-          <h2 className="text-wp-text/60 uppercase tracking-wide text-[15px] mb-3">
-            beyond tech
+        {/* Quick Navigation to other Hubs */}
+        <section className="space-y-2">
+          <h2 className="text-white/60 uppercase tracking-wide text-[13px] font-semibold">
+            Explore More Hubs
           </h2>
-
-          <div className="space-y-2 text-wp-text/80 text-[15px] font-light">
-            <p>
-              🎹 I enjoy playing melodica and guitar, exploring music in my free
-              time.
-            </p>
-            <p>
-              🤝 Active volunteer at tech communities like AWS User Group Pune.
-            </p>
-            <p>
-              🌐 Love simplifying technology and sharing knowledge with others.
-            </p>
-            <p>
-              📺 I love watching tech videos and follow creators like Fireship,
-              DIY Perks, and NetworkChuck.
-            </p>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() => navigate("/projects")}
+              className="p-3 bg-white/5 rounded border border-white/10 text-left active:bg-white/10 transition-colors"
+            >
+              <span className="text-[14px] font-medium text-white block">Projects Hub</span>
+              <span className="text-[11px] text-white/50">Full portfolio list →</span>
+            </button>
+            <button
+              onClick={() => navigate("/office")}
+              className="p-3 bg-white/5 rounded border border-white/10 text-left active:bg-white/10 transition-colors"
+            >
+              <span className="text-[14px] font-medium text-white block">Office / Resume</span>
+              <span className="text-[11px] text-white/50">Case studies & PDF →</span>
+            </button>
           </div>
         </section>
       </div>
 
-      <WPAppBar buttons={appBarButtons} />
+      <WPNavBar />
     </div>
   );
 };

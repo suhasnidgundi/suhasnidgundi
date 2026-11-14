@@ -1,10 +1,8 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
-
+import { ArrowLeft, Calendar, Building2, CheckCircle2 } from "lucide-react";
 import { useExperiences } from "@/hooks/useExperiences";
-
 import WPStatusBar from "@/components/wp/WPStatusBar";
-import WPAppBar from "@/components/wp/WPAppBar";
+import WPNavBar from "@/components/wp/WPNavBar";
 
 const WPExperienceDetail = () => {
   const { id } = useParams();
@@ -13,143 +11,88 @@ const WPExperienceDetail = () => {
   const { data: experiences, isLoading } = useExperiences();
   const exp = experiences?.find((e) => e.$id === id);
 
-  const formatDate = (date: string | undefined) => {
-    if (!date) return "";
-    return new Date(date).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-    });
-  };
-
-  const appBarButtons = [
-    {
-      icon: <ArrowLeft className="w-5 h-5" />,
-      label: "Back",
-      onClick: () => navigate(-1),
-    },
-  ];
-
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-wp-bg flex items-center justify-center text-wp-text/60">
-        Loading experience...
+      <div className="min-h-screen bg-black text-white flex items-center justify-center text-[14px] text-white/50 font-['Segoe_UI',sans-serif]">
+        Loading experience details…
       </div>
     );
   }
 
   if (!exp) {
     return (
-      <div className="min-h-screen bg-wp-bg flex items-center justify-center text-wp-text/60">
-        Experience not found.
+      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6 text-center font-['Segoe_UI',sans-serif] space-y-4">
+        <p className="text-[18px]">Experience entry not found.</p>
+        <button
+          onClick={() => navigate("/experience")}
+          className="px-4 py-2 bg-[hsl(var(--wp-accent))] text-white rounded text-[13px]"
+        >
+          Return to Experience
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-wp-bg text-wp-text flex flex-col">
+    <div className="min-h-screen bg-black text-white font-['Segoe_UI',sans-serif] flex flex-col select-none">
       <WPStatusBar />
 
-      {/* Panorama */}
-      <div className="relative h-56 w-full bg-wp-accent/30 flex items-end p-6">
-        <h1 className="text-[38px] font-light tracking-tight wp-list-enter leading-tight">
-          {exp.role.toLowerCase()}
-        </h1>
+      {/* Hero Header */}
+      <div className="relative h-56 w-full bg-gradient-to-br from-[hsl(var(--wp-violet))]/40 to-black flex items-end p-6 border-b border-white/10">
+        <div>
+          <span className="text-[11px] font-mono uppercase bg-[hsl(var(--wp-accent))] text-white px-2 py-0.5 rounded font-bold">
+            {exp.is_current ? "Current Role" : exp.experience_type || "Career"}
+          </span>
+          <h1 className="text-[34px] font-extralight text-white tracking-tight leading-tight lowercase mt-2">
+            {exp.role.toLowerCase()}
+          </h1>
+          <p className="text-[hsl(var(--wp-accent))] text-[15px] font-medium mt-0.5">
+            @ {exp.company}
+          </p>
+        </div>
       </div>
 
-      <div className="flex-1 px-6 py-8 space-y-10 overflow-y-auto">
-        {/* Overview */}
-        <section className="wp-list-enter">
-          <h2 className="text-wp-text/60 uppercase text-[15px] mb-2">
-            overview
+      {/* Details */}
+      <div className="flex-1 px-6 py-6 space-y-6 overflow-y-auto pb-24">
+        {/* Timeline Metadata */}
+        <div className="flex items-center gap-2 text-[13px] text-white/60">
+          <Calendar className="w-4 h-4 text-[hsl(var(--wp-accent))]" />
+          <span>
+            {exp.start_date} – {exp.is_current ? "Present" : exp.end_date || "2023"}
+          </span>
+        </div>
+
+        {/* Role Overview */}
+        <section className="space-y-1">
+          <h2 className="text-white/60 uppercase tracking-wide text-[12px] font-semibold">
+            Role Responsibilities
           </h2>
-
-          <p className="text-[18px] font-semibold">{exp.company}</p>
-
-          <p className="text-wp-text/70 mt-1 text-[15px]">
-            {exp.is_current
-              ? `${formatDate(exp.start_date)} — Present`
-              : `${formatDate(exp.start_date)} — ${formatDate(exp.end_date)}`}
-          </p>
-
-          {exp.experience_type && (
-            <p className="text-wp-accent text-[13px] font-semibold mt-1 uppercase">
-              {exp.experience_type}
-            </p>
-          )}
-
-          {/* Summary */}
-          {exp.summary && (
-            <p className="text-wp-text/80 text-[15px] mt-4 leading-relaxed">
-              {exp.summary}
-            </p>
-          )}
-        </section>
-
-        {/* Responsibilities */}
-        <section className="wp-list-enter wp-delay-1">
-          <h2 className="text-wp-text/60 uppercase text-[15px] mb-3">
-            responsibilities
-          </h2>
-
-          {exp.responsibilities?.length ? (
-            <ul className="list-disc ml-5 space-y-2 text-wp-text/80 text-[15px]">
-              {exp.responsibilities.map((r, i) => (
-                <li key={i}>{r}</li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-wp-text/40 text-[14px]">
-              No responsibilities added.
-            </p>
-          )}
-        </section>
-
-        {/* Impact */}
-        <section className="wp-list-enter wp-delay-2">
-          <h2 className="text-wp-text/60 uppercase text-[15px] mb-3">impact</h2>
-
-          {exp.impact?.length ? (
-            <ul className="list-disc ml-5 space-y-2 text-wp-text/80 text-[15px]">
-              {exp.impact.map((i, idx) => (
-                <li key={idx}>{i}</li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-wp-text/40 text-[14px]">No impact added.</p>
-          )}
-        </section>
-
-        {/* Skills */}
-        <section className="wp-list-enter wp-delay-1">
-          <h2 className="text-wp-text/60 uppercase text-[15px] mb-3">
-            skills applied
-          </h2>
-
-          <div className="flex flex-wrap gap-2">
-            {exp.skills?.map((s) => (
-              <span
-                key={s}
-                className="px-3 py-1 bg-wp-accent text-wp-bg text-[12px]"
-              >
-                {s}
-              </span>
-            ))}
-          </div>
-        </section>
-
-        {/* Description */}
-        <section className="wp-list-enter wp-delay-2">
-          <h2 className="text-wp-text/60 uppercase text-[15px] mb-3">
-            description
-          </h2>
-
-          <p className="mb-20 text-wp-text/80 text-[15px] leading-relaxed whitespace-pre-line">
-            {exp.description || "No description provided."}
+          <p className="text-white/85 text-[14px] leading-relaxed font-light whitespace-pre-line">
+            {exp.description}
           </p>
         </section>
+
+        {/* Skills & Technologies */}
+        {exp.skills && exp.skills.length > 0 && (
+          <section className="space-y-2">
+            <h2 className="text-white/60 uppercase tracking-wide text-[12px] font-semibold">
+              Skills & Stack
+            </h2>
+            <div className="flex flex-wrap gap-1.5">
+              {exp.skills.map((skill) => (
+                <span
+                  key={skill}
+                  className="px-2.5 py-1 bg-white/10 text-white text-[12px] rounded font-mono"
+                >
+                  {skill}
+                </span>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
 
-      <WPAppBar buttons={appBarButtons} />
+      <WPNavBar />
     </div>
   );
 };

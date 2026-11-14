@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { WPThemeProvider } from "@/contexts/WPThemeContext";
 import Preloader from "./components/Preloader";
 import Home from "./pages/Home";
 import Projects from "./pages/Projects";
@@ -23,6 +24,9 @@ import { useIsMobile } from "./hooks/use-mobile";
 import WPProjects from "./pages/WPProjects";
 import WPProjectDetail from "./pages/WPProjectDetail";
 import WPExperienceDetail from "./pages/WPExperienceDetail";
+import WPGuestbook from "./pages/WPGuestbook";
+import WPOffice from "./pages/WPOffice";
+import WPSettings from "./pages/WPSettings";
 import WPNotFound from "./pages/WPNotFound";
 import { SpeedInsights } from '@vercel/speed-insights/react';
 import { Analytics } from '@vercel/analytics/react';
@@ -68,19 +72,21 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <SpeedInsights />
-          <Analytics />
-          {isLoading ? (
-            <Preloader onComplete={handlePreloaderComplete} />
-          ) : (
-            <BrowserRouter>
-              <AppRoutes isDark={isDark} toggleTheme={toggleTheme} />
-            </BrowserRouter>
-          )}
-        </TooltipProvider>
+        <WPThemeProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <SpeedInsights />
+            <Analytics />
+            {isLoading ? (
+              <Preloader onComplete={handlePreloaderComplete} />
+            ) : (
+              <BrowserRouter>
+                <AppRoutes isDark={isDark} toggleTheme={toggleTheme} />
+              </BrowserRouter>
+            )}
+          </TooltipProvider>
+        </WPThemeProvider>
       </AuthProvider>
     </QueryClientProvider>
   );
@@ -136,6 +142,50 @@ const AppRoutes = ({
         element={
           isMobile ? (
             <WPAboutMe isDark={isDark} toggleTheme={toggleTheme} />
+          ) : (
+            <Home isDark={isDark} toggleTheme={toggleTheme} />
+          )
+        }
+      />
+
+      <Route
+        path="/guestbook"
+        element={
+          isMobile ? (
+            <WPGuestbook />
+          ) : (
+            <Home isDark={isDark} toggleTheme={toggleTheme} />
+          )
+        }
+      />
+
+      <Route
+        path="/office"
+        element={
+          isMobile ? (
+            <WPOffice />
+          ) : (
+            <Home isDark={isDark} toggleTheme={toggleTheme} />
+          )
+        }
+      />
+
+      <Route
+        path="/settings"
+        element={
+          isMobile ? (
+            <WPSettings isDark={isDark} toggleTheme={toggleTheme} />
+          ) : (
+            <Home isDark={isDark} toggleTheme={toggleTheme} />
+          )
+        }
+      />
+
+      <Route
+        path="/contact"
+        element={
+          isMobile ? (
+            <WPGuestbook />
           ) : (
             <Home isDark={isDark} toggleTheme={toggleTheme} />
           )

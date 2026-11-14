@@ -95,6 +95,7 @@ interface XPDesktopProps {
   onOpenCalculator?: () => void;
   onOpenMinesweeper?: () => void;
   onOpenGuestbook?: () => void;
+  onOpenWindowsPhone?: () => void;
   onUnfocusAll?: () => void;
   isDark: boolean;
 }
@@ -111,6 +112,7 @@ const XPDesktop: React.FC<XPDesktopProps> = ({
   onOpenCalculator,
   onOpenMinesweeper,
   onOpenGuestbook,
+  onOpenWindowsPhone,
   onUnfocusAll,
   isDark,
 }) => {
@@ -183,6 +185,12 @@ const XPDesktop: React.FC<XPDesktopProps> = ({
       icon: '/icons/display_properties_32.png',
       label: 'Guestbook',
       onDoubleClick: () => onOpenGuestbook?.(),
+    },
+    {
+      id: 'windows-phone',
+      icon: '/icons/phone_32.png',
+      label: 'Windows Phone',
+      onDoubleClick: () => onOpenWindowsPhone?.(),
     },
     {
       id: 'recycle-bin',

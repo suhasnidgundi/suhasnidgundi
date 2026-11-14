@@ -1,87 +1,137 @@
-import { useNavigate } from "react-router-dom";
-import { Home, ArrowLeft } from "lucide-react";
-import useAnalytics from "@/hooks/useAnalytics";
-import { useProjects } from "@/hooks/useProjects";
-import WPStatusBar from "@/components/wp/WPStatusBar";
-import WPHeader from "@/components/wp/WPHeader";
-import WPAppBar from "@/components/wp/WPAppBar";
-import WPFolderIcon from "@/components/wp/icons/WPFolderIcon";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Search, Folder, ExternalLink, Github, Sparkles } from 'lucide-react';
+import useAnalytics from '@/hooks/useAnalytics';
+import { useProjects } from '@/hooks/useProjects';
+import WPStatusBar from '@/components/wp/WPStatusBar';
+import WPNavBar from '@/components/wp/WPNavBar';
 
 interface WPProjectsProps {
   isDark: boolean;
   toggleTheme: () => void;
 }
 
-const WPProjects = (props: WPProjectsProps) => {
+const WPProjects = ({ isDark }: WPProjectsProps) => {
   const navigate = useNavigate();
   useAnalytics();
 
   const { data: projects, isLoading } = useProjects();
+  const [activePivot, setActivePivot] = useState<'all' | 'featured'>('all');
+  const [query, setQuery] = useState('');
 
-  const appBarButtons = [
-    { icon: <Home className="w-5 h-5" />, label: "Home", onClick: () => navigate("/") },
-    { icon: <ArrowLeft className="w-5 h-5" />, label: "Back", onClick: () => navigate(-1) },
-  ];
+  const filtered = (projects || [])
+    .filter((p) => (activePivot === 'featured' ? p.is_featured : true))
+    .filter(
+      (p) =>
+        p.title.toLowerCase().includes(query.toLowerCase()) ||
+        p.description?.toLowerCase().includes(query.toLowerCase()) ||
+        p.tech_stack?.some((t) => t.toLowerCase().includes(query.toLowerCase()))
+    );
 
   return (
-    <div className="min-h-screen bg-wp-bg flex flex-col">
+    <div className="min-h-screen bg-black text-white font-['Segoe_UI',sans-serif] flex flex-col select-none">
       <WPStatusBar />
-      <WPHeader title="projects" showBack />
 
-      <div className="flex-1 overflow-y-auto pb-24">
+      {/* Main Header & Pivot */}
+      <div className="px-5 pt-4 pb-2">
+        <h1 className="text-[44px] font-extralight tracking-tight text-white lowercase leading-none">
+          projects
+        </h1>
+
+        {/* Pivot Tabs */}
+        <div className="flex items-center gap-6 mt-4 border-b border-white/10 pb-2">
+          <button
+            onClick={() => setActivePivot('all')}
+            className={`text-[20px] font-light lowercase transition-colors ${
+              activePivot === 'all'
+                ? 'text-[hsl(var(--wp-accent))] font-medium'
+                : 'text-white/40 hover:text-white/70'
+            }`}
+          >
+            all ({projects?.length || 0})
+          </button>
+          <button
+            onClick={() => setActivePivot('featured')}
+            className={`text-[20px] font-light lowercase transition-colors ${
+              activePivot === 'featured'
+                ? 'text-[hsl(var(--wp-accent))] font-medium'
+                : 'text-white/40 hover:text-white/70'
+            }`}
+          >
+            featured
+          </button>
+        </div>
+
+        {/* Search bar */}
+        <div className="mt-3 relative">
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="filter projects by name or stack..."
+            className="w-full bg-white/10 text-white placeholder-white/40 text-[14px] px-3 py-2 pl-9 rounded border border-white/20 focus:outline-none focus:border-[hsl(var(--wp-accent))]"
+          />
+          <Search className="w-4 h-4 text-white/50 absolute left-3 top-3" />
+        </div>
+      </div>
+
+      {/* Projects List */}
+      <div className="flex-1 overflow-y-auto px-5 pt-2 pb-24">
         {isLoading ? (
-          <div className="px-4 py-6 text-wp-text/60 text-center">
-            Loading projects...
+          <div className="py-20 text-center text-white/50 text-[14px]">
+            Syncing projects from Vercel Blob…
           </div>
-        ) : projects && projects.length > 0 ? (
-          <div className="divide-y divide-wp-text/10">
-            {projects.map((project, index) => (
+        ) : filtered.length > 0 ? (
+          <div className="space-y-4">
+            {filtered.map((project, index) => (
               <div
                 key={project.$id}
                 onClick={() => navigate(`/projects/${project.$id}`)}
-                className={`relative px-5 py-4 active:bg-wp-text/10 wp-list-enter wp-delay-${
-                  (index % 4) + 1
-                }`}
+                className="relative p-4 bg-white/5 border-l-4 border-[hsl(var(--wp-accent))] rounded-r shadow-sm active:bg-white/10 cursor-pointer transition-colors"
               >
-                <div className="wp-accent-bar" />
+                <div className="flex items-start justify-between gap-3 mb-1.5">
+                  <h3 className="text-[17px] font-semibold text-white leading-tight">
+                    {project.title}
+                  </h3>
+                  {project.is_featured && (
+                    <span className="text-[9px] bg-[hsl(var(--wp-accent))] text-white font-bold px-1.5 py-0.2 rounded uppercase">
+                      Featured
+                    </span>
+                  )}
+                </div>
 
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-wp-accent flex items-center justify-center text-wp-bg">
-                    <WPFolderIcon />
-                  </div>
+                <p className="text-[13px] text-white/75 font-light leading-relaxed mb-3 line-clamp-2">
+                  {project.impact_metric || project.description}
+                </p>
 
-                  <div className="flex-1">
-                    <h3 className="text-[17px] font-semibold text-wp-text mb-1">
-                      {project.title}
-                    </h3>
-
-                    <p className="text-wp-text/70 text-[14px] font-light mb-2">
-                      {project.impact_metric || project.description}
-                    </p>
-
-                    <div className="flex flex-wrap gap-1">
-                      {project.tech_stack?.map((tag) => (
-                        <span
-                          key={tag}
-                          className="text-[11px] bg-wp-text/10 text-wp-text/70 px-2 py-0.5"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
+                {/* Tech Stack Badges */}
+                <div className="flex flex-wrap gap-1.5">
+                  {project.tech_stack?.map((tag) => (
+                    <span
+                      key={tag}
+                      className="text-[11px] bg-white/10 text-white/80 px-2 py-0.5 rounded font-mono"
+                    >
+                      {tag}
+                    </span>
+                  ))}
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="px-4 py-6 text-wp-text/60 text-center">
-            No projects found.
+          <div className="text-center py-16 text-white/50 space-y-2">
+            <Folder className="w-12 h-12 mx-auto text-white/20" />
+            <p className="text-[15px]">No projects found.</p>
+            <p className="text-[12px] text-white/40">
+              {query
+                ? 'Try a different search keyword.'
+                : 'Add projects via the Admin dashboard at /admin.'}
+            </p>
           </div>
         )}
       </div>
 
-      <WPAppBar buttons={appBarButtons} />
+      <WPNavBar />
     </div>
   );
 };
