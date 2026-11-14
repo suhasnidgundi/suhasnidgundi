@@ -1,4 +1,4 @@
-import { INITIAL_EXPERIENCES } from '../src/data/portfolioData';
+import { INITIAL_EXPERIENCES } from './data/portfolioData';
 
 export default async function handler(req: Request) {
   try {

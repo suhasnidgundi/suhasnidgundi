@@ -1,4 +1,4 @@
-import { INITIAL_PROJECTS } from '../src/data/portfolioData';
+import { INITIAL_PROJECTS } from './data/portfolioData';
 
 export default async function handler(req: Request) {
   try {

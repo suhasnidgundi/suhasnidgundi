@@ -45,7 +45,10 @@ async function getBlobGuestbook(): Promise<GuestbookEntry[] | null> {
     const { blobs } = await list({ prefix: 'guestbook-entries.json' });
     const match = blobs.find((b) => b.pathname === 'guestbook-entries.json');
     if (!match) return null;
-    const res = await fetch(`${match.url}?t=${Date.now()}`, { cache: 'no-store' });
+    const res = await fetch(`${match.url}?t=${Date.now()}`, {
+      cache: 'no-store',
+      signal: AbortSignal.timeout(3000),
+    });
     if (!res.ok) return null;
     return await res.json();
   } catch (err) {

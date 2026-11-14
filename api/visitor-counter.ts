@@ -11,7 +11,10 @@ async function getBlobCounterData() {
     const { blobs } = await list({ prefix: 'visitor-count.json' });
     const match = blobs.find((b) => b.pathname === 'visitor-count.json');
     if (!match) return null;
-    const res = await fetch(`${match.url}?t=${Date.now()}`, { cache: 'no-store' });
+    const res = await fetch(`${match.url}?t=${Date.now()}`, {
+      cache: 'no-store',
+      signal: AbortSignal.timeout(3000),
+    });
     if (!res.ok) return null;
     return await res.json();
   } catch (err) {
