@@ -17,6 +17,9 @@ interface StartMenuProps {
   onOpenWordDoc: () => void;
   onOpenBrowser: (url: string) => void;
   onOpenAIChat?: () => void;
+  onOpenNotepad?: () => void;
+  onOpenCalculator?: () => void;
+  onOpenMinesweeper?: () => void;
   onLogOff: () => void;
   onOpenFolder?: (folder: 'root' | 'projects' | 'experience') => void;
 }
@@ -28,6 +31,9 @@ const StartMenu = ({
   onOpenWordDoc,
   onOpenBrowser,
   onOpenAIChat,
+  onOpenNotepad,
+  onOpenCalculator,
+  onOpenMinesweeper,
   onLogOff,
   onOpenFolder,
 }: StartMenuProps) => {
@@ -125,8 +131,19 @@ const StartMenu = ({
               />
               <MenuItem
                 icon={NotepadIcon}
-                title="Blog Posts"
-                onClick={() => handleItemClick(() => onOpenBrowser('https://medium.com/@suhasnidgundi'))}
+                title="Notepad"
+                subtitle="README.txt"
+                onClick={() => handleItemClick(() => onOpenNotepad?.())}
+              />
+              <MenuItem
+                icon="/icons/calculator_32.png"
+                title="Calculator"
+                onClick={() => handleItemClick(() => onOpenCalculator?.())}
+              />
+              <MenuItem
+                icon="/icons/minesweeper_32.png"
+                title="Minesweeper"
+                onClick={() => handleItemClick(() => onOpenMinesweeper?.())}
               />
             </div>
 

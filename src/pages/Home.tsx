@@ -10,6 +10,9 @@ import XPPdfViewer from "@/components/xp/XPPdfViewer";
 import XPDesktop from "@/components/xp/XPDesktop";
 import XPMyComputerWindow from "@/components/xp/XPMyComputerWindow";
 import XPAIChatWindow from "@/components/xp/XPAIChatWindow";
+import XPNotepad from "@/components/xp/XPNotepad";
+import XPCalculator from "@/components/xp/XPCalculator";
+import XPMinesweeper from "@/components/xp/XPMinesweeper";
 import WPHome from "./WPHome";
 import {
   WindowManagerProvider,
@@ -97,6 +100,18 @@ const HomeContent: React.FC<HomeProps> = ({ isDark, toggleTheme }) => {
 
   const handleOpenAIChat = useCallback(() => {
     openWindow({ appId: 'ai-chat' });
+  }, [openWindow]);
+
+  const handleOpenNotepad = useCallback(() => {
+    openWindow({ appId: 'notepad' });
+  }, [openWindow]);
+
+  const handleOpenCalculator = useCallback(() => {
+    openWindow({ appId: 'calculator' });
+  }, [openWindow]);
+
+  const handleOpenMinesweeper = useCallback(() => {
+    openWindow({ appId: 'minesweeper' });
   }, [openWindow]);
 
   // Render individual windows according to their appId
@@ -236,6 +251,57 @@ const HomeContent: React.FC<HomeProps> = ({ isDark, toggleTheme }) => {
           </div>
         );
 
+      case 'notepad':
+        return (
+          <div key={win.id} data-win-id={win.id} style={windowStyle}>
+            <XPNotepad
+              onClose={commonProps.onClose}
+              onMinimize={commonProps.onMinimize}
+              onMaximize={commonProps.onMaximize}
+              onFocus={commonProps.onFocus}
+              zIndex={win.zIndex}
+              isMaximized={isMaximized}
+              isActive={win.focused}
+              onPositionChange={commonProps.onPositionChange}
+              onSizeChange={commonProps.onSizeChange}
+            />
+          </div>
+        );
+
+      case 'calculator':
+        return (
+          <div key={win.id} data-win-id={win.id} style={windowStyle}>
+            <XPCalculator
+              onClose={commonProps.onClose}
+              onMinimize={commonProps.onMinimize}
+              onMaximize={commonProps.onMaximize}
+              onFocus={commonProps.onFocus}
+              zIndex={win.zIndex}
+              isMaximized={isMaximized}
+              isActive={win.focused}
+              onPositionChange={commonProps.onPositionChange}
+              onSizeChange={commonProps.onSizeChange}
+            />
+          </div>
+        );
+
+      case 'minesweeper':
+        return (
+          <div key={win.id} data-win-id={win.id} style={windowStyle}>
+            <XPMinesweeper
+              onClose={commonProps.onClose}
+              onMinimize={commonProps.onMinimize}
+              onMaximize={commonProps.onMaximize}
+              onFocus={commonProps.onFocus}
+              zIndex={win.zIndex}
+              isMaximized={isMaximized}
+              isActive={win.focused}
+              onPositionChange={commonProps.onPositionChange}
+              onSizeChange={commonProps.onSizeChange}
+            />
+          </div>
+        );
+
       default:
         return null;
     }
@@ -250,6 +316,11 @@ const HomeContent: React.FC<HomeProps> = ({ isDark, toggleTheme }) => {
         onNavigateToProjects={() => openWindow({ appId: 'my-computer', data: { folder: 'projects' } })}
         onNavigateToExperience={() => openWindow({ appId: 'my-computer', data: { folder: 'experience' } })}
         onOpenAIChat={handleOpenAIChat}
+        onOpenWordDoc={handleOpenWordDoc}
+        onOpenPdfViewer={handleOpenPdfViewer}
+        onOpenNotepad={handleOpenNotepad}
+        onOpenCalculator={handleOpenCalculator}
+        onOpenMinesweeper={handleOpenMinesweeper}
         onUnfocusAll={unfocusAll}
         isDark={isDark}
       />
@@ -274,6 +345,9 @@ const HomeContent: React.FC<HomeProps> = ({ isDark, toggleTheme }) => {
         onOpenWordDoc={handleOpenWordDoc}
         onOpenBrowser={handleOpenBrowser}
         onOpenAIChat={handleOpenAIChat}
+        onOpenNotepad={handleOpenNotepad}
+        onOpenCalculator={handleOpenCalculator}
+        onOpenMinesweeper={handleOpenMinesweeper}
         onLogOff={handleLogOff}
         isMuted={isMuted}
         onToggleMute={handleToggleMute}

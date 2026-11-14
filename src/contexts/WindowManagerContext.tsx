@@ -6,7 +6,15 @@ import WordIcon from '@/assets/xp/icons/ms_word_logo_icon.png';
 import PdfIcon from '@/assets/xp/icons/notepad_icon.png';
 import SearchIcon from '@/assets/xp/icons/search_icon.png';
 
-export type WindowAppId = 'my-computer' | 'word-doc' | 'browser' | 'pdf-viewer' | 'ai-chat';
+export type WindowAppId =
+  | 'my-computer'
+  | 'word-doc'
+  | 'browser'
+  | 'pdf-viewer'
+  | 'ai-chat'
+  | 'notepad'
+  | 'calculator'
+  | 'minesweeper';
 
 export interface ManagedWindow {
   id: string;
@@ -185,6 +193,30 @@ function getDefaultAppMeta(appId: WindowAppId) {
         w: 480,
         h: 580,
         resizable: true,
+      };
+    case 'notepad':
+      return {
+        title: 'README.txt - Notepad',
+        icon: '/icons/notepad_32.png',
+        w: 640,
+        h: 480,
+        resizable: true,
+      };
+    case 'calculator':
+      return {
+        title: 'Calculator',
+        icon: '/icons/calculator_32.png',
+        w: 280,
+        h: 340,
+        resizable: false,
+      };
+    case 'minesweeper':
+      return {
+        title: 'Minesweeper',
+        icon: '/icons/minesweeper_32.png',
+        w: 240,
+        h: 300,
+        resizable: false,
       };
   }
 }

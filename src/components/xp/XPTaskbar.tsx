@@ -22,6 +22,9 @@ interface XPTaskbarProps {
   onOpenWordDoc?: () => void;
   onOpenBrowser?: (url: string) => void;
   onOpenAIChat?: () => void;
+  onOpenNotepad?: () => void;
+  onOpenCalculator?: () => void;
+  onOpenMinesweeper?: () => void;
   onLogOff?: () => void;
   onOpenFolder?: (folder: 'root' | 'projects' | 'experience') => void;
   isMuted?: boolean;
@@ -42,6 +45,9 @@ const XPTaskbar = ({
   onOpenWordDoc,
   onOpenBrowser,
   onOpenAIChat,
+  onOpenNotepad,
+  onOpenCalculator,
+  onOpenMinesweeper,
   onLogOff,
   onOpenFolder,
   isMuted = false,
@@ -247,6 +253,18 @@ const XPTaskbar = ({
         }}
         onOpenAIChat={() => {
           onOpenAIChat?.();
+          handleCloseStartMenu();
+        }}
+        onOpenNotepad={() => {
+          onOpenNotepad?.();
+          handleCloseStartMenu();
+        }}
+        onOpenCalculator={() => {
+          onOpenCalculator?.();
+          handleCloseStartMenu();
+        }}
+        onOpenMinesweeper={() => {
+          onOpenMinesweeper?.();
           handleCloseStartMenu();
         }}
         onLogOff={() => {
