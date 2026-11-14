@@ -31,8 +31,9 @@ const DesktopIcon = ({ icon, label, onClick, onDoubleClick, selected }: DesktopI
       role="button"
       tabIndex={0}
       aria-label={label}
-      className={`flex flex-col items-center justify-center w-[75px] p-2 cursor-pointer
-        ${selected ? 'bg-[#316ac5]/50' : 'hover:bg-white/10'} rounded transition-colors`}
+      className={`flex flex-col items-center justify-center w-[82px] p-1.5 cursor-pointer select-none rounded-[2px] transition-all ${
+        selected ? 'bg-[#316ac5]/30 ring-1 ring-[#316ac5]/60' : 'hover:bg-white/10'
+      }`}
       onClick={onClick}
       onDoubleClick={onDoubleClick}
       onKeyDown={handleKeyDown}
@@ -40,12 +41,19 @@ const DesktopIcon = ({ icon, label, onClick, onDoubleClick, selected }: DesktopI
       <img
         src={icon}
         alt={label}
-        className="w-12 h-12 object-contain drop-shadow-lg mb-1"
+        className={`w-11 h-11 object-contain mb-1 transition-all ${
+          selected ? 'filter drop-shadow-[0_0_2px_#316ac5]' : 'drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]'
+        }`}
       />
       <span
-        className={`text-[11px] text-center leading-tight text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]
-          ${selected ? 'bg-[#316ac5] px-1' : ''}`}
-        style={{ textShadow: '1px 1px 2px rgba(0,0,0,0.8)' }}
+        className={`text-[11px] text-center leading-snug text-white font-['MSSans',Tahoma,sans-serif] px-1 py-0.5 rounded-[1px] ${
+          selected
+            ? 'bg-[#316ac5] text-white outline outline-1 outline-dotted outline-white/80'
+            : 'drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]'
+        }`}
+        style={{
+          textShadow: selected ? 'none' : '1px 1px 1px #000, 0 0 3px #000',
+        }}
       >
         {label}
       </span>

@@ -9,6 +9,7 @@ interface TaskbarWindowButton {
   title: string;
   icon: string;
   isMinimized: boolean;
+  isActive?: boolean;
 }
 
 interface XPTaskbarProps {
@@ -70,13 +71,15 @@ const XPTaskbar = ({
   return (
     <>
       <div className="xp-taskbar flex items-center justify-between">
-        {/* Start Button - Authentic XP Start Button Image */}
+        {/* Start Button - Authentic Luna XP Start Button */}
         <button 
-          className={`h-full w-[100px] shrink-0 transition-all ${isStartMenuOpen ? 'brightness-90' : 'hover:brightness-110'}`}
+          className={`h-full w-[97px] shrink-0 border-none transition-all cursor-pointer ${
+            isStartMenuOpen ? 'brightness-90' : 'hover:brightness-110 active:brightness-90'
+          }`}
           style={{
-            backgroundImage: `url(${StartBtnNormal})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
+            backgroundImage: "url('/luna/start.png')",
+            backgroundSize: '97px 30px',
+            backgroundPosition: 'left center',
             backgroundRepeat: 'no-repeat',
           }}
           aria-label="Start Menu"
@@ -86,54 +89,46 @@ const XPTaskbar = ({
         </button>
 
         {/* Program Tray - Active Windows */}
-        <div className="flex-1 flex items-center h-full pt-1 px-2 overflow-hidden gap-1">
+        <div className="flex-1 flex items-center h-full px-2 overflow-hidden gap-1">
           {activeWindows.length === 0 ? (
             /* Default My Portfolio button when no windows */
             <button 
-              className="h-[22px] px-3 flex items-center gap-2 text-white text-[11px] min-w-[150px] shrink-0"
-              style={{
-                background: 'linear-gradient(180deg, rgb(60, 127, 177) 0%, rgb(34, 99, 170) 8%, rgb(31, 85, 153) 40%, rgb(27, 65, 137) 88%, rgb(34, 73, 138) 93%, rgb(40, 90, 165) 95%, rgb(49, 112, 192) 100%)',
-                boxShadow: 'rgb(0 0 0 / 30%) -1px 0px inset, rgb(255 255 255 / 20%) 1px 1px 1px inset',
-                borderRadius: '2px',
-              }}
+              className="xp-taskbar-item active"
               onClick={() => onOpenMyComputer?.()}
             >
-              <img src={MyComputerIcon} alt="My Computer" className="w-4 h-4" />
+              <img src={MyComputerIcon} alt="My Computer" className="w-3.5 h-3.5 object-contain" />
               <span className="truncate">My Portfolio</span>
             </button>
           ) : (
             activeWindows.map((window) => (
               <button 
                 key={window.id}
-                className={`h-[22px] px-3 flex items-center gap-2 text-white text-[11px] min-w-[120px] max-w-[180px] shrink-0 ${
-                  window.isMinimized ? 'opacity-70' : ''
+                className={`xp-taskbar-item ${window.isActive ? 'active' : ''} ${
+                  window.isMinimized ? 'minimized' : ''
                 }`}
-                style={{
-                  background: window.isMinimized 
-                    ? 'linear-gradient(180deg, rgb(80, 130, 170) 0%, rgb(60, 110, 160) 50%, rgb(50, 90, 140) 100%)'
-                    : 'linear-gradient(180deg, rgb(60, 127, 177) 0%, rgb(34, 99, 170) 8%, rgb(31, 85, 153) 40%, rgb(27, 65, 137) 88%, rgb(34, 73, 138) 93%, rgb(40, 90, 165) 95%, rgb(49, 112, 192) 100%)',
-                  boxShadow: 'rgb(0 0 0 / 30%) -1px 0px inset, rgb(255 255 255 / 20%) 1px 1px 1px inset',
-                  borderRadius: '2px',
-                }}
                 onClick={() => {
                   playSound?.('click');
                   onWindowClick?.(window.id);
                 }}
+                title={window.title}
               >
-                <img src={window.icon} alt={window.title} className="w-4 h-4" />
+                <img src={window.icon} alt={window.title} className="w-3.5 h-3.5 object-contain shrink-0" />
                 <span className="truncate">{window.title}</span>
               </button>
             ))
           )}
         </div>
 
-        {/* System Tray - Authentic XP Style */}
+        {/* System Tray - Authentic Luna XP Style */}
         <div 
-          className="flex items-center gap-2 px-3 h-full shrink-0"
+          className="flex items-center gap-2 px-3 h-full shrink-0 select-none"
           style={{
-            background: 'linear-gradient(180deg, rgb(12, 89, 185) 1%, rgb(19, 158, 233) 6%, rgb(24, 181, 242) 10%, rgb(19, 155, 235) 14%, rgb(18, 144, 232) 19%, rgb(13, 141, 234) 63%, rgb(13, 159, 241) 81%, rgb(15, 158, 237) 88%, rgb(17, 155, 233) 91%, rgb(19, 146, 226) 94%, rgb(19, 126, 215) 97%, rgb(9, 91, 201) 100%)',
-            borderLeft: '1px solid rgb(16, 66, 175)',
-            boxShadow: 'rgb(24 187 255) 1px 0px 1px inset',
+            backgroundImage: "url('/luna/tray.png')",
+            backgroundRepeat: 'repeat-x',
+            backgroundSize: '1px 30px',
+            backgroundColor: '#0c59b9',
+            borderLeft: '1px solid #0944a1',
+            boxShadow: 'inset 1px 0 1px #1bbbfb',
           }}
         >
           {/* Mute button */}
@@ -143,9 +138,9 @@ const XPTaskbar = ({
             title={isMuted ? "Unmute sounds" : "Mute sounds"}
           >
             {isMuted ? (
-              <VolumeX className="w-4 h-4 text-slate-50" />
+              <VolumeX className="w-3.5 h-3.5 text-slate-50" />
             ) : (
-              <Volume2 className="w-4 h-4 text-slate-50" />
+              <Volume2 className="w-3.5 h-3.5 text-slate-50" />
             )}
           </button>
           <button
@@ -154,12 +149,15 @@ const XPTaskbar = ({
             title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
           >
             {isDark ? (
-              <Sun className="w-4 h-4 text-yellow-300" />
+              <Sun className="w-3.5 h-3.5 text-yellow-300" />
             ) : (
-              <Moon className="w-4 h-4 text-slate-50" />
+              <Moon className="w-3.5 h-3.5 text-slate-50" />
             )}
           </button>
-          <span className="text-slate-50 text-[11px] px-1">
+          <span 
+            className="text-white text-[11px] font-['MSSans',Tahoma,sans-serif] px-1 drop-shadow-[0_1px_1px_rgba(0,0,0,0.6)] cursor-default"
+            title={time.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+          >
             {formatTime(time)}
           </span>
         </div>

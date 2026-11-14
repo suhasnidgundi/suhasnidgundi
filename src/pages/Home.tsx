@@ -463,7 +463,8 @@ const Home = ({ isDark, toggleTheme }: HomeProps) => {
           id: w.id,
           title: w.title,
           icon: w.icon,
-          isMinimized: w.isMinimized
+          isMinimized: w.isMinimized,
+          isActive: w.zIndex === maxZIndex && !w.isMinimized,
         }))}
         onWindowClick={handleWindowClick}
         onOpenMyComputer={handleOpenMyComputer}

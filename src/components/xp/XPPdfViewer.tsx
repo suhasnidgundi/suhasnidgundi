@@ -1,8 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { ZoomIn, ZoomOut, Download, Printer, ChevronLeft, ChevronRight, Search } from 'lucide-react';
-import MinimizeIcon from '@/assets/xp/icons/minimize_icon.png';
-import MaximizeIcon from '@/assets/xp/icons/maximize_icon.png';
-import ExitIcon from '@/assets/xp/icons/exit_icon.png';
 
 
 interface XPPdfViewerProps {
@@ -77,61 +74,58 @@ const XPPdfViewer = ({
   return (
     <div
       ref={windowRef}
-      className={`flex flex-col h-full bg-card shadow-lg overflow-hidden ${isMaximized ? '' : 'rounded-t-lg'
-        }`}
+      className={`flex flex-col h-full overflow-hidden ${
+        isMaximized ? '' : 'xp-window-frame'
+      } ${!isActive ? 'inactive' : ''}`}
       style={{
-        border: '2px solid hsl(var(--primary) / 0.6)',
-        borderRadius: isMaximized ? '0' : '8px 8px 0 0',
         zIndex,
-        boxShadow: isActive
-          ? 'var(--window-box-shadow)'
-          : 'var(--window-box-shadow-inactive)',
+        borderRadius: isMaximized ? '0' : '8px 8px 0 0',
       }}
       onMouseDown={onFocus}
     >
       {/* Title Bar - Draggable */}
       <div
-        className={`h-[30px] flex items-center justify-between px-1 select-none shrink-0 ${isActive ? 'xp-title-bar' : 'xp-title-bar-inactive'}`}
+        className={`h-[30px] flex items-center justify-between px-1.5 select-none shrink-0 ${
+          isActive ? 'xp-title-bar' : 'xp-title-bar-inactive'
+        }`}
         onMouseDown={handleTitleMouseDown}
-        style={{ cursor: !isMaximized ? 'grab' : 'default' }}
+        onDoubleClick={onMaximize}
+        style={{ cursor: !isMaximized ? 'default' : 'default' }}
       >
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 flex items-center justify-center">
-            <svg viewBox="0 0 24 24" className="w-4 h-4 text-primary-foreground">
+        <div className="flex items-center gap-1.5 ml-1">
+          <div className="w-4 h-4 flex items-center justify-center shrink-0">
+            <svg viewBox="0 0 24 24" className="w-4 h-4 text-white">
               <rect x="3" y="3" width="18" height="18" rx="2" fill="#D32F2F" stroke="white" strokeWidth="1" />
               <text x="4" y="16" fontSize="9" fontWeight="bold" fill="white">PDF</text>
             </svg>
           </div>
-          <span className="text-primary-foreground font-bold text-[13px] drop-shadow-sm">
+          <span className="font-['Trebuchet_MS',Tahoma,sans-serif] font-bold text-[13px] text-white drop-shadow-[1px_1px_1px_rgba(15,16,137,0.8)]">
             Suhas_Nidgundi_Resume.pdf - Adobe Reader
           </span>
         </div>
 
-        <div className="flex items-center gap-[2px]">
+        <div className="flex items-center mr-1 shrink-0">
           <button
             onClick={(e) => { e.stopPropagation(); onMinimize?.(); }}
             onMouseDown={(e) => e.stopPropagation()}
-            className="xp-control-btn xp-minimize hover:brightness-110"
+            className="xp-caption-btn xp-caption-min"
             title="Minimize"
-          >
-            <img src={MinimizeIcon} alt="Minimize" className="w-5 h-5" />
-          </button>
+            aria-label="Minimize"
+          />
           <button
             onClick={(e) => { e.stopPropagation(); onMaximize?.(); }}
             onMouseDown={(e) => e.stopPropagation()}
-            className="xp-control-btn xp-maximize hover:brightness-110"
+            className={`xp-caption-btn ${isMaximized ? 'xp-caption-restore' : 'xp-caption-max'}`}
             title={isMaximized ? "Restore" : "Maximize"}
-          >
-            <img src={MaximizeIcon} alt={isMaximized ? "Restore" : "Maximize"} className="w-5 h-5" />
-          </button>
+            aria-label={isMaximized ? "Restore" : "Maximize"}
+          />
           <button
             onClick={(e) => { e.stopPropagation(); onClose(); }}
             onMouseDown={(e) => e.stopPropagation()}
-            className="xp-control-btn xp-close hover:brightness-110"
+            className="xp-caption-btn xp-caption-close"
             title="Close"
-          >
-            <img src={ExitIcon} alt="Close" className="w-5 h-5" />
-          </button>
+            aria-label="Close"
+          />
         </div>
       </div>
 

@@ -78,11 +78,10 @@ export const XPModal = ({
                     </div>
                     <button
                         onClick={onClose}
-                        className="xp-close text-white w-[21px] h-[21px] flex items-center justify-center text-xs font-bold"
+                        className="xp-caption-btn xp-caption-close"
                         aria-label="Close"
-                    >
-                        ✕
-                    </button>
+                        title="Close"
+                    />
                 </div>
 
                 {/* Modal Content */}

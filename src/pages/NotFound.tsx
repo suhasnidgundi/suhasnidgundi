@@ -28,21 +28,21 @@ const NotFound = () => {
       {/* XP Error Dialog */}
       <div className="w-full max-w-md">
         {/* Window Container */}
-        <div className="bg-white rounded-lg overflow-hidden" style={{ boxShadow: '0 4px 20px rgba(0, 0, 0, 0.4)' }}>
+        <div className="xp-window-frame overflow-hidden" style={{ borderRadius: '8px 8px 0 0' }}>
           {/* Title Bar */}
           <div className="xp-title-bar h-[30px] flex items-center justify-between px-2">
             <div className="flex items-center gap-1.5">
               <div className="w-4 h-4 bg-gradient-to-br from-red-500 via-yellow-500 to-blue-500 rounded-sm flex items-center justify-center">
                 <span className="text-[8px] text-white font-bold">XP</span>
               </div>
-              <span className="text-white font-bold text-[13px]">Windows</span>
+              <span className="text-white font-bold text-[13px] font-['Trebuchet_MS',Tahoma,sans-serif] drop-shadow-[1px_1px_1px_rgba(15,16,137,0.8)]">Windows</span>
             </div>
             <button 
               onClick={handleOk}
-              className="xp-control-btn xp-close hover:brightness-110 transition-all"
-            >
-              <X className="w-3 h-3 text-primary-foreground" strokeWidth={3} />
-            </button>
+              className="xp-caption-btn xp-caption-close"
+              title="Close"
+              aria-label="Close"
+            />
           </div>
 
           {/* Dialog Content */}

@@ -1,7 +1,4 @@
 import { ReactNode, useState, useRef, useCallback, useEffect } from 'react';
-import MinimizeIcon from '@/assets/xp/icons/minimize_icon.png';
-import MaximizeIcon from '@/assets/xp/icons/maximize_icon.png';
-import ExitIcon from '@/assets/xp/icons/exit_icon.png';
 
 const TASKBAR_HEIGHT = 30;
 const MIN_WIDTH = 320;
@@ -61,6 +58,12 @@ const XPWindow = ({
     } else {
       setInternalMaximized(!internalMaximized);
     }
+  };
+
+  // Double click title bar to toggle maximize
+  const handleTitleDoubleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    handleMaximize();
   };
 
   // --- Drag handlers ---
@@ -183,14 +186,12 @@ const XPWindow = ({
   return (
     <div
       ref={windowRef}
-      className={`flex flex-col h-full rounded-t-lg overflow-hidden ${className}`}
+      className={`flex flex-col h-full overflow-hidden ${
+        isMaximized ? '' : 'xp-window-frame'
+      } ${!isActive ? 'inactive' : ''} ${className}`}
       style={{
-        borderTopLeftRadius: '8px',
-        borderTopRightRadius: '8px',
         zIndex,
-        boxShadow: isActive
-          ? '2px 3px 12px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(0, 0, 0, 0.15)'
-          : '1px 2px 6px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.1)',
+        borderRadius: isMaximized ? '0' : '8px 8px 0 0',
       }}
       onMouseDown={onFocus}
     >
@@ -204,56 +205,57 @@ const XPWindow = ({
         />
       ))}
 
-      {/* Title Bar - XP styling with drag support */}
+      {/* Title Bar - Authentic Luna XP styling with drag and double-click support */}
       <div
-        className={`h-[28px] flex items-center justify-between px-1 select-none shrink-0 ${isActive ? 'xp-title-bar' : 'xp-title-bar-inactive'
-          }`}
+        className={`h-[30px] flex items-center justify-between px-1.5 select-none shrink-0 ${
+          isActive ? 'xp-title-bar' : 'xp-title-bar-inactive'
+        }`}
         onMouseDown={handleMouseDown}
-        style={{ cursor: draggable && !isMaximized ? 'grab' : 'default' }}
+        onDoubleClick={handleTitleDoubleClick}
+        style={{ cursor: draggable && !isMaximized ? 'default' : 'default' }}
       >
-        <div className="flex items-center gap-1 ml-1 overflow-hidden">
-          {icon && <div className="w-5 h-5 flex items-center justify-center shrink-0">{icon}</div>}
-          <span className="text-white font-semibold text-[12px] drop-shadow-[0_1px_1px_rgba(0,0,0,0.3)] leading-tight line-clamp-1 whitespace-nowrap">{title}</span>
+        <div className="flex items-center gap-1.5 ml-1 overflow-hidden pointer-events-none">
+          {icon && <div className="w-4 h-4 flex items-center justify-center shrink-0">{icon}</div>}
+          <span className="font-['Trebuchet_MS',Tahoma,sans-serif] font-bold text-[13px] text-white leading-tight line-clamp-1 whitespace-nowrap drop-shadow-[1px_1px_1px_rgba(15,16,137,0.8)]">
+            {title}
+          </span>
         </div>
-        <div className="flex items-center mr-0.5 shrink-0">
+        <div className="flex items-center mr-1 shrink-0">
           <button
-            className="xp-control-btn xp-minimize hover:brightness-110 transition-all ml-1"
+            className="xp-caption-btn xp-caption-min"
             onClick={(e) => {
               e.stopPropagation();
               onMinimize?.();
             }}
             onMouseDown={(e) => e.stopPropagation()}
             title="Minimize"
-          >
-            <img src={MinimizeIcon} alt="Minimize" className="w-5 h-5" />
-          </button>
+            aria-label="Minimize"
+          />
           <button
-            className="xp-control-btn xp-maximize hover:brightness-110 transition-all ml-1"
+            className={`xp-caption-btn ${isMaximized ? 'xp-caption-restore' : 'xp-caption-max'}`}
             onClick={(e) => {
               e.stopPropagation();
               handleMaximize();
             }}
             onMouseDown={(e) => e.stopPropagation()}
             title={isMaximized ? "Restore" : "Maximize"}
-          >
-            <img src={MaximizeIcon} alt="Maximize" className="w-5 h-5" />
-          </button>
+            aria-label={isMaximized ? "Restore" : "Maximize"}
+          />
           <button
-            className="xp-control-btn xp-close hover:brightness-110 transition-all ml-1"
+            className="xp-caption-btn xp-caption-close"
             onClick={(e) => {
               e.stopPropagation();
               onClose?.();
             }}
             onMouseDown={(e) => e.stopPropagation()}
             title="Close"
-          >
-            <img src={ExitIcon} alt="Close" className="w-5 h-5" />
-          </button>
+            aria-label="Close"
+          />
         </div>
       </div>
 
-      {/* Content - XP Yellow background */}
-      <div className="flex-1 flex flex-col overflow-hidden" style={{ backgroundColor: 'var(--xp-yellow)' }}>
+      {/* Content - XP Yellow/Cream background */}
+      <div className="flex-1 flex flex-col overflow-hidden bg-[#ece9d8] dark:bg-gray-900 border-l-[3px] border-r-[3px] border-b-[3px] border-[#0055ea] dark:border-[#4265a7]" style={{ borderColor: isActive ? '#0055ea' : '#7a96df' }}>
         {children}
       </div>
     </div>

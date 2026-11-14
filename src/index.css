@@ -366,9 +366,12 @@
     border-color: hsl(206 100% 50%);
   }
 
-  /* XP Taskbar - Authentic gradient from win32.run */
+  /* XP Taskbar - Authentic Luna from winxp.si */
   .xp-taskbar {
-    background-image: var(--xp-taskbar-gradient);
+    background-image: url('/luna/taskbar.png');
+    background-repeat: repeat-x;
+    background-size: 1px 30px;
+    background-color: #245edb;
 
     position: absolute;
     bottom: 0;
@@ -381,28 +384,41 @@
     align-items: center;
 
     user-select: none;
-    z-index: 10;
+    z-index: 1000;
 
-    border-top: 1px solid rgb(49, 101, 196);
+    border-top: 1px solid #1e44a6;
   }
 
-  /* Authentic XP Window shadow effect from win32.run */
-  .xp-window-shadow {
-    box-shadow: var(--window-box-shadow);
+  /* Authentic XP Window border and frame matching winxp.si */
+  .xp-window-frame {
+    -webkit-font-smoothing: antialiased;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    padding: 0 0 3px;
+    box-shadow: inset -1px -1px #00138c, inset 1px 1px #0831d9, inset -2px -2px #001ea0, inset 2px 2px #166aee, inset -3px -3px #003bda, inset 3px 3px #0855dd, 2px 4px 16px rgba(0, 0, 0, 0.4);
+    background-color: #0055ea;
   }
 
-  .xp-window-shadow-inactive {
-    box-shadow: var(--window-box-shadow-inactive);
+  .xp-window-frame.inactive {
+    box-shadow: inset -1px -1px #5066a3, inset 1px 1px #748bc8, inset -2px -2px #5066a3, inset 2px 2px #748bc8, inset -3px -3px #5066a3, inset 3px 3px #748bc8, 1px 2px 8px rgba(0, 0, 0, 0.25);
+    background-color: #6582cf;
   }
 
-  /* XP Title Bar Gradient - Authentic from win32.run */
+  /* XP Title Bar Gradient - Authentic Luna caption bitmap with CSS fallback */
   .xp-title-bar {
-    background: var(--titlebar-gradient);
-    font-family: 'Trebuchet MS', 'MSSans', Tahoma, Arial, sans-serif;
+    background: url('/luna/caption.png') 0 0/100% 100% no-repeat, var(--titlebar-gradient);
+    font-family: 'Trebuchet MS', 'Trebuchet', Tahoma, Arial, sans-serif;
+    border-top: 1px solid #0831d9;
+    border-left: 1px solid #0831d9;
+    border-right: 1px solid #001ea0;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 7px;
+    height: 30px;
+    text-shadow: 1px 1px #0f1089;
   }
 
   .dark .xp-title-bar {
-    background: linear-gradient(180deg,
+    background: url('/luna/caption.png') 0 0/100% 100% no-repeat, linear-gradient(180deg,
         hsl(206 80% 45%) 0%,
         hsl(206 80% 35%) 8%,
         hsl(206 80% 30%) 40%,
@@ -412,14 +428,21 @@
         hsl(214 70% 45%) 100%);
   }
 
-  /* Inactive title bar - dimmed gradient (win32.run pattern) */
+  /* Inactive title bar - dimmed Luna caption */
   .xp-title-bar-inactive {
-    background: var(--titlebar-gradient-inactive);
-    font-family: 'Trebuchet MS', 'MSSans', Tahoma, Arial, sans-serif;
+    background: url('/luna/caption-inactive.png') 0 0/100% 100% no-repeat, var(--titlebar-gradient-inactive);
+    font-family: 'Trebuchet MS', 'Trebuchet', Tahoma, Arial, sans-serif;
+    border-top: 1px solid #7a96df;
+    border-left: 1px solid #7a96df;
+    border-right: 1px solid #7a96df;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 7px;
+    height: 30px;
+    text-shadow: none;
   }
 
   .dark .xp-title-bar-inactive {
-    background: linear-gradient(180deg,
+    background: url('/luna/caption-inactive.png') 0 0/100% 100% no-repeat, linear-gradient(180deg,
         hsl(206 30% 45%) 0%,
         hsl(206 30% 38%) 8%,
         hsl(206 30% 33%) 40%,
@@ -427,6 +450,141 @@
         hsl(214 25% 33%) 93%,
         hsl(214 25% 38%) 95%,
         hsl(214 25% 42%) 100%);
+  }
+
+  /* Title bar caption control buttons - Pixel perfect Luna */
+  .xp-caption-btn {
+    width: 21px;
+    height: 21px;
+    min-width: 21px;
+    min-height: 21px;
+    border: none;
+    padding: 0;
+    margin-left: 2px;
+    background-color: transparent;
+    background-position: center;
+    background-size: 21px 21px;
+    background-repeat: no-repeat;
+    cursor: default;
+    transition: filter 0.08s ease;
+  }
+
+  .xp-caption-btn:focus {
+    outline: none;
+  }
+
+  /* Minimize Button */
+  .xp-caption-min {
+    background-image: url('/luna/caption/minimize-active-normal.png');
+  }
+  .xp-caption-min:hover:not(:active) {
+    background-image: url('/luna/caption/minimize-active-hot.png');
+  }
+  .xp-caption-min:active {
+    background-image: url('/luna/caption/minimize-active-pressed.png');
+  }
+  .xp-title-bar-inactive .xp-caption-min {
+    background-image: url('/luna/caption/minimize-inactive-normal.png');
+  }
+  .xp-title-bar-inactive .xp-caption-min:hover:not(:active) {
+    background-image: url('/luna/caption/minimize-inactive-hot.png');
+  }
+  .xp-title-bar-inactive .xp-caption-min:active {
+    background-image: url('/luna/caption/minimize-inactive-pressed.png');
+  }
+
+  /* Maximize Button */
+  .xp-caption-max {
+    background-image: url('/luna/caption/maximize-active-normal.png');
+  }
+  .xp-caption-max:hover:not(:active) {
+    background-image: url('/luna/caption/maximize-active-hot.png');
+  }
+  .xp-caption-max:active {
+    background-image: url('/luna/caption/maximize-active-pressed.png');
+  }
+  .xp-title-bar-inactive .xp-caption-max {
+    background-image: url('/luna/caption/maximize-inactive-normal.png');
+  }
+  .xp-title-bar-inactive .xp-caption-max:hover:not(:active) {
+    background-image: url('/luna/caption/maximize-inactive-hot.png');
+  }
+  .xp-title-bar-inactive .xp-caption-max:active {
+    background-image: url('/luna/caption/maximize-inactive-pressed.png');
+  }
+
+  /* Restore Button */
+  .xp-caption-restore {
+    background-image: url('/luna/caption/restore-active-normal.png');
+  }
+  .xp-caption-restore:hover:not(:active) {
+    background-image: url('/luna/caption/restore-active-hot.png');
+  }
+  .xp-caption-restore:active {
+    background-image: url('/luna/caption/restore-active-pressed.png');
+  }
+  .xp-title-bar-inactive .xp-caption-restore {
+    background-image: url('/luna/caption/restore-inactive-normal.png');
+  }
+  .xp-title-bar-inactive .xp-caption-restore:hover:not(:active) {
+    background-image: url('/luna/caption/restore-inactive-hot.png');
+  }
+  .xp-title-bar-inactive .xp-caption-restore:active {
+    background-image: url('/luna/caption/restore-inactive-pressed.png');
+  }
+
+  /* Close Button */
+  .xp-caption-close {
+    background-image: url('/luna/caption/close-active-normal.png');
+  }
+  .xp-caption-close:hover:not(:active) {
+    background-image: url('/luna/caption/close-active-hot.png');
+  }
+  .xp-caption-close:active {
+    background-image: url('/luna/caption/close-active-pressed.png');
+  }
+  .xp-title-bar-inactive .xp-caption-close {
+    background-image: url('/luna/caption/close-inactive-normal.png');
+  }
+  .xp-title-bar-inactive .xp-caption-close:hover:not(:active) {
+    background-image: url('/luna/caption/close-inactive-hot.png');
+  }
+  .xp-title-bar-inactive .xp-caption-close:active {
+    background-image: url('/luna/caption/close-inactive-pressed.png');
+  }
+
+  /* Taskbar Window Button - Luna 3D Bevel */
+  .xp-taskbar-item {
+    height: 24px;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #ffffff;
+    font-size: 11px;
+    font-family: Tahoma, 'MSSans', sans-serif;
+    min-width: 120px;
+    max-width: 170px;
+    border-radius: 3px;
+    border: none;
+    cursor: default;
+    background: linear-gradient(180deg, #3c81f3 0%, #2f6de5 12%, #225ad6 50%, #1a4fc2 52%, #225ad6 100%);
+    box-shadow: inset 1px 1px #5a9cf8, inset -1px -1px #133b94;
+    transition: filter 0.08s ease;
+  }
+
+  .xp-taskbar-item:hover {
+    filter: brightness(1.12);
+  }
+
+  .xp-taskbar-item.active {
+    background: linear-gradient(180deg, #1842a8 0%, #1e4ec0 12%, #2255cf 50%, #1b47ad 52%, #1842a8 100%);
+    box-shadow: inset 1px 1px #0f2c73, inset -1px -1px #326de0;
+    font-weight: bold;
+  }
+
+  .xp-taskbar-item.minimized {
+    opacity: 0.82;
   }
 
   /* XP Sidebar Gradient */

@@ -48,30 +48,39 @@ const StartMenu = ({
 
       {/* Start Menu */}
       <div
-        className="fixed bottom-[30px] left-0 z-[200] w-[380px] bg-gradient-to-b from-[#1f5bff] to-[#0045d4] rounded-tr-lg shadow-2xl overflow-hidden"
+        className="fixed bottom-[30px] left-0 z-[200] w-[380px] rounded-t-[7px] shadow-2xl overflow-hidden select-none border-t border-l border-r border-[#0055ea]"
         style={{
-          boxShadow: '4px -4px 12px rgba(0, 0, 0, 0.4), inset 1px 1px 0 rgba(255, 255, 255, 0.3)',
+          boxShadow: '2px -2px 14px rgba(0, 0, 0, 0.45), inset 1px 1px 0 rgba(255, 255, 255, 0.4)',
         }}
       >
-        {/* User Header */}
-        <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-[#0058ee] to-[#3a88ff]">
-          <div className="w-12 h-12 rounded-md overflow-hidden border-2 border-white/50 shadow-md">
+        {/* User Header - Authentic Luna Top Banner */}
+        <div 
+          className="flex items-center gap-3 px-3 h-[67px]"
+          style={{
+            backgroundImage: "url('/startmenu/top.png')",
+            backgroundSize: '380px 67px',
+            backgroundPosition: 'top left',
+            backgroundRepeat: 'no-repeat',
+            backgroundColor: '#0058ee',
+          }}
+        >
+          <div className="w-[50px] h-[50px] rounded-[4px] overflow-hidden border-2 border-[#ccd6eb] shadow-md bg-white shrink-0">
             <img
               src={UserIcon}
               alt="User"
               className="w-full h-full object-cover bg-gradient-to-br from-[#3a7bd5] to-[#5aa9ff]"
             />
           </div>
-          <span className="text-white font-bold text-[14px] drop-shadow-sm">
+          <span className="text-white font-bold text-[16px] font-['Trebuchet_MS',Tahoma,sans-serif] drop-shadow-[1px_1px_2px_#0a1883b3] truncate">
             Suhas Nidgundi
           </span>
         </div>
 
         {/* Main Content */}
-        <div className="flex h-[340px]">
+        <div className="flex h-[360px] border-b border-[#0055ea]">
           {/* Left Column - Programs */}
-          <div className="w-[60%] bg-white flex flex-col">
-            <div className="flex-1 py-2">
+          <div className="w-[58%] bg-white flex flex-col justify-between">
+            <div className="py-1">
               {/* Pinned Programs */}
               <MenuItem
                 icon={InternetExplorerIcon}
@@ -94,7 +103,7 @@ const StartMenu = ({
                 />
               )}
 
-              <div className="my-2 mx-3 h-px bg-gray-300" />
+              <div className="my-1.5 mx-2.5 h-[1px] bg-gradient-to-r from-transparent via-[#d3d3d3] to-transparent" />
 
               {/* Recent Programs */}
               <MenuItem
@@ -119,20 +128,22 @@ const StartMenu = ({
               />
             </div>
 
-            {/* All Programs - Visual indicator without functionality */}
-            {/* <div className="px-3 py-2 border-t border-gray-200 bg-gradient-to-b from-gray-50 to-gray-100">
+            {/* All Programs - Authentic XP bar */}
+            <div className="p-1 border-t border-[#d3d3d3]">
               <div 
-                className="flex items-center justify-between text-[11px] text-gray-500"
-                title="Coming soon"
+                className="flex items-center justify-center gap-2 py-1.5 px-3 rounded hover:bg-[#316ac5] hover:text-white cursor-pointer group transition-colors"
+                onClick={() => handleItemClick(onOpenMyComputer)}
               >
-                <span className="font-semibold">All Programs</span>
-                <span>▶</span>
+                <span className="font-bold text-[11px] text-[#000080] group-hover:text-white font-['MSSans',Tahoma,sans-serif]">
+                  All Programs
+                </span>
+                <span className="text-[#008000] group-hover:text-white font-bold text-[10px]">▶</span>
               </div>
-            </div> */}
+            </div>
           </div>
 
           {/* Right Column - Quick Links */}
-          <div className="w-[40%] bg-gradient-to-b from-[#d3e5fa] to-[#a8c8e8] py-2">
+          <div className="w-[42%] bg-gradient-to-b from-[#d3e5fa] to-[#a8c8e8] py-2 border-l border-[#95b4e0]">
             <RightMenuItem
               icon={MyComputerIcon}
               title="My Computer"
@@ -150,7 +161,7 @@ const StartMenu = ({
               onClick={() => handleItemClick(() => navigate('/projects'))}
             />
 
-            <div className="my-2 mx-3 h-px bg-[#7ba2ce]" />
+            <div className="my-2 mx-3 h-[1px] bg-[#95b4e0]" />
 
             <RightMenuItem
               icon={InternetExplorerIcon}
@@ -165,21 +176,30 @@ const StartMenu = ({
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="flex items-center justify-end gap-2 px-3 py-2 bg-gradient-to-r from-[#1a3fb3] to-[#3a6fd9] border-t border-[#4d7dd4]">
+        {/* Bottom Bar - Authentic Luna Footer */}
+        <div 
+          className="flex items-center justify-end gap-3 px-4 h-[48px]"
+          style={{
+            backgroundImage: "url('/startmenu/bottom.png')",
+            backgroundSize: '380px 48px',
+            backgroundPosition: 'bottom left',
+            backgroundRepeat: 'no-repeat',
+            backgroundColor: '#1a3fb3',
+          }}
+        >
           <button
             onClick={() => handleItemClick(onLogOff)}
-            className="flex items-center gap-2 px-3 py-1 text-white text-[11px] hover:bg-white/10 rounded transition-colors"
+            className="flex items-center gap-2 px-2.5 py-1 text-white text-[11px] font-['MSSans',Tahoma,sans-serif] hover:bg-white/20 active:bg-black/20 rounded cursor-pointer transition-colors"
           >
-            <img src={LogoutIcon} alt="Log Off" className="w-4 h-4" />
-            <span>Log Off</span>
+            <img src={LogoutIcon} alt="Log Off" className="w-5 h-5 object-contain" />
+            <span className="drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] font-semibold">Log Off</span>
           </button>
           <button
             onClick={() => handleItemClick(onLogOff)}
-            className="flex items-center gap-2 px-3 py-1 text-white text-[11px] hover:bg-white/10 rounded transition-colors"
+            className="flex items-center gap-2 px-2.5 py-1 text-white text-[11px] font-['MSSans',Tahoma,sans-serif] hover:bg-white/20 active:bg-black/20 rounded cursor-pointer transition-colors"
           >
-            <img src={ShutDownIcon} alt="Shut Down" className="w-4 h-4" />
-            <span>Shut Down</span>
+            <img src={ShutDownIcon} alt="Turn Off Computer" className="w-5 h-5 object-contain" />
+            <span className="drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] font-semibold">Turn Off Computer</span>
           </button>
         </div>
       </div>
