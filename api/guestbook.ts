@@ -1,4 +1,5 @@
-// Serverless Guestbook API supporting Neon / Supabase Postgres / Upstash or serverless fallback
+// Serverless Guestbook API supporting Upstash Redis / Vercel Blob / Postgres
+import { put, list } from '@vercel/blob';
 
 export interface GuestbookEntry {
   id: string;
@@ -38,6 +39,35 @@ const INITIAL_ENTRIES: GuestbookEntry[] = [
 
 let inMemoryEntries: GuestbookEntry[] = [...INITIAL_ENTRIES];
 
+async function getBlobGuestbook(): Promise<GuestbookEntry[] | null> {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) return null;
+  try {
+    const { blobs } = await list({ prefix: 'guestbook-entries.json' });
+    const match = blobs.find((b) => b.pathname === 'guestbook-entries.json');
+    if (!match) return null;
+    const res = await fetch(`${match.url}?t=${Date.now()}`, { cache: 'no-store' });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (err) {
+    console.warn('Vercel Blob guestbook read error:', err);
+    return null;
+  }
+}
+
+async function saveBlobGuestbook(entries: GuestbookEntry[]) {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) return null;
+  try {
+    return await put('guestbook-entries.json', JSON.stringify(entries), {
+      access: 'public',
+      addRandomSuffix: false,
+      allowOverwrite: true,
+    });
+  } catch (err) {
+    console.warn('Vercel Blob guestbook save error:', err);
+    return null;
+  }
+}
+
 export default async function handler(req: Request) {
   if (req.method === 'POST') {
     try {
@@ -60,7 +90,7 @@ export default async function handler(req: Request) {
         badge: 'New Signer',
       };
 
-      // If Postgres or Redis is configured, write to it
+      // 1. Upstash Redis
       const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
       const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
 
@@ -74,9 +104,26 @@ export default async function handler(req: Request) {
         }
       }
 
+      // 2. Vercel Blob
+      if (process.env.BLOB_READ_WRITE_TOKEN) {
+        try {
+          const current = (await getBlobGuestbook()) || inMemoryEntries;
+          const updated = [newEntry, ...current];
+          await saveBlobGuestbook(updated);
+          inMemoryEntries = updated;
+
+          return new Response(JSON.stringify({ success: true, entry: newEntry, source: 'blob' }), {
+            status: 201,
+            headers: { 'Content-Type': 'application/json' },
+          });
+        } catch (e) {
+          console.warn('Failed to save to Blob, fallback to memory:', e);
+        }
+      }
+
       inMemoryEntries = [newEntry, ...inMemoryEntries];
 
-      return new Response(JSON.stringify({ success: true, entry: newEntry }), {
+      return new Response(JSON.stringify({ success: true, entry: newEntry, source: 'memory' }), {
         status: 201,
         headers: { 'Content-Type': 'application/json' },
       });
@@ -98,32 +145,57 @@ export default async function handler(req: Request) {
         headers: { Authorization: `Bearer ${redisToken}` },
       });
       const data = await res.json();
-      if (Array.isArray(data?.result) && data.result.length > 0) {
+      if (data && Array.isArray(data.result) && data.result.length > 0) {
         const parsed = data.result.map((item: string) => {
           try {
-            return JSON.parse(item);
+            return JSON.parse(decodeURIComponent(item));
           } catch {
             return null;
           }
         }).filter(Boolean);
-        return new Response(JSON.stringify(parsed), {
+
+        return new Response(JSON.stringify({ entries: parsed, source: 'upstash' }), {
           status: 200,
           headers: {
             'Content-Type': 'application/json',
-            'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
+            'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=30',
           },
         });
       }
     } catch (e) {
-      console.warn('Failed to read from Redis, using fallback:', e);
+      console.warn('Redis read failed, falling back to Blob/memory:', e);
     }
   }
 
-  return new Response(JSON.stringify(inMemoryEntries), {
-    status: 200,
-    headers: {
-      'Content-Type': 'application/json',
-      'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
-    },
-  });
+  // Check Vercel Blob
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    try {
+      const blobEntries = await getBlobGuestbook();
+      if (blobEntries && Array.isArray(blobEntries)) {
+        return new Response(JSON.stringify({ entries: blobEntries, source: 'blob' }), {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=30',
+          },
+        });
+      }
+    } catch (e) {
+      console.warn('Vercel Blob read error, falling back to memory:', e);
+    }
+  }
+
+  return new Response(
+    JSON.stringify({
+      entries: inMemoryEntries,
+      source: 'memory',
+    }),
+    {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=30',
+      },
+    }
+  );
 }

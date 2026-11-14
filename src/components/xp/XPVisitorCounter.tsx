@@ -43,7 +43,7 @@ export const XPVisitorCounter: React.FC = () => {
       className="flex items-center gap-1 px-1.5 py-0.5 bg-[#000000] border border-[#092e51] rounded-[2px] shadow-[inset_1px_1px_2px_rgba(0,0,0,0.8)] select-none cursor-help"
       title={
         total !== null
-          ? `Live Visitor Counter (${source === 'upstash' ? 'Upstash Redis Persistent' : 'Serverless Memory'}): ${total} visits`
+          ? `Live Visitor Counter (${source === 'upstash' ? 'Upstash Redis' : source === 'blob' ? 'Vercel Blob Persistent' : 'Live Cloud'}): ${total} visits`
           : 'Connecting to visitor counter...'
       }
     >

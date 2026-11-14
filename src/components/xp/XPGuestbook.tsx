@@ -35,13 +35,17 @@ export const XPGuestbook: React.FC<XPGuestbookProps> = ({
   const [submitting, setSubmitting] = useState(false);
   const [successNotice, setSuccessNotice] = useState(false);
 
+  const [source, setSource] = useState<string>('cloud');
+
   const fetchEntries = async () => {
     setLoading(true);
     try {
       const res = await fetch('/api/guestbook');
       if (res.ok) {
         const data = await res.json();
-        setEntries(data);
+        const list = Array.isArray(data) ? data : (data.entries || []);
+        setEntries(list);
+        if (data.source) setSource(data.source);
       }
     } catch (err) {
       console.warn('Failed to load guestbook:', err);
@@ -198,7 +202,7 @@ export const XPGuestbook: React.FC<XPGuestbookProps> = ({
               Recent Signatures ({entries.length})
             </h4>
             <span className="text-[10px] text-gray-500 font-['MSSans',Tahoma,sans-serif]">
-              Live updates
+              {source === 'blob' ? '🟢 Vercel Blob Storage' : source === 'upstash' ? '🟢 Upstash Redis' : 'Live updates'}
             </span>
           </div>
 
