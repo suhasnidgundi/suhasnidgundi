@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 
 export const XPVisitorCounter: React.FC = () => {
-  const [total, setTotal] = useState<number>(4281);
-  const [loading, setLoading] = useState(true);
+  const [total, setTotal] = useState<number | null>(null);
+  const [source, setSource] = useState<string>('connecting');
 
   useEffect(() => {
     let isMounted = true;
@@ -15,15 +15,14 @@ export const XPVisitorCounter: React.FC = () => {
         const res = await fetch('/api/visitor-counter', { method });
         if (res.ok) {
           const data = await res.json();
-          if (isMounted && data.total) {
+          if (isMounted && typeof data.total === 'number') {
             setTotal(data.total);
+            setSource(data.source || 'live');
             sessionStorage.setItem('xp-visitor-counted', 'true');
           }
         }
       } catch (err) {
         console.warn('Visitor counter fetch failed:', err);
-      } finally {
-        if (isMounted) setLoading(false);
       }
     };
 
@@ -34,13 +33,19 @@ export const XPVisitorCounter: React.FC = () => {
     };
   }, []);
 
-  // Format as 6 digits with leading zeros
-  const digits = String(total).padStart(6, '0').split('');
+  // Format as 6 digits with leading zeros or dashes while connecting
+  const digits = total !== null
+    ? String(total).padStart(6, '0').split('')
+    : ['-', '-', '-', '-', '-', '-'];
 
   return (
     <div
       className="flex items-center gap-1 px-1.5 py-0.5 bg-[#000000] border border-[#092e51] rounded-[2px] shadow-[inset_1px_1px_2px_rgba(0,0,0,0.8)] select-none cursor-help"
-      title={`Vercel Edge + Upstash Redis Live Visitor Counter: ${total.toLocaleString()} unique visits`}
+      title={
+        total !== null
+          ? `Live Visitor Counter (${source === 'upstash' ? 'Upstash Redis Persistent' : 'Serverless Memory'}): ${total} visits`
+          : 'Connecting to visitor counter...'
+      }
     >
       <span className="text-[9px] text-gray-400 font-['MSSans',Tahoma,sans-serif] mr-0.5">VISITORS</span>
       <div className="flex items-center gap-[1px]">
