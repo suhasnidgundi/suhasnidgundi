@@ -63,6 +63,8 @@ export interface ProfileData {
   website: string;
   status: string;
   coreSkills: string[];
+  resumeUrl?: string;
+  resumeFilename?: string;
   updatedAt: string;
 }
 
@@ -101,17 +103,56 @@ export async function GET(req: Request) {
     let edgeConfigData: Record<string, any> = {};
     if (process.env.EDGE_CONFIG) {
       try {
-        const [openToWork, status, announcement, featuredProject] = await Promise.all([
+        const [
+          openToWork,
+          status,
+          announcement,
+          featuredProject,
+          name,
+          title,
+          role,
+          headline,
+          location,
+          email,
+          github,
+          linkedin,
+          website,
+          resumeUrl,
+          resumeFilename,
+        ] = await Promise.all([
           get('openToWork'),
           get('status'),
           get('announcement'),
           get('featuredProject'),
+          get('name'),
+          get('title'),
+          get('role'),
+          get('headline'),
+          get('location'),
+          get('email'),
+          get('github'),
+          get('linkedin'),
+          get('website'),
+          get('resumeUrl'),
+          get('resumeFilename'),
         ]);
+
         edgeConfigData = {
           openToWork: openToWork !== undefined ? Boolean(openToWork) : undefined,
           status: status ? String(status) : undefined,
           announcement: announcement ? String(announcement) : undefined,
           featuredProject: featuredProject ? String(featuredProject) : undefined,
+          name: name ? String(name) : undefined,
+          title: title ? String(title) : undefined,
+          role: role ? String(role) : undefined,
+          headline: headline ? String(headline) : undefined,
+          location: location ? String(location) : undefined,
+          email: email ? String(email) : undefined,
+          github: github ? String(github) : undefined,
+          linkedin: linkedin ? String(linkedin) : undefined,
+          website: website ? String(website) : undefined,
+          resumeUrl: resumeUrl ? String(resumeUrl) : undefined,
+          resumeFilename: resumeFilename ? String(resumeFilename) : undefined,
         };
       } catch (e) {
         console.warn('Edge config read skipped:', e);
@@ -121,30 +162,32 @@ export async function GET(req: Request) {
     // 2. Fetch from Vercel Blob
     const blobProfile = await fetchBlobProfile();
 
-    // 3. Fallback baseline if blob is empty
+    // 3. Fallback baseline if blob is empty, optionally overridden by environment variables
     const baseline: ProfileData = {
-      openToWork: true,
-      role: 'Full Stack Engineer & System Designer',
+      openToWork: process.env.PORTFOLIO_OPEN_TO_WORK ? process.env.PORTFOLIO_OPEN_TO_WORK === 'true' : true,
+      role: process.env.PORTFOLIO_ROLE || 'Full Stack Engineer & System Designer',
       availableForHire: true,
-      announcement: 'Welcome to my portfolio! Built with React, Vite & Vercel ecosystem.',
-      featuredProject: 'Digital Campus Inventory',
+      announcement: process.env.PORTFOLIO_ANNOUNCEMENT || 'Welcome to my portfolio! Powered dynamically by the Vercel ecosystem.',
+      featuredProject: process.env.PORTFOLIO_FEATURED_PROJECT || '',
       environment: process.env.VERCEL_ENV || 'production',
       region: process.env.VERCEL_REGION || 'bom1',
-      name: 'Suhas Nidgundi',
-      handle: 'suhasnidgundi',
-      title: 'Full Stack Software Engineer & System Designer',
-      headline: 'Building high-impact systems, distributed architectures, and nostalgic web experiences',
-      location: 'Belgaum / Pune, India',
-      email: 'suhasnidgundi@gmail.com',
-      github: 'https://github.com/suhasnidgundi',
-      linkedin: 'https://linkedin.com/in/suhasnidgundi',
-      website: 'https://suhasnidgundi.tech',
-      status: 'Available for exciting Full Stack & System Engineering opportunities',
+      name: process.env.PORTFOLIO_NAME || 'Suhas Nidgundi',
+      handle: process.env.PORTFOLIO_HANDLE || 'suhasnidgundi',
+      title: process.env.PORTFOLIO_TITLE || 'Full Stack Software Engineer & System Designer',
+      headline: process.env.PORTFOLIO_HEADLINE || 'Building high-impact systems, distributed architectures, and nostalgic web experiences',
+      location: process.env.PORTFOLIO_LOCATION || 'Belgaum / Pune, India',
+      email: process.env.PORTFOLIO_EMAIL || 'suhasnidgundi@gmail.com',
+      github: process.env.PORTFOLIO_GITHUB || 'https://github.com/suhasnidgundi',
+      linkedin: process.env.PORTFOLIO_LINKEDIN || 'https://linkedin.com/in/suhasnidgundi',
+      website: process.env.PORTFOLIO_WEBSITE || 'https://suhasnidgundi.tech',
+      status: process.env.PORTFOLIO_STATUS || 'Available for exciting Full Stack & System Engineering opportunities',
       coreSkills: ['React', 'TypeScript', 'Node.js', 'Python', 'Tailwind CSS', 'Vercel', 'PostgreSQL', 'Docker'],
+      resumeUrl: process.env.PORTFOLIO_RESUME_URL || '',
+      resumeFilename: process.env.PORTFOLIO_RESUME_FILENAME || '',
       updatedAt: new Date().toISOString(),
     };
 
-    // Fuse baseline, blob profile, and edge config (Edge Config overrides for flags)
+    // Fuse baseline, blob profile, and edge config (Edge Config has top priority)
     const fused: ProfileData = {
       ...baseline,
       ...(blobProfile || {}),

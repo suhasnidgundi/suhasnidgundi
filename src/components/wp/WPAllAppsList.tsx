@@ -1,22 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Search,
-  User,
-  Sparkles,
-  BookOpen,
-  Mail,
-  Briefcase,
-  Github,
-  BookMarked,
-  Globe,
-  Linkedin,
-  FileText,
-  Folder,
-  Settings,
-  Activity,
-  ArrowRight,
-} from 'lucide-react';
+import { WPIcon } from './WPIcons';
 import { useWPTheme } from '@/contexts/WPThemeContext';
 
 interface AppItem {
@@ -30,9 +14,10 @@ interface AppItem {
 
 interface WPAllAppsListProps {
   onBackToStart: () => void;
+  onOpenVercelHub?: () => void;
 }
 
-const WPAllAppsList: React.FC<WPAllAppsListProps> = ({ onBackToStart }) => {
+const WPAllAppsList: React.FC<WPAllAppsListProps> = ({ onBackToStart, onOpenVercelHub }) => {
   const navigate = useNavigate();
   const { setCortanaOpen } = useWPTheme();
   const [searchTerm, setSearchTerm] = useState('');
@@ -44,7 +29,7 @@ const WPAllAppsList: React.FC<WPAllAppsListProps> = ({ onBackToStart }) => {
       id: 'about',
       name: 'About Me',
       letter: 'A',
-      icon: <User className="w-5 h-5 text-white" />,
+      icon: <WPIcon name="people" size={20} className="text-white" />,
       subtitle: 'Profile, skills & background',
       onClick: () => navigate('/about'),
     },
@@ -52,7 +37,7 @@ const WPAllAppsList: React.FC<WPAllAppsListProps> = ({ onBackToStart }) => {
       id: 'cortana',
       name: 'AI Assistant (Cortana)',
       letter: 'A',
-      icon: <Sparkles className="w-5 h-5 text-white" />,
+      icon: <WPIcon name="cortana" size={20} className="text-cyan-300" />,
       subtitle: 'Talk with portfolio AI',
       onClick: () => setCortanaOpen(true),
     },
@@ -60,7 +45,7 @@ const WPAllAppsList: React.FC<WPAllAppsListProps> = ({ onBackToStart }) => {
       id: 'blog',
       name: 'Blog (Medium)',
       letter: 'B',
-      icon: <BookOpen className="w-5 h-5 text-white" />,
+      icon: <WPIcon name="document" size={20} className="text-white" />,
       subtitle: 'Tech articles & deep dives',
       onClick: () => openUrl('https://medium.com/@suhasnidgundi'),
     },
@@ -68,7 +53,7 @@ const WPAllAppsList: React.FC<WPAllAppsListProps> = ({ onBackToStart }) => {
       id: 'contact',
       name: 'Contact',
       letter: 'C',
-      icon: <Mail className="w-5 h-5 text-white" />,
+      icon: <WPIcon name="email" size={20} className="text-white" />,
       subtitle: 'Send direct message',
       onClick: () => navigate('/contact'),
     },
@@ -76,7 +61,7 @@ const WPAllAppsList: React.FC<WPAllAppsListProps> = ({ onBackToStart }) => {
       id: 'experience',
       name: 'Experience',
       letter: 'E',
-      icon: <Briefcase className="w-5 h-5 text-white" />,
+      icon: <WPIcon name="briefcase" size={20} className="text-white" />,
       subtitle: 'Work & leadership history',
       onClick: () => navigate('/experience'),
     },
@@ -84,7 +69,7 @@ const WPAllAppsList: React.FC<WPAllAppsListProps> = ({ onBackToStart }) => {
       id: 'github',
       name: 'GitHub',
       letter: 'G',
-      icon: <Github className="w-5 h-5 text-white" />,
+      icon: <WPIcon name="store" size={20} className="text-white" />,
       subtitle: '@suhasnidgundi repos',
       onClick: () => openUrl('https://github.com/suhasnidgundi'),
     },
@@ -92,7 +77,7 @@ const WPAllAppsList: React.FC<WPAllAppsListProps> = ({ onBackToStart }) => {
       id: 'guestbook',
       name: 'Guestbook',
       letter: 'G',
-      icon: <BookMarked className="w-5 h-5 text-white" />,
+      icon: <WPIcon name="guestbook" size={20} className="text-white" />,
       subtitle: 'View & sign visitor wall',
       onClick: () => navigate('/guestbook'),
     },
@@ -100,7 +85,7 @@ const WPAllAppsList: React.FC<WPAllAppsListProps> = ({ onBackToStart }) => {
       id: 'ie',
       name: 'Internet Explorer',
       letter: 'I',
-      icon: <Globe className="w-5 h-5 text-white" />,
+      icon: <WPIcon name="document" size={20} className="text-white" />,
       subtitle: 'Web links & live demos',
       onClick: () => openUrl('https://suhasnidgundi.tech'),
     },
@@ -108,7 +93,7 @@ const WPAllAppsList: React.FC<WPAllAppsListProps> = ({ onBackToStart }) => {
       id: 'linkedin',
       name: 'LinkedIn',
       letter: 'L',
-      icon: <Linkedin className="w-5 h-5 text-white" />,
+      icon: <WPIcon name="people" size={20} className="text-white" />,
       subtitle: 'Professional network',
       onClick: () => openUrl('https://linkedin.com/in/suhasnidgundi'),
     },
@@ -116,7 +101,7 @@ const WPAllAppsList: React.FC<WPAllAppsListProps> = ({ onBackToStart }) => {
       id: 'office',
       name: 'Office Hub (Resume)',
       letter: 'O',
-      icon: <FileText className="w-5 h-5 text-white" />,
+      icon: <WPIcon name="document" size={20} className="text-white" />,
       subtitle: 'The Engineering Journey & PDF',
       onClick: () => navigate('/office'),
     },
@@ -124,7 +109,7 @@ const WPAllAppsList: React.FC<WPAllAppsListProps> = ({ onBackToStart }) => {
       id: 'projects',
       name: 'Projects',
       letter: 'P',
-      icon: <Folder className="w-5 h-5 text-white" />,
+      icon: <WPIcon name="folder" size={20} className="text-white" />,
       subtitle: 'Software systems & architecture',
       onClick: () => navigate('/projects'),
     },
@@ -132,7 +117,7 @@ const WPAllAppsList: React.FC<WPAllAppsListProps> = ({ onBackToStart }) => {
       id: 'settings',
       name: 'Settings',
       letter: 'S',
-      icon: <Settings className="w-5 h-5 text-white" />,
+      icon: <WPIcon name="settings" size={20} className="text-white" />,
       subtitle: 'start+theme, accents & system',
       onClick: () => navigate('/settings'),
     },
@@ -140,9 +125,17 @@ const WPAllAppsList: React.FC<WPAllAppsListProps> = ({ onBackToStart }) => {
       id: 'visitors',
       name: 'Visitor Telemetry',
       letter: 'V',
-      icon: <Activity className="w-5 h-5 text-white" />,
+      icon: <WPIcon name="analytics" size={20} className="text-white" />,
       subtitle: 'Real-time counters & analytics',
       onClick: () => navigate('/settings'),
+    },
+    {
+      id: 'vercel',
+      name: 'Vercel Cloud Hub',
+      letter: 'V',
+      icon: <WPIcon name="vercel" size={18} className="fill-white" />,
+      subtitle: 'Edge Config, Blob & AI Telemetry',
+      onClick: () => (onOpenVercelHub ? onOpenVercelHub() : navigate('/settings')),
     },
   ];
 
@@ -162,10 +155,10 @@ const WPAllAppsList: React.FC<WPAllAppsListProps> = ({ onBackToStart }) => {
   const sortedLetters = Object.keys(groupedApps).sort();
 
   return (
-    <div className="min-h-full flex flex-col font-['Segoe_UI',sans-serif] px-4 pt-2 pb-24 select-none">
+    <div className="min-h-full flex flex-col font-segoe px-4 pt-2 pb-24 select-none">
       {/* Header with swipe indicator to go back to Start */}
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-[34px] font-extralight tracking-tight text-white lowercase">
+        <h2 className="text-[36px] font-segoe-light tracking-[-0.03em] text-white lowercase">
           apps
         </h2>
         <button
@@ -173,7 +166,7 @@ const WPAllAppsList: React.FC<WPAllAppsListProps> = ({ onBackToStart }) => {
           className="flex items-center gap-1.5 px-3 py-1 bg-white/10 rounded text-[12px] text-white/80 active:bg-white/20 transition-colors"
         >
           <span>start</span>
-          <ArrowRight className="w-3.5 h-3.5" />
+          <WPIcon name="arrowRight" size={14} />
         </button>
       </div>
 
@@ -186,7 +179,7 @@ const WPAllAppsList: React.FC<WPAllAppsListProps> = ({ onBackToStart }) => {
           placeholder="search apps"
           className="w-full bg-white/10 text-white placeholder-white/40 text-[15px] px-3 py-2 pl-9 rounded border border-white/20 focus:outline-none focus:border-[hsl(var(--wp-accent))]"
         />
-        <Search className="w-4 h-4 text-white/50 absolute left-3 top-3" />
+        <WPIcon name="search" size={16} className="text-white/50 absolute left-3 top-3" />
       </div>
 
       {/* Grouped App List */}

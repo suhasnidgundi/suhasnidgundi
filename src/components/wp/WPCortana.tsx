@@ -1,26 +1,31 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, X, Sparkles, Bot, User, Trash2, ArrowLeft } from 'lucide-react';
+import { WPIcon } from './WPIcons';
 import { useWPTheme } from '@/contexts/WPThemeContext';
+import { useProfile } from '@/hooks/useProfile';
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
 }
 
-const SUGGESTIONS = [
-  "What are Suhas's top projects?",
-  "Tell me about Suhas's work experience",
-  "What is Suhas's tech stack?",
-  "How can I contact Suhas?",
-];
-
 const WPCortana: React.FC = () => {
+  const { data: profile } = useProfile();
+  const firstName = profile?.name ? profile.name.split(' ')[0] : 'the author';
+
+  const suggestions = [
+    "How is this portfolio integrated with Vercel?",
+    `What are ${firstName}'s top projects?`,
+    `Tell me about ${firstName}'s work experience`,
+    `What is ${firstName}'s tech stack?`,
+    `How can I contact ${firstName}?`,
+  ];
+
   const { cortanaOpen, setCortanaOpen } = useWPTheme();
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
       content:
-        "Hey there! I'm Cortana, Suhas's AI portfolio assistant powered by the Vercel cloud ecosystem.\n\nAsk me anything about Suhas's software architecture, systems, projects, or background!",
+        `Hey there! I'm Cortana, ${profile?.name || 'the author'}'s AI portfolio assistant powered by the Vercel cloud ecosystem.\n\nAsk me anything about software architecture, systems, projects, or background!`,
     },
   ]);
   const [input, setInput] = useState('');
@@ -91,18 +96,18 @@ const WPCortana: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-black text-white font-['Segoe_UI',sans-serif] animate-in fade-in duration-200 select-none">
+    <div className="fixed inset-0 z-50 flex flex-col bg-black text-white font-segoe animate-in fade-in duration-200 select-none">
       {/* Top Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-black/60 backdrop-blur-md">
         <button
           onClick={() => setCortanaOpen(false)}
           className="flex items-center gap-1.5 text-white/80 active:text-white"
         >
-          <ArrowLeft className="w-5 h-5" />
-          <span className="text-[14px] font-light">back</span>
+          <WPIcon name="arrowLeft" size={18} />
+          <span className="text-[14px] font-light font-segoe-light">back</span>
         </button>
 
-        <span className="text-[17px] font-light tracking-wide text-cyan-300">
+        <span className="text-[19px] font-segoe-light tracking-wide text-cyan-300">
           cortana
         </span>
 
@@ -118,33 +123,33 @@ const WPCortana: React.FC = () => {
           className="p-1.5 text-white/60 hover:text-white active:bg-white/10 rounded"
           title="Clear chat"
         >
-          <Trash2 className="w-4 h-4" />
+          <WPIcon name="close" size={16} />
         </button>
       </div>
 
-      {/* Cortana Halo Animation Banner */}
+      {/* Cortana Halo Animation Banner - Authentic Windows Phone 8.1 Dual Pulsing Halo */}
       <div className="flex flex-col items-center justify-center py-6 bg-gradient-to-b from-cyan-950/40 via-transparent to-transparent">
         {/* Concentric Pulsing Double Ring */}
-        <div className="relative w-20 h-20 flex items-center justify-center">
+        <div className="relative w-24 h-24 flex items-center justify-center">
           {/* Outer Pulsing Aura */}
           <div
             className={`absolute inset-0 rounded-full border-2 border-cyan-400/40 transition-all duration-700 ${
               isLoading ? 'animate-ping' : 'animate-pulse'
             }`}
           />
-          {/* Middle Rotating Ring */}
+          {/* Middle Rotating Halo Ring */}
           <div
-            className={`absolute inset-1.5 rounded-full border-2 border-dashed border-cyan-300/80 ${
+            className={`absolute inset-2 rounded-full border border-cyan-300/60 ${
               isLoading ? 'animate-spin' : ''
             }`}
           />
-          {/* Inner Solid Core */}
-          <div className="w-12 h-12 rounded-full bg-cyan-500/20 border-2 border-cyan-400 flex items-center justify-center shadow-[0_0_20px_rgba(34,211,238,0.5)]">
-            <Sparkles className="w-6 h-6 text-cyan-300" />
+          {/* Authentic Cortana Center Orb */}
+          <div className="w-14 h-14 rounded-full bg-cyan-950/60 border-2 border-cyan-300 flex items-center justify-center shadow-[0_0_24px_rgba(34,211,238,0.6)]">
+            <WPIcon name="cortana" size={36} className="text-cyan-300 animate-pulse" />
           </div>
         </div>
 
-        <p className="mt-3 text-[13px] text-cyan-200/80 font-light tracking-wider uppercase">
+        <p className="mt-3 text-[13px] text-cyan-200/80 font-segoe-light tracking-wider uppercase">
           {isLoading ? 'Cortana is thinking…' : 'What can I help you with?'}
         </p>
       </div>
@@ -177,7 +182,7 @@ const WPCortana: React.FC = () => {
 
       {/* Suggested Quick Questions */}
       <div className="px-3 py-2 border-t border-white/10 bg-black/50 overflow-x-auto scrollbar-hide flex gap-2">
-        {SUGGESTIONS.map((s, idx) => (
+        {suggestions.map((s, idx) => (
           <button
             key={idx}
             onClick={() => handleSend(s)}
@@ -203,7 +208,7 @@ const WPCortana: React.FC = () => {
           disabled={isLoading || !input.trim()}
           className="w-10 h-10 rounded bg-cyan-600 hover:bg-cyan-500 active:scale-95 disabled:opacity-40 flex items-center justify-center text-white transition-all shadow"
         >
-          <Send className="w-4 h-4" />
+          <WPIcon name="arrowRight" size={16} />
         </button>
       </div>
     </div>

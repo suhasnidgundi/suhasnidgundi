@@ -1,17 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Sparkles,
-  ArrowRight,
-  BookMarked,
-  FileText,
-  Activity,
-  Settings,
-  Mail,
-  User,
-  ExternalLink,
-  ChevronRight,
-} from 'lucide-react';
+import { WPIcon } from '@/components/wp/WPIcons';
 
 import useAnalytics from '@/hooks/useAnalytics';
 import { useProjects } from '@/hooks/useProjects';
@@ -32,6 +21,8 @@ import WPGithubIcon from '@/components/wp/icons/WPGithubIcon';
 import WPLinkedInIcon from '@/components/wp/icons/WPLinkedInIcon';
 import WPBlogIcon from '@/components/wp/icons/WPBlogIcon';
 import WPMailIcon from '@/components/wp/icons/WPMailIcon';
+import WPLockScreen from '@/components/wp/WPLockScreen';
+import WPVercelHub from '@/components/wp/WPVercelHub';
 
 import profilePhoto from '@/assets/profile-photo.jpg';
 
@@ -49,6 +40,7 @@ const WPHome = ({ isDark, toggleTheme }: WPHomeProps) => {
     transparentTiles,
     background,
     setCortanaOpen,
+    setActionCenterOpen,
   } = useWPTheme();
 
   const { data: projects } = useProjects();
@@ -57,6 +49,35 @@ const WPHome = ({ isDark, toggleTheme }: WPHomeProps) => {
 
   // Active Screen: 'start' | 'apps'
   const [activeScreen, setActiveScreen] = useState<'start' | 'apps'>('start');
+  const [vercelHubOpen, setVercelHubOpen] = useState(false);
+
+  // Gesture tracking for Start <-> All Apps panorama and top-edge Action Center pull
+  const touchStartX = useRef(0);
+  const touchStartY = useRef(0);
+
+  const handleScreenTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleScreenTouchEnd = (e: React.TouchEvent) => {
+    const deltaX = e.changedTouches[0].clientX - touchStartX.current;
+    const deltaY = e.changedTouches[0].clientY - touchStartY.current;
+
+    // 1. Horizontal swipe gesture between Start and All Apps panorama
+    if (Math.abs(deltaX) > 55 && Math.abs(deltaX) > Math.abs(deltaY) * 1.3) {
+      if (deltaX < 0 && activeScreen === 'start') {
+        setActiveScreen('apps');
+      } else if (deltaX > 0 && activeScreen === 'apps') {
+        setActiveScreen('start');
+      }
+    }
+
+    // 2. Top-edge downward swipe to pull Action Center
+    if (touchStartY.current < 80 && deltaY > 40 && Math.abs(deltaY) > Math.abs(deltaX)) {
+      setActionCenterOpen(true);
+    }
+  };
 
   // Dynamic Blob States
   const [visitorCount, setVisitorCount] = useState<{ total: number; today: number }>({
@@ -64,7 +85,10 @@ const WPHome = ({ isDark, toggleTheme }: WPHomeProps) => {
     today: 0,
   });
   const [guestbookCount, setGuestbookCount] = useState<number>(0);
-  const [latestGuestbookEntry, setLatestGuestbookEntry] = useState<any>(null);
+  const [latestGuestbookEntry, setLatestGuestbookEntry] = useState<{
+    name?: string;
+    message?: string;
+  } | null>(null);
 
   useEffect(() => {
     // 1. Fetch live visitor count
@@ -109,22 +133,36 @@ const WPHome = ({ isDark, toggleTheme }: WPHomeProps) => {
         />
       )}
 
+      {/* Windows Phone Lock Screen */}
+      <WPLockScreen />
+
       {/* Top Status Bar (Tap to open Action Center) */}
-      <WPStatusBar />
+      <WPStatusBar hasNotifications={Boolean(edgeConfig?.announcement)} />
 
       {/* Pull-down Action Center Shade */}
-      <WPActionCenter isDark={isDark} toggleTheme={toggleTheme} />
+      <WPActionCenter
+        isDark={isDark}
+        toggleTheme={toggleTheme}
+        onOpenVercelHub={() => setVercelHubOpen(true)}
+      />
 
       {/* Cortana Assistant Modal */}
       <WPCortana />
 
-      {/* Screen Container (Start vs All Apps) */}
-      <div className="flex-1 overflow-y-auto relative z-10">
+      {/* Vercel Cloud Hub Modal */}
+      <WPVercelHub isOpen={vercelHubOpen} onClose={() => setVercelHubOpen(false)} />
+
+      {/* Screen Container with Horizontal Panorama & Top-Edge Pull Gestures */}
+      <div
+        onTouchStart={handleScreenTouchStart}
+        onTouchEnd={handleScreenTouchEnd}
+        className="flex-1 overflow-y-auto relative z-10 transition-opacity duration-200"
+      >
         {activeScreen === 'start' ? (
           <div className="px-4 pt-4 pb-28 max-w-md mx-auto">
             {/* Start Header with subtle swipe button */}
             <div className="flex items-center justify-between mb-5">
-              <h1 className="text-[44px] font-extralight tracking-tight text-white leading-none lowercase">
+              <h1 className="text-[46px] font-segoe-light tracking-[-0.04em] text-white leading-none lowercase select-none">
                 start
               </h1>
 
@@ -134,7 +172,7 @@ const WPHome = ({ isDark, toggleTheme }: WPHomeProps) => {
                 title="All Apps"
                 aria-label="View all apps"
               >
-                <ArrowRight className="w-4 h-4 stroke-[2.2]" />
+                <WPIcon name="arrowRight" size={16} />
               </button>
             </div>
 
@@ -143,7 +181,7 @@ const WPHome = ({ isDark, toggleTheme }: WPHomeProps) => {
               {/* 1. Me / Profile Tile (Wide) */}
               <WPTile
                 size="wide"
-                label={edgeConfig?.name || 'Suhas Nidgundi'}
+                label={edgeConfig?.name || 'Me'}
                 color="bg-[hsl(var(--wp-accent))]"
                 badge={edgeConfig?.openToWork ? 'OPEN TO WORK' : 'AVAILABLE'}
                 onClick={() => navigate('/about')}
@@ -152,12 +190,12 @@ const WPHome = ({ isDark, toggleTheme }: WPHomeProps) => {
                   <div className="flex items-center gap-4">
                     <img
                       src={profilePhoto}
-                      alt="Suhas"
+                      alt={edgeConfig?.name || 'Profile'}
                       className="w-16 h-16 rounded-full object-cover border-2 border-white shadow-md"
                     />
                     <div className="text-left">
                       <span className="text-[17px] font-semibold text-white block">
-                        {edgeConfig?.name || 'Suhas Nidgundi'}
+                        {edgeConfig?.name || 'Profile'}
                       </span>
                       <span className="text-[12px] text-white/80 font-light block leading-tight">
                         {edgeConfig?.role || 'Full Stack Engineer & System Designer'}
@@ -179,11 +217,11 @@ const WPHome = ({ isDark, toggleTheme }: WPHomeProps) => {
                           'Available for exciting Full Stack & System Engineering opportunities'}
                       </p>
                       <span className="text-[11px] text-white/60 block mt-1">
-                        📍 {edgeConfig?.location || 'Belgaum / Pune, India'}
+                        📍 {edgeConfig?.location || 'Global'}
                       </span>
                     </div>
                     <span className="text-[11px] text-[hsl(var(--wp-accent))] font-medium flex items-center gap-1">
-                      Tap to open People Hub <ChevronRight className="w-3 h-3" />
+                      Tap to open People Hub <WPIcon name="arrowRight" size={10} />
                     </span>
                   </div>
                 }
@@ -219,11 +257,11 @@ const WPHome = ({ isDark, toggleTheme }: WPHomeProps) => {
                       </div>
                     ) : (
                       <p className="text-[13px] text-white/70">
-                        Explore clean-slate projects from Vercel Blob.
+                        No projects published yet.
                       </p>
                     )}
                     <span className="text-[11px] text-emerald-300 font-medium flex items-center gap-1">
-                      Tap to view all projects <ChevronRight className="w-3 h-3" />
+                      Tap to view all projects <WPIcon name="arrowRight" size={10} />
                     </span>
                   </div>
                 }
@@ -253,7 +291,7 @@ const WPHome = ({ isDark, toggleTheme }: WPHomeProps) => {
                       </div>
                     ) : (
                       <p className="text-[12px] text-white/70">
-                        Full Stack & System Engineering history.
+                        No experience records yet.
                       </p>
                     )}
                     <span className="text-[10px] text-purple-300 font-medium">
@@ -271,9 +309,9 @@ const WPHome = ({ isDark, toggleTheme }: WPHomeProps) => {
                 onClick={() => setCortanaOpen(true)}
                 icon={
                   <div className="relative w-14 h-14 flex items-center justify-center">
-                    <div className="absolute inset-0 rounded-full border-2 border-cyan-400/50 animate-pulse" />
-                    <div className="w-10 h-10 rounded-full bg-cyan-500/20 border-2 border-cyan-300 flex items-center justify-center">
-                      <Sparkles className="w-5 h-5 text-cyan-300 animate-spin" />
+                    <div className="absolute inset-0 rounded-full border border-cyan-400/30 animate-ping opacity-25" />
+                    <div className="w-12 h-12 rounded-full bg-cyan-950/40 border border-cyan-400/50 flex items-center justify-center">
+                      <WPIcon name="cortana" size={32} className="text-cyan-300 animate-pulse" />
                     </div>
                   </div>
                 }
@@ -292,7 +330,59 @@ const WPHome = ({ isDark, toggleTheme }: WPHomeProps) => {
                 }
               />
 
-              {/* 5. Visitor Telemetry Tile (Medium with Live Counts) */}
+              {/* 5. Vercel Cloud Ecosystem Tile (Wide with Live Flip) */}
+              <WPTile
+                size="wide"
+                label="Vercel Cloud"
+                color="bg-[#0c0d0e] border border-white/15"
+                onClick={() => setVercelHubOpen(true)}
+                flipInterval={7000}
+                icon={
+                  <div className="flex items-center gap-4">
+                    <div className="w-14 h-14 bg-white/10 rounded flex items-center justify-center border border-white/20 shadow-md">
+                      <WPIcon name="vercel" size={28} className="fill-white" />
+                    </div>
+                    <div className="text-left">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[17px] font-semibold text-white block">
+                          Vercel Edge
+                        </span>
+                        <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded font-mono font-bold">
+                          {edgeConfig?.region?.toUpperCase() || 'BOM1'}
+                        </span>
+                      </div>
+                      <span className="text-[12px] text-white/70 font-light block leading-tight mt-0.5">
+                        Edge Config • Blob Storage • Speed Insights
+                      </span>
+                    </div>
+                  </div>
+                }
+                backContent={
+                  <div className="flex flex-col justify-between h-full">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-semibold tracking-wider uppercase text-cyan-300">
+                        Vercel Cloud Telemetry
+                      </span>
+                      <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold">
+                        ACTIVE
+                      </span>
+                    </div>
+                    <div className="text-[12px] text-white/90 font-light leading-snug">
+                      <p>
+                        Edge Network: <span className="text-white font-medium">{edgeConfig?.environment || 'Production'} ({edgeConfig?.region?.toUpperCase() || 'BOM1'})</span>
+                      </p>
+                      <p className="mt-0.5">
+                        Blob Storage: <span className="text-white font-medium">Projects & Profile Synchronized</span>
+                      </p>
+                    </div>
+                    <span className="text-[11px] text-cyan-300 font-medium flex items-center gap-1">
+                      Tap to open Cloud Hub <WPIcon name="arrowRight" size={10} />
+                    </span>
+                  </div>
+                }
+              />
+
+              {/* 6. Visitor Telemetry Tile (Medium with Live Counts) */}
               <WPTile
                 size="medium"
                 label="Visitor Stats"
@@ -301,7 +391,7 @@ const WPHome = ({ isDark, toggleTheme }: WPHomeProps) => {
                 flipInterval={5000}
                 icon={
                   <div className="flex flex-col items-center">
-                    <Activity className="w-8 h-8 text-white mb-1" />
+                    <WPIcon name="analytics" size={30} className="text-white mb-1" />
                     <span className="text-[20px] font-mono font-bold text-white tracking-wider">
                       {visitorCount.total}
                     </span>
@@ -333,7 +423,7 @@ const WPHome = ({ isDark, toggleTheme }: WPHomeProps) => {
                 count={guestbookCount}
                 onClick={() => navigate('/guestbook')}
                 flipInterval={9000}
-                icon={<BookMarked className="w-8 h-8 text-white" />}
+                icon={<WPIcon name="guestbook" size={30} className="text-white" />}
                 backContent={
                   <div className="flex flex-col justify-between h-full">
                     <div className="flex items-center justify-between">
@@ -371,7 +461,7 @@ const WPHome = ({ isDark, toggleTheme }: WPHomeProps) => {
                 label="Office / Resume"
                 color="bg-[hsl(var(--wp-cyan))]"
                 onClick={() => navigate('/office')}
-                icon={<FileText className="w-8 h-8 text-white" />}
+                icon={<WPIcon name="document" size={30} className="text-white" />}
               />
 
               {/* 8. Settings Tile (Medium with Active Accent Color) */}
@@ -386,7 +476,7 @@ const WPHome = ({ isDark, toggleTheme }: WPHomeProps) => {
                       className="w-7 h-7 rounded-full border-2 border-white mb-1 shadow"
                       style={{ backgroundColor: accent.hex }}
                     />
-                    <Settings className="w-5 h-5 text-white/80" />
+                    <WPIcon name="settings" size={20} className="text-white/80" />
                   </div>
                 }
               />
@@ -436,12 +526,15 @@ const WPHome = ({ isDark, toggleTheme }: WPHomeProps) => {
               <span className="text-[14px] font-light text-white/80 lowercase">
                 swipe or tap for all apps
               </span>
-              <ArrowRight className="w-4 h-4 text-white/60" />
+              <WPIcon name="arrowRight" size={14} className="text-white/60" />
             </div>
           </div>
         ) : (
           /* View 2: All Apps Alphabetical View */
-          <WPAllAppsList onBackToStart={() => setActiveScreen('start')} />
+          <WPAllAppsList
+            onBackToStart={() => setActiveScreen('start')}
+            onOpenVercelHub={() => setVercelHubOpen(true)}
+          />
         )}
       </div>
 

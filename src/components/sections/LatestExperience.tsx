@@ -1,14 +1,36 @@
 import { Briefcase, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { useCurrentExperience } from '@/hooks/useExperiences';
 
 const LatestExperience = () => {
-  const experience = {
-    role: 'Software Engineering Intern',
-    company: 'Tech Solutions Inc.',
-    duration: 'June 2024 - Present',
-    impact: 'Implemented microservices architecture reducing API latency by 40% and improving system reliability.',
-  };
+  const { data: experience, isLoading } = useCurrentExperience();
+
+  if (isLoading) {
+    return (
+      <section className="py-20">
+        <div className="container mx-auto px-4 text-center text-muted-foreground text-sm">
+          Loading latest experience...
+        </div>
+      </section>
+    );
+  }
+
+  if (!experience) {
+    return (
+      <section className="py-20">
+        <div className="container mx-auto px-4 text-center">
+          <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-muted mb-4">
+            <Briefcase className="h-6 w-6 text-muted-foreground" />
+          </div>
+          <h2 className="text-xl font-semibold text-foreground mb-1">No Experience Records</h2>
+          <p className="text-sm text-muted-foreground max-w-md mx-auto">
+            No work experience has been published to Vercel storage yet.
+          </p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-20">
@@ -35,12 +57,16 @@ const LatestExperience = () => {
                 <p className="mb-2 font-medium text-primary">
                   {experience.company}
                 </p>
-                <p className="mb-4 text-sm text-muted-foreground">
-                  {experience.duration}
-                </p>
-                <p className="text-muted-foreground">
-                  {experience.impact}
-                </p>
+                {experience.start_date && (
+                  <p className="mb-4 text-sm text-muted-foreground">
+                    {experience.start_date} {experience.end_date ? `- ${experience.end_date}` : '- Present'}
+                  </p>
+                )}
+                {experience.description && (
+                  <p className="text-muted-foreground">
+                    {experience.description}
+                  </p>
+                )}
               </div>
             </div>
 

@@ -166,7 +166,7 @@ function getDefaultAppMeta(appId: WindowAppId) {
       };
     case 'word-doc':
       return {
-        title: 'Suhas_Nidgundi_About_Me.doc - Microsoft Word',
+        title: 'About_Me.doc - Microsoft Word',
         icon: WordIcon,
         w: 920,
         h: 640,
@@ -182,7 +182,7 @@ function getDefaultAppMeta(appId: WindowAppId) {
       };
     case 'pdf-viewer':
       return {
-        title: 'Suhas_Nidgundi_Resume.pdf - Adobe Reader',
+        title: 'Resume.pdf - Adobe Reader',
         icon: PdfIcon,
         w: 880,
         h: 620,
@@ -190,7 +190,7 @@ function getDefaultAppMeta(appId: WindowAppId) {
       };
     case 'ai-chat':
       return {
-        title: 'Windows Assistant — Suhas Portfolio AI',
+        title: 'Windows Assistant — AI Portfolio Guide',
         icon: SearchIcon,
         w: 480,
         h: 580,

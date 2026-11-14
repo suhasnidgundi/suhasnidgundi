@@ -177,7 +177,7 @@ export async function PUT(req: Request) {
     }
 
     const body = await req.json();
-    let experiences = await fetchBlobExperiences();
+    const experiences = await fetchBlobExperiences();
 
     if (Array.isArray(body)) {
       await saveBlobExperiences(body);
@@ -236,7 +236,7 @@ export async function DELETE(req: Request) {
       );
     }
 
-    let experiences = await fetchBlobExperiences();
+    const experiences = await fetchBlobExperiences();
     const filtered = experiences.filter((e) => e.$id !== id);
     await saveBlobExperiences(filtered);
 

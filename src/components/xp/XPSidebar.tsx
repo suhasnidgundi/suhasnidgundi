@@ -1,5 +1,6 @@
 import { useState, ReactNode } from 'react';
 import { ChevronUp, ChevronDown } from 'lucide-react';
+import { useProfile } from '@/hooks/useProfile';
 import GlobeIcon from '@/assets/xp/icons/globe_icon.png';
 import BriefCaseIcon from '@/assets/xp/icons/briefcase_icon.png';
 import FolderOpenIcon from "@/assets/xp/icons/folder_opened_icon.png";
@@ -90,13 +91,14 @@ interface XPSidebarProps {
 }
 
 const XPSidebar = ({ onViewAboutMe, onDownloadResume, onNavigateFolder, currentFolder = 'root' }: XPSidebarProps) => {
+  const { data: profile } = useProfile();
   const handleDownloadResume = () => {
     if (onDownloadResume) {
       onDownloadResume();
     } else {
       const link = document.createElement('a');
-      link.href = '/resume.pdf';
-      link.download = 'resume.pdf';
+      link.href = profile?.resumeUrl || '/resume.pdf';
+      link.download = profile?.resumeFilename || 'Resume.pdf';
       link.click();
     }
   };
@@ -133,7 +135,7 @@ const XPSidebar = ({ onViewAboutMe, onDownloadResume, onNavigateFolder, currentF
         <SidebarLink 
           icon={<img src={EmailIcon} alt="Email" className="w-4 h-4 text-yellow-300" />} 
           label="Contact Me" 
-          onClick={() => window.open('mailto:suhasnidgundi@gmail.com', '_blank')}
+          onClick={() => window.open(`mailto:${profile?.email || 'contact@example.com'}`, '_blank')}
         />
       </SidebarSection>
 

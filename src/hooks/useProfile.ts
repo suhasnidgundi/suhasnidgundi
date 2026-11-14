@@ -1,32 +1,23 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getAdminAuthHeaders } from '@/contexts/AuthContext';
+import { DEFAULT_PROFILE, type DynamicProfile } from '@/config/profile';
 
-export interface DynamicProfile {
-  name: string;
-  handle: string;
-  title: string;
-  headline: string;
-  location: string;
-  email: string;
-  github: string;
-  linkedin: string;
-  website: string;
-  status: string;
-  openToWork: boolean;
-  announcement?: string;
-  featuredProject?: string;
-  coreSkills: string[];
-  updatedAt: string;
-}
+export type { DynamicProfile } from '@/config/profile';
 
 export const useProfile = () => {
   return useQuery<DynamicProfile>({
     queryKey: ['profile'],
     queryFn: async (): Promise<DynamicProfile> => {
-      const res = await fetch('/api/config');
-      if (!res.ok) throw new Error('Failed to fetch profile from Vercel');
-      return await res.json();
+      try {
+        const res = await fetch('/api/config');
+        if (!res.ok) return DEFAULT_PROFILE;
+        const data = await res.json();
+        return { ...DEFAULT_PROFILE, ...data };
+      } catch (err) {
+        return DEFAULT_PROFILE;
+      }
     },
+    initialData: DEFAULT_PROFILE,
     staleTime: 30 * 1000,
   });
 };

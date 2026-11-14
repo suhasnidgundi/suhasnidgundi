@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Download, FileText, ExternalLink, CheckCircle } from 'lucide-react';
 import WPStatusBar from '@/components/wp/WPStatusBar';
 import WPNavBar from '@/components/wp/WPNavBar';
+import { useProfile } from '@/hooks/useProfile';
 
 const WPOffice: React.FC = () => {
+  const { data: profile } = useProfile();
   const [activePivot, setActivePivot] = useState<'story' | 'resume'>('story');
   const [storyData, setStoryData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -60,22 +62,26 @@ const WPOffice: React.FC = () => {
               <div className="py-20 text-center text-white/50 text-[14px]">
                 Loading document from Vercel Blob…
               </div>
-            ) : storyData ? (
+            ) : storyData && Array.isArray(storyData.sections) && storyData.sections.length > 0 ? (
               <div>
                 <div className="mb-6 p-4 bg-white/5 border-l-4 border-[hsl(var(--wp-accent))] rounded-r">
                   <h2 className="text-[20px] font-semibold text-white">
-                    {storyData.title || 'Suhas Nidgundi'}
+                    {storyData.title || profile?.name}
                   </h2>
-                  <p className="text-[13px] text-white/70 mt-1">
-                    {storyData.subtitle}
-                  </p>
-                  <p className="text-[11px] text-white/40 font-mono mt-2">
-                    {storyData.contact}
-                  </p>
+                  {storyData.subtitle && (
+                    <p className="text-[13px] text-white/70 mt-1">
+                      {storyData.subtitle}
+                    </p>
+                  )}
+                  {storyData.contact && (
+                    <p className="text-[11px] text-white/40 font-mono mt-2">
+                      {storyData.contact}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-6">
-                  {storyData.sections?.map((sec: any) => (
+                  {storyData.sections.map((sec: any) => (
                     <section key={sec.id} className="space-y-2">
                       <h3 className="text-[18px] font-medium text-[hsl(var(--wp-accent))] tracking-wide">
                         {sec.heading}
@@ -93,7 +99,13 @@ const WPOffice: React.FC = () => {
                 </div>
               </div>
             ) : (
-              <div className="text-white/60 text-[14px]">Document unavailable.</div>
+              <div className="text-center py-20 text-white/50 space-y-2">
+                <FileText className="w-12 h-12 mx-auto text-white/20" />
+                <p className="text-[15px]">No documents published in Office Hub.</p>
+                <p className="text-[12px] text-white/40">
+                  You can upload or edit documents in Vercel Blob via /admin.
+                </p>
+              </div>
             )}
           </div>
         ) : (
@@ -106,7 +118,7 @@ const WPOffice: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-[17px] font-semibold text-white">
-                    Suhas_Nidgundi_Resume.pdf
+                    {profile?.resumeFilename || 'Resume.pdf'}
                   </h3>
                   <span className="text-[12px] text-white/60 font-mono">
                     Official Technical Resume • 2026 Edition
@@ -115,20 +127,20 @@ const WPOffice: React.FC = () => {
               </div>
 
               <p className="text-[14px] text-white/80 font-light leading-relaxed">
-                Contains complete academic history (VTU B.E. Computer Science), full stack engineering projects, distributed systems experience, and contact references.
+                Contains complete technical history, engineering projects, distributed systems experience, and contact references.
               </p>
 
               <div className="pt-2 flex flex-col gap-2">
                 <a
-                  href="/resume.pdf"
-                  download="Suhas_Nidgundi_Resume.pdf"
+                  href={profile?.resumeUrl || '/resume.pdf'}
+                  download={profile?.resumeFilename || 'Resume.pdf'}
                   className="w-full py-3 bg-[hsl(var(--wp-accent))] text-white font-semibold text-[14px] rounded flex items-center justify-center gap-2 active:scale-95 transition-transform shadow"
                 >
                   <Download className="w-4 h-4" /> Download Resume (PDF)
                 </a>
 
                 <a
-                  href="/resume.pdf"
+                  href={profile?.resumeUrl || '/resume.pdf'}
                   target="_blank"
                   rel="noreferrer"
                   className="w-full py-3 bg-white/10 text-white font-medium text-[14px] rounded flex items-center justify-center gap-2 active:scale-95 transition-transform"

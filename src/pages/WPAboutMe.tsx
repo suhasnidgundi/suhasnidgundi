@@ -54,19 +54,19 @@ const WPAboutMe = ({ isDark }: WPAboutMeProps) => {
         {/* Quick Contact & Action Buttons */}
         <div className="flex items-center gap-3">
           <button
-            onClick={() => openUrl(`mailto:${config?.email || "suhasnidgundi@gmail.com"}`)}
+            onClick={() => config?.email && openUrl(`mailto:${config.email}`)}
             className="flex-1 py-2.5 bg-[hsl(var(--wp-accent))] text-white rounded font-medium text-[13px] flex items-center justify-center gap-2 active:scale-95 shadow transition-transform"
           >
             <Mail className="w-4 h-4" /> Email Me
           </button>
           <button
-            onClick={() => openUrl(config?.linkedin || "https://linkedin.com/in/suhasnidgundi")}
+            onClick={() => config?.linkedin && openUrl(config.linkedin)}
             className="flex-1 py-2.5 bg-[#0077b5] text-white rounded font-medium text-[13px] flex items-center justify-center gap-2 active:scale-95 shadow transition-transform"
           >
             <Linkedin className="w-4 h-4" /> LinkedIn
           </button>
           <button
-            onClick={() => openUrl(config?.github || "https://github.com/suhasnidgundi")}
+            onClick={() => config?.github && openUrl(config.github)}
             className="w-10 h-10 bg-white/10 rounded flex items-center justify-center text-white active:bg-white/20 transition-colors"
             title="GitHub"
           >
@@ -85,7 +85,7 @@ const WPAboutMe = ({ isDark }: WPAboutMeProps) => {
           </p>
           <div className="flex items-center gap-1.5 text-[12px] text-white/60 pt-1">
             <MapPin className="w-3.5 h-3.5 text-[hsl(var(--wp-accent))]" />
-            <span>{config?.location || "Belgaum / Pune, India"}</span>
+            <span>{config?.location || "India"}</span>
           </div>
         </div>
 

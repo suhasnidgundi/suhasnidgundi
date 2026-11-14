@@ -198,7 +198,7 @@ export async function PUT(req: Request) {
     }
 
     const body = await req.json();
-    let projects = await fetchBlobProjects();
+    const projects = await fetchBlobProjects();
 
     if (Array.isArray(body)) {
       await saveBlobProjects(body);
@@ -257,7 +257,7 @@ export async function DELETE(req: Request) {
       );
     }
 
-    let projects = await fetchBlobProjects();
+    const projects = await fetchBlobProjects();
     const filtered = projects.filter((p) => p.$id !== id);
     await saveBlobProjects(filtered);
 

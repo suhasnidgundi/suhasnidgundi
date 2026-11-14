@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { Upload, FileText, Loader2, CheckCircle2 } from 'lucide-react';
 import { useProfile, useUpdateProfile } from '@/hooks/useProfile';
 import { useToast } from '@/hooks/use-toast';
@@ -17,15 +18,30 @@ const AdminSettings = () => {
   const [title, setTitle] = useState('');
   const [headline, setHeadline] = useState('');
   const [status, setStatus] = useState('');
+  const [email, setEmail] = useState('');
+  const [location, setLocation] = useState('');
+  const [github, setGithub] = useState('');
+  const [linkedin, setLinkedin] = useState('');
+  const [website, setWebsite] = useState('');
+  const [announcement, setAnnouncement] = useState('');
+  const [featuredProject, setFeaturedProject] = useState('');
+  const [openToWork, setOpenToWork] = useState<boolean | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedResumeUrl, setUploadedResumeUrl] = useState('');
 
   // Populate local form state when profile data arrives
-  const isEditing = name || title || headline || status;
-  const currentName = isEditing ? name : (profile?.name || '');
-  const currentTitle = isEditing ? title : (profile?.title || '');
-  const currentHeadline = isEditing ? headline : (profile?.headline || '');
-  const currentStatus = isEditing ? status : (profile?.status || '');
+  const currentName = name || (profile?.name || '');
+  const currentTitle = title || (profile?.title || '');
+  const currentHeadline = headline || (profile?.headline || '');
+  const currentStatus = status || (profile?.status || '');
+  const currentEmail = email || (profile?.email || '');
+  const currentLocation = location || (profile?.location || '');
+  const currentGithub = github || (profile?.github || '');
+  const currentLinkedin = linkedin || (profile?.linkedin || '');
+  const currentWebsite = website || (profile?.website || '');
+  const currentAnnouncement = announcement || (profile?.announcement || '');
+  const currentFeaturedProject = featuredProject || (profile?.featuredProject || '');
+  const currentOpenToWork = openToWork !== null ? openToWork : (profile?.openToWork ?? true);
 
   const handleProfileSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,6 +51,14 @@ const AdminSettings = () => {
         title: currentTitle,
         headline: currentHeadline,
         status: currentStatus,
+        email: currentEmail,
+        location: currentLocation,
+        github: currentGithub,
+        linkedin: currentLinkedin,
+        website: currentWebsite,
+        announcement: currentAnnouncement,
+        featuredProject: currentFeaturedProject,
+        openToWork: currentOpenToWork,
       });
       toast({
         title: 'Profile Updated',
@@ -64,15 +88,24 @@ const AdminSettings = () => {
       if (res.ok) {
         const data = await res.json();
         setUploadedResumeUrl(data.url);
+        // Automatically link uploaded resume to profile
+        await updateProfile.mutateAsync({
+          resumeUrl: data.url,
+          resumeFilename: file.name,
+        });
         toast({
           title: 'Vercel Blob Upload',
-          description: `Uploaded ${file.name} successfully to Vercel Blob!`,
+          description: `Uploaded ${file.name} successfully to Vercel Blob & linked to profile!`,
         });
       } else {
-        toast({ title: 'Error', description: 'Blob upload failed', variant: 'destructive' });
+        throw new Error('Upload failed');
       }
     } catch (err) {
-      toast({ title: 'Error', description: 'Network error during upload', variant: 'destructive' });
+      toast({
+        title: 'Upload Error',
+        description: 'Could not upload file to Vercel Blob.',
+        variant: 'destructive',
+      });
     } finally {
       setIsUploading(false);
     }
@@ -83,7 +116,7 @@ const AdminSettings = () => {
       <div>
         <h1 className="text-3xl font-bold text-foreground">Vercel Cloud Settings</h1>
         <p className="text-muted-foreground mt-1">
-          Manage your dynamic profile metadata and file assets stored in Vercel Blob.
+          Manage your dynamic profile metadata, contact info, and file assets stored in Vercel Blob & Edge Config.
         </p>
       </div>
 
@@ -92,7 +125,7 @@ const AdminSettings = () => {
         <CardHeader>
           <CardTitle>Global Profile Metadata (Vercel Blob & Edge Config)</CardTitle>
           <CardDescription>
-            These values power your Windows XP start menu, about dialogs, and AI assistant dynamically.
+            These values power your Windows XP and Windows Phone desktop, menus, about dialogs, and AI assistant dynamically.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -102,14 +135,14 @@ const AdminSettings = () => {
             </div>
           ) : (
             <form onSubmit={handleProfileSave} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="prof-name">Display Name</Label>
                   <Input
                     id="prof-name"
                     value={currentName}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Suhas Nidgundi"
+                    placeholder="Your Name"
                   />
                 </div>
                 <div className="space-y-2">
@@ -119,6 +152,28 @@ const AdminSettings = () => {
                     value={currentTitle}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="Full Stack Software Engineer"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="prof-email">Contact Email</Label>
+                  <Input
+                    id="prof-email"
+                    type="email"
+                    value={currentEmail}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your.email@example.com"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="prof-location">Location</Label>
+                  <Input
+                    id="prof-location"
+                    value={currentLocation}
+                    onChange={(e) => setLocation(e.target.value)}
+                    placeholder="City, Country"
                   />
                 </div>
               </div>
@@ -133,20 +188,84 @@ const AdminSettings = () => {
                 />
               </div>
 
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="prof-github">GitHub Profile URL</Label>
+                  <Input
+                    id="prof-github"
+                    value={currentGithub}
+                    onChange={(e) => setGithub(e.target.value)}
+                    placeholder="https://github.com/..."
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="prof-linkedin">LinkedIn Profile URL</Label>
+                  <Input
+                    id="prof-linkedin"
+                    value={currentLinkedin}
+                    onChange={(e) => setLinkedin(e.target.value)}
+                    placeholder="https://linkedin.com/in/..."
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="prof-website">Portfolio Website</Label>
+                  <Input
+                    id="prof-website"
+                    value={currentWebsite}
+                    onChange={(e) => setWebsite(e.target.value)}
+                    placeholder="https://..."
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="prof-status">Live Availability Status</Label>
+                  <Input
+                    id="prof-status"
+                    value={currentStatus}
+                    onChange={(e) => setStatus(e.target.value)}
+                    placeholder="Available for exciting opportunities"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="prof-feat">Featured Project Name</Label>
+                  <Input
+                    id="prof-feat"
+                    value={currentFeaturedProject}
+                    onChange={(e) => setFeaturedProject(e.target.value)}
+                    placeholder="Featured Project Title"
+                  />
+                </div>
+              </div>
+
               <div className="space-y-2">
-                <Label htmlFor="prof-status">Live Availability Status</Label>
+                <Label htmlFor="prof-announcement">Live Announcement Banner (Edge Config Broadcast)</Label>
                 <Input
-                  id="prof-status"
-                  value={currentStatus}
-                  onChange={(e) => setStatus(e.target.value)}
-                  placeholder="Available for exciting Full Stack & System Engineering opportunities"
+                  id="prof-announcement"
+                  value={currentAnnouncement}
+                  onChange={(e) => setAnnouncement(e.target.value)}
+                  placeholder="Welcome to my portfolio!..."
                 />
               </div>
 
-              <Button type="submit" disabled={updateProfile.isPending}>
-                {updateProfile.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                Save Profile to Vercel Blob
-              </Button>
+              <div className="flex items-center space-x-2 pt-2">
+                <Switch
+                  id="prof-open-work"
+                  checked={currentOpenToWork}
+                  onCheckedChange={(checked) => setOpenToWork(checked)}
+                />
+                <Label htmlFor="prof-open-work" className="cursor-pointer">
+                  Open to Work Badge & Available for Hire Flag
+                </Label>
+              </div>
+
+              <div className="pt-2">
+                <Button type="submit" disabled={updateProfile.isPending}>
+                  {updateProfile.isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                  Save Profile to Vercel Blob & Edge Config
+                </Button>
+              </div>
             </form>
           )}
         </CardContent>

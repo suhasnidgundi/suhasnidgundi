@@ -1,8 +1,9 @@
 export function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const title = searchParams.get('title') || 'Suhas Nidgundi';
-  const role = searchParams.get('role') || 'Full Stack Engineer & System Designer';
-  const status = searchParams.get('status') || 'Available for Opportunities';
+  const title = searchParams.get('title') || process.env.PORTFOLIO_NAME || 'Suhas Nidgundi';
+  const role = searchParams.get('role') || process.env.PORTFOLIO_ROLE || 'Full Stack Engineer & System Designer';
+  const status = searchParams.get('status') || process.env.PORTFOLIO_STATUS || 'Available for Opportunities';
+  const location = searchParams.get('location') || process.env.PORTFOLIO_LOCATION || 'Belgaum / Pune, India';
 
   const svg = `<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
     <defs>
@@ -55,7 +56,7 @@ export function GET(request: Request) {
       <!-- Titlebar Icon & Text -->
       <circle cx="24" cy="19" r="8" fill="#ffcc00"/>
       <text x="42" y="25" fill="#ffffff" font-size="16" font-weight="bold" font-family="'Trebuchet MS', Tahoma, sans-serif" filter="drop-shadow(1px 1px 1px #0f1089)">
-        My Portfolio — Suhas Nidgundi (Windows XP Professional)
+        ${title} — Windows XP Professional Portfolio
       </text>
 
       <!-- Close Button (X) -->
@@ -79,7 +80,7 @@ export function GET(request: Request) {
         ${role}
       </text>
       <text x="170" y="165" fill="#4b5563" font-size="14" font-family="Tahoma, sans-serif">
-        Belgaum / Pune, India • ${status}
+        ${location} • ${status}
       </text>
 
       <line x1="45" y1="190" x2="795" y2="190" stroke="#aca899" stroke-width="1"/>
@@ -88,49 +89,44 @@ export function GET(request: Request) {
       <g transform="translate(45, 210)">
         <rect width="750" height="150" fill="#ffffff" stroke="#7f9db9" stroke-width="1" rx="2"/>
         
-        <text x="20" y="32" fill="#000000" font-size="14" font-weight="bold" font-family="Tahoma, sans-serif">
-          Operating System Features:
+        <text x="25" y="35" fill="#000080" font-size="15" font-weight="bold" font-family="Tahoma, sans-serif">
+          Cloud Infrastructure & Architecture:
         </text>
-        <text x="35" y="60" fill="#374151" font-size="13" font-family="Tahoma, sans-serif">
-          • Interactive Windows Explorer with Project &amp; Experience Folders
+        
+        <text x="25" y="65" fill="#333333" font-size="14" font-family="Tahoma, sans-serif">
+          ▲ Vercel Edge Config — sub-millisecond configuration switches & live broadcast
         </text>
-        <text x="35" y="85" fill="#374151" font-size="13" font-family="Tahoma, sans-serif">
-          • Built-in AI Assistant powered by Vercel AI SDK &amp; Gemini Flash
+        <text x="25" y="90" fill="#333333" font-size="14" font-family="Tahoma, sans-serif">
+          ▲ Vercel Blob Storage — durable persistent guestbook & object storage
         </text>
-        <text x="35" y="110" fill="#374151" font-size="13" font-family="Tahoma, sans-serif">
-          • Working WordPad, Notepad, PDF Resume Viewer, Calculator &amp; Minesweeper
+        <text x="25" y="115" fill="#333333" font-size="14" font-family="Tahoma, sans-serif">
+          ▲ Vercel Serverless & AI SDK — real-time intelligent streaming assistant
         </text>
-        <text x="35" y="135" fill="#374151" font-size="13" font-family="Tahoma, sans-serif">
-          • 100% Native Vercel Ecosystem (Edge Network, Functions, Blob, Speed Insights)
-        </text>
-      </g>
-
-      <!-- Classic XP OK / Cancel Buttons -->
-      <g transform="translate(685, 395)">
-        <rect width="110" height="34" rx="3" fill="#ece9d8" stroke="#003c74" stroke-width="1"/>
-        <text x="55" y="22" fill="#000000" font-size="13" font-weight="bold" font-family="Tahoma, sans-serif" text-anchor="middle">
-          OK
+        <text x="25" y="140" fill="#333333" font-size="14" font-family="Tahoma, sans-serif">
+          ▲ Vercel Speed Insights & Analytics — edge performance telemetry
         </text>
       </g>
 
-      <!-- URL Badge -->
-      <text x="45" y="418" fill="#6b7280" font-size="13" font-family="Tahoma, sans-serif">
-        https://suhasnidgundi.tech
-      </text>
+      <!-- Footer Buttons -->
+      <g transform="translate(560, 390)">
+        <!-- OK Button -->
+        <rect width="105" height="28" rx="3" fill="#ece9d8" stroke="#003c74" stroke-width="1"/>
+        <text x="52" y="19" fill="#000000" font-size="13" font-family="Tahoma, sans-serif" text-anchor="middle">View Projects</text>
+      </g>
+
+      <g transform="translate(685, 390)">
+        <!-- Cancel Button -->
+        <rect width="105" height="28" rx="3" fill="#ece9d8" stroke="#7f9db9" stroke-width="1"/>
+        <text x="52" y="19" fill="#000000" font-size="13" font-family="Tahoma, sans-serif" text-anchor="middle">Explore OS</text>
+      </g>
     </g>
-
-    <!-- Windows XP Taskbar along the bottom -->
-    <rect y="600" width="1200" height="30" fill="#245edb"/>
-    <!-- Start Button -->
-    <path d="M 0 600 L 95 600 Q 105 600 108 605 L 115 630 L 0 630 Z" fill="#388e3c"/>
-    <text x="40" y="621" fill="#ffffff" font-size="14" font-weight="bold" font-family="Tahoma, sans-serif" font-style="italic">start</text>
   </svg>`;
 
   return new Response(svg, {
     status: 200,
     headers: {
       'Content-Type': 'image/svg+xml',
-      'Cache-Control': 'public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400',
+      'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
     },
   });
 }

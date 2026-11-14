@@ -25,8 +25,8 @@ function generateAdminToken(email: string): string {
   const header = base64UrlEncode(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
   const payload = base64UrlEncode(
     JSON.stringify({
-      sub: 'admin-suhas',
-      name: 'Suhas Nidgundi',
+      sub: 'admin-portfolio',
+      name: process.env.PORTFOLIO_NAME || 'Admin',
       email: email.toLowerCase().trim(),
       role: 'admin',
       iat: Math.floor(Date.now() / 1000),

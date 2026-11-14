@@ -1,8 +1,19 @@
 import { ArrowRight, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { useProfile } from '@/hooks/useProfile';
 
 const HeroSection = () => {
+  const { data: profile } = useProfile();
+
+  const initials = profile?.name
+    ? profile.name
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .slice(0, 2)
+    : 'SN';
+
   return (
     <section className="relative min-h-[calc(100vh-4rem)] flex items-center py-20">
       {/* Background gradient */}
@@ -19,7 +30,7 @@ const HeroSection = () => {
               <div className="absolute -inset-1 rounded-full bg-primary/20 blur-xl" />
               <div className="relative h-48 w-48 md:h-64 md:w-64 overflow-hidden rounded-full border-4 border-primary/20 bg-muted">
                 <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
-                  <span className="text-6xl md:text-7xl font-bold text-primary">SN</span>
+                  <span className="text-6xl md:text-7xl font-bold text-primary">{initials}</span>
                 </div>
               </div>
             </div>
@@ -28,14 +39,13 @@ const HeroSection = () => {
           {/* Content */}
           <div className="flex-1 text-center lg:text-left">
             <h1 className="mb-4 text-4xl md:text-5xl lg:text-6xl font-bold text-foreground">
-              Suhas Nidgundi
+              {profile?.name || 'Portfolio'}
             </h1>
             <p className="mb-6 text-xl md:text-2xl font-medium text-primary">
-              Engineering scalable systems with clarity and impact
+              {profile?.title || 'Full Stack Engineer & System Designer'}
             </p>
             <p className="mb-8 max-w-2xl text-lg text-muted-foreground">
-              Final-year engineer building scalable systems and empowering communities through code. 
-              Passionate about cloud architecture, open source, and creating meaningful software.
+              {profile?.headline || 'Building high-impact systems, distributed cloud architectures, and thoughtful digital products.'}
             </p>
 
             {/* CTA Buttons */}
@@ -46,10 +56,17 @@ const HeroSection = () => {
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
-              <Button variant="outline" size="lg">
-                <Download className="mr-2 h-4 w-4" />
-                Download Resume
-              </Button>
+              <a 
+                href={profile?.resumeUrl || '/Suhas_Nidgundi_Resume.pdf'} 
+                download={profile?.resumeFilename || 'Resume.pdf'}
+                target="_blank" 
+                rel="noreferrer"
+              >
+                <Button variant="outline" size="lg">
+                  <Download className="mr-2 h-4 w-4" />
+                  Download Resume
+                </Button>
+              </a>
             </div>
           </div>
         </div>

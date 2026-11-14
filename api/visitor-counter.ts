@@ -90,7 +90,7 @@ export async function POST(req: Request) {
   if (process.env.BLOB_READ_WRITE_TOKEN) {
     try {
       const current = await getBlobCounterData();
-      let total = current?.total ? Number(current.total) + 1 : 1;
+      const total = current?.total ? Number(current.total) + 1 : 1;
       let today = 1;
 
       if (current && current.date === currentDate) {

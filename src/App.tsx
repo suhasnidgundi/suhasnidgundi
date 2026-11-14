@@ -34,7 +34,17 @@ import { Analytics } from '@vercel/analytics/react';
 const queryClient = new QueryClient();
 
 const App = () => {
+  const isMobile = useIsMobile();
   const [isLoading, setIsLoading] = useState(() => {
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const isMobileView =
+        window.innerWidth < 768 ||
+        urlParams.get("view") === "mobile" ||
+        urlParams.get("view") === "phone" ||
+        localStorage.getItem("wp_force_view") === "mobile";
+      if (isMobileView) return false;
+    }
     return !localStorage.getItem("hasVisited");
   });
   const [isDark, setIsDark] = useState(false);
@@ -78,7 +88,7 @@ const App = () => {
             <Sonner />
             <SpeedInsights />
             <Analytics />
-            {isLoading ? (
+            {isLoading && !isMobile ? (
               <Preloader onComplete={handlePreloaderComplete} />
             ) : (
               <BrowserRouter>

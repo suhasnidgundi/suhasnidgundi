@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { ZoomIn, ZoomOut, Download, Printer, ChevronLeft, ChevronRight, Search } from 'lucide-react';
+import { useProfile } from '@/hooks/useProfile';
 
 
 interface XPPdfViewerProps {
@@ -27,6 +28,7 @@ const XPPdfViewer = ({
   onPositionChange,
   onSizeChange,
 }: XPPdfViewerProps) => {
+  const { data: profile } = useProfile();
   const [zoom, setZoom] = useState(100);
 
   // Drag state - delegates to parent via onPositionChange
@@ -102,7 +104,7 @@ const XPPdfViewer = ({
             </svg>
           </div>
           <span className="font-['Trebuchet_MS',Tahoma,sans-serif] font-bold text-[13px] text-white drop-shadow-[1px_1px_1px_rgba(15,16,137,0.8)]">
-            Suhas_Nidgundi_Resume.pdf - Adobe Reader
+            {profile?.resumeFilename || 'Resume.pdf'} - Adobe Reader
           </span>
         </div>
 
@@ -182,7 +184,7 @@ const XPPdfViewer = ({
       {/* PDF Embed Area */}
       <div className="flex-1 bg-muted/70 overflow-auto flex justify-center p-4">
         <embed
-          src="/resume.pdf#toolbar=0"
+          src={`${profile?.resumeUrl || '/resume.pdf'}#toolbar=0`}
           type="application/pdf"
           className="shadow-lg border border-border"
           style={{

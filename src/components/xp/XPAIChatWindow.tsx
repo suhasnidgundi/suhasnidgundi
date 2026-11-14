@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import XPWindow from './XPWindow';
 import SearchIcon from '@/assets/xp/icons/search_icon.png';
 import { Send, Sparkles, Trash2, Bot, User } from 'lucide-react';
+import { useProfile } from '@/hooks/useProfile';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -18,13 +19,6 @@ interface XPAIChatWindowProps {
   isActive?: boolean;
 }
 
-const SUGGESTED_PROMPTS = [
-  "What are Suhas's top projects?",
-  "Tell me about Suhas's experience",
-  "What is Suhas's tech stack?",
-  "How can I contact Suhas?",
-];
-
 export const XPAIChatWindow: React.FC<XPAIChatWindowProps> = ({
   onClose,
   onMinimize,
@@ -34,11 +28,21 @@ export const XPAIChatWindow: React.FC<XPAIChatWindowProps> = ({
   onFocus,
   isActive,
 }) => {
+  const { data: profile } = useProfile();
+  const firstName = profile?.name ? profile.name.split(' ')[0] : 'the author';
+
+  const suggestedPrompts = [
+    `What are ${firstName}'s top projects?`,
+    `Tell me about ${firstName}'s experience`,
+    `What is ${firstName}'s tech stack?`,
+    `How can I contact ${firstName}?`,
+  ];
+
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
       content:
-        "👋 Welcome! I am Suhas's interactive AI Portfolio Assistant powered by the Vercel ecosystem.\n\nAsk me anything about Suhas's engineering background, projects, full-stack skillset, or how to get in touch!",
+        `👋 Welcome! I am ${profile?.name || 'the author'}'s interactive AI Portfolio Assistant powered by the Vercel ecosystem.\n\nAsk me anything about engineering background, projects, full-stack skillset, or how to get in touch!`,
     },
   ]);
   const [input, setInput] = useState('');
@@ -111,7 +115,7 @@ export const XPAIChatWindow: React.FC<XPAIChatWindowProps> = ({
         {
           role: 'assistant',
           content:
-            "⚠️ Sorry, I encountered an issue connecting to the AI endpoint. Please try again or reach out to Suhas directly at suhasnidgundi@gmail.com.",
+            `⚠️ Sorry, I encountered an issue connecting to the AI endpoint. Please try again or reach out directly at ${profile?.email || 'contact email'}.`,
         },
       ]);
     } finally {
@@ -210,7 +214,7 @@ export const XPAIChatWindow: React.FC<XPAIChatWindowProps> = ({
 
         {/* Suggested Quick Prompts */}
         <div className="px-3 pb-1 flex flex-wrap gap-1.5">
-          {SUGGESTED_PROMPTS.map((prompt, i) => (
+          {suggestedPrompts.map((prompt, i) => (
             <button
               key={i}
               onClick={() => handleSend(prompt)}
@@ -229,7 +233,7 @@ export const XPAIChatWindow: React.FC<XPAIChatWindowProps> = ({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask anything about Suhas..."
+            placeholder={`Ask anything about ${firstName}...`}
             disabled={isLoading}
             className="flex-1 px-3 py-1.5 border border-[#7F9DB9] rounded bg-white text-xs text-black focus:outline-none focus:ring-1 focus:ring-[#0055EA]"
           />

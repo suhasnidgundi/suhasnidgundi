@@ -73,7 +73,7 @@ const INITIAL_ENTRIES: GuestbookEntry[] = [
     id: 'gb-3',
     name: 'Rohan Sharma',
     company: 'Tech Lead @ Bengaluru',
-    message: 'Awesome portfolio Suhas! DriverClickerPro and Project Guardian look like great production applications. Let’s connect on LinkedIn!',
+    message: 'Awesome portfolio! The projects and system architecture look like great production applications. Let’s connect on LinkedIn!',
     createdAt: '2026-11-10T09:45:00Z',
     badge: 'Verified Visitor',
   },

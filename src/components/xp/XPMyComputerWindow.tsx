@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import MyComputerIcon from "@/assets/xp/icons/my_computer.png";
 import { useFeaturedProject, useProjects } from "@/hooks/useProjects";
 import { useCurrentExperience, useExperiences } from "@/hooks/useExperiences";
+import { useProfile } from "@/hooks/useProfile";
 import XPWindow from "@/components/xp/XPWindow";
 import XPMenuBar from "@/components/xp/XPMenuBar";
 import XPToolbar from "@/components/xp/XPToolbar";
@@ -115,6 +116,7 @@ const XPMyComputerWindow = ({
   const currentFolder: ExplorerFolder = history[historyIndex] || 'root';
 
   // Fetch dynamic content
+  const { data: profile } = useProfile();
   const { data: featuredProject } = useFeaturedProject();
   const { data: currentExperience } = useCurrentExperience();
   const { data: projects, isLoading: projectsLoading } = useProjects();
@@ -233,8 +235,8 @@ const XPMyComputerWindow = ({
           onViewAboutMe={onOpenWordDoc}
           onDownloadResume={() => {
             const link = document.createElement('a');
-            link.href = '/resume.pdf';
-            link.download = 'Suhas_Nidgundi_Resume.pdf';
+            link.href = profile?.resumeUrl || '/resume.pdf';
+            link.download = profile?.resumeFilename || 'Resume.pdf';
             link.click();
           }}
           onNavigateFolder={navigateToFolder}
@@ -250,7 +252,7 @@ const XPMyComputerWindow = ({
               <SectionDivider title="About Me" />
               <FileItem
                 icon={UserIcon}
-                label="Suhas Nidgundi"
+                label={profile?.name || 'About Me'}
                 onClick={() => handleIconClick("about")}
                 onDoubleClick={onOpenWordDoc}
                 selected={selectedIcon === "about"}
@@ -300,14 +302,14 @@ const XPMyComputerWindow = ({
                 icon={LinkedinIcon}
                 label="LinkedIn"
                 onClick={() => handleIconClick("linkedin")}
-                onDoubleClick={() => onOpenBrowser("https://linkedin.com/in/suhasnidgundi")}
+                onDoubleClick={() => onOpenBrowser(profile?.linkedin || "https://linkedin.com")}
                 selected={selectedIcon === "linkedin"}
               />
               <FileItem
                 icon={MailIcon}
                 label="Contact Me"
                 onClick={() => handleIconClick("contact")}
-                onDoubleClick={() => { window.location.href = 'mailto:suhasnidgundi@gmail.com'; }}
+                onDoubleClick={() => { window.location.href = `mailto:${profile?.email || 'contact@example.com'}`; }}
                 selected={selectedIcon === "contact"}
               />
 
@@ -360,22 +362,31 @@ const XPMyComputerWindow = ({
                       {currentExperience.description}
                     </p>
                   )}
+                  {currentExperiencesList.length === 0 && pastExperiences.length === 0 && (
+                    <div className="flex flex-col items-center justify-center p-12 text-center text-muted-foreground font-['MSSans',Tahoma,sans-serif]">
+                      <img src={BriefcaseIcon} alt="Empty Folder" className="w-12 h-12 opacity-35 mb-2" />
+                      <p className="text-[12px] font-bold text-gray-700 dark:text-gray-200">This folder is empty.</p>
+                      <p className="text-[10px] text-gray-500 mt-0.5">There are no experience records published yet.</p>
+                    </div>
+                  )}
                 </div>
               )}
 
               {/* GitHub Graph */}
-              <div className="mt-4 mb-8 p-4 bg-white dark:bg-gray-800 border border-[#7f9db9] dark:border-gray-600 rounded mx-2 shadow-sm">
-                <h3 className="xp-section-title text-[12px] font-bold text-black dark:text-gray-100 mb-2 font-['MSSans',Tahoma,sans-serif]">
-                  📊 GitHub Activity
-                </h3>
-                <div className="overflow-x-auto">
-                  <img
-                    src={`https://ghchart.rshah.org/${isDark ? '3b82f6' : '0066cc'}/suhasnidgundi`}
-                    alt="GitHub Contribution Graph"
-                    className="max-w-none"
-                  />
+              {profile?.github && (
+                <div className="mt-4 mb-8 p-4 bg-white dark:bg-gray-800 border border-[#7f9db9] dark:border-gray-600 rounded mx-2 shadow-sm">
+                  <h3 className="xp-section-title text-[12px] font-bold text-black dark:text-gray-100 mb-2 font-['MSSans',Tahoma,sans-serif]">
+                    📊 GitHub Activity
+                  </h3>
+                  <div className="overflow-x-auto">
+                    <img
+                      src={`https://ghchart.rshah.org/${isDark ? '3b82f6' : '0066cc'}/${profile.handle || profile.github.split('/').filter(Boolean).pop()}`}
+                      alt="GitHub Contribution Graph"
+                      className="max-w-none"
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           )}
 
@@ -498,8 +509,10 @@ const XPMyComputerWindow = ({
                   })}
                 </div>
               ) : (
-                <div className="text-center p-8 text-[11px] text-muted-foreground font-['MSSans',Tahoma,sans-serif]">
-                  No projects found.
+                <div className="flex flex-col items-center justify-center p-12 text-center text-muted-foreground font-['MSSans',Tahoma,sans-serif]">
+                  <img src={FolderIcon} alt="Empty Folder" className="w-12 h-12 opacity-35 mb-2" />
+                  <p className="text-[12px] font-bold text-gray-700 dark:text-gray-200">This folder is empty.</p>
+                  <p className="text-[10px] text-gray-500 mt-0.5">There are no projects published in this portfolio yet.</p>
                 </div>
               )}
             </div>
@@ -630,6 +643,13 @@ const XPMyComputerWindow = ({
                           </div>
                         ))}
                       </div>
+                    </div>
+                  )}
+                  {currentExperiencesList.length === 0 && pastExperiences.length === 0 && (
+                    <div className="flex flex-col items-center justify-center p-12 text-center text-muted-foreground font-['MSSans',Tahoma,sans-serif]">
+                      <img src={BriefcaseIcon} alt="Empty Folder" className="w-12 h-12 opacity-35 mb-2" />
+                      <p className="text-[12px] font-bold text-gray-700 dark:text-gray-200">This folder is empty.</p>
+                      <p className="text-[10px] text-gray-500 mt-0.5">There are no experience records published yet.</p>
                     </div>
                   )}
                 </div>

@@ -1,24 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
+import { DEFAULT_PROFILE, type DynamicProfile } from '@/config/profile';
 
-export interface EdgeConfigFeatures {
-  openToWork: boolean;
-  role: string;
-  availableForHire: boolean;
-  announcement: string;
-  featuredProject: string;
-  environment: string;
-  region: string;
-}
-
-const DEFAULT_CONFIG: EdgeConfigFeatures = {
-  openToWork: true,
-  role: 'Full Stack Engineer & System Designer',
-  availableForHire: true,
-  announcement: 'Welcome to my Windows XP portfolio! Powered 100% by the Vercel Ecosystem.',
-  featuredProject: 'Digital Campus Inventory',
-  environment: 'production',
-  region: 'bom1',
-};
+export type EdgeConfigFeatures = DynamicProfile;
 
 export const useEdgeConfig = () => {
   return useQuery<EdgeConfigFeatures>({
@@ -26,14 +9,14 @@ export const useEdgeConfig = () => {
     queryFn: async (): Promise<EdgeConfigFeatures> => {
       try {
         const res = await fetch('/api/config');
-        if (!res.ok) throw new Error('Failed to load edge config');
+        if (!res.ok) return DEFAULT_PROFILE;
         const data = await res.json();
-        return { ...DEFAULT_CONFIG, ...data };
+        return { ...DEFAULT_PROFILE, ...data };
       } catch (err) {
-        return DEFAULT_CONFIG;
+        return DEFAULT_PROFILE;
       }
     },
-    initialData: DEFAULT_CONFIG,
+    initialData: DEFAULT_PROFILE,
     staleTime: 60 * 1000, // 1 minute
   });
 };

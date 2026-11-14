@@ -31,7 +31,7 @@ export const WP_ACCENT_COLORS: WPAccentColor[] = [
 ];
 
 export const WP_BACKGROUNDS = [
-  { id: 'none', name: 'None (Pure Accent)' },
+  { id: 'none', name: 'Lumia Theme Prism (Adaptive)' },
   { id: 'poly', name: 'Lumia Polygon', url: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=1080&auto=format&fit=crop' },
   { id: 'nature', name: 'Bing Landscape', url: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1080&auto=format&fit=crop' },
   { id: 'dark-cyber', name: 'Cyber Mesh', url: 'https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=1080&auto=format&fit=crop' },
@@ -52,6 +52,10 @@ interface WPThemeContextType {
   setCortanaOpen: (open: boolean) => void;
   forceView: 'auto' | 'mobile' | 'desktop';
   setForceView: (mode: 'auto' | 'mobile' | 'desktop') => void;
+  isLocked: boolean;
+  setIsLocked: (locked: boolean) => void;
+  lockScreen: () => void;
+  unlockScreen: () => void;
 }
 
 const WPThemeContext = createContext<WPThemeContextType | undefined>(undefined);
@@ -73,9 +77,20 @@ export const WPThemeProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const [actionCenterOpen, setActionCenterOpen] = useState(false);
   const [cortanaOpen, setCortanaOpen] = useState(false);
+  const [isLocked, setIsLocked] = useState<boolean>(true);
   const [forceView, setForceViewState] = useState<'auto' | 'mobile' | 'desktop'>(() => {
     return (localStorage.getItem('wp_force_view') as any) || 'auto';
   });
+
+  const lockScreen = () => {
+    setIsLocked(true);
+    setActionCenterOpen(false);
+    setCortanaOpen(false);
+  };
+
+  const unlockScreen = () => {
+    setIsLocked(false);
+  };
 
   const setAccent = (newAccent: WPAccentColor) => {
     setAccentState(newAccent);
@@ -129,6 +144,10 @@ export const WPThemeProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setCortanaOpen,
         forceView,
         setForceView,
+        isLocked,
+        setIsLocked,
+        lockScreen,
+        unlockScreen,
       }}
     >
       {children}

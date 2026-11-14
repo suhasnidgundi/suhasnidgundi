@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, Moon, Sun, Users, MapPin, Clock, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useProfile } from '@/hooks/useProfile';
 
 interface WPInfoModalProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface WPInfoModalProps {
 }
 
 const WPInfoModal = ({ isOpen, onClose, isDark, toggleTheme }: WPInfoModalProps) => {
+  const { data: profile } = useProfile();
   const [currentTime, setCurrentTime] = useState('');
   
   useEffect(() => {
@@ -54,7 +56,7 @@ const WPInfoModal = ({ isOpen, onClose, isDark, toggleTheme }: WPInfoModalProps)
           <Heart className="w-6 h-6 text-wp-magenta" />
           <div>
             <p className="text-wp-text/60 text-[12px] uppercase tracking-wide">Crafted with love by</p>
-            <p className="text-wp-text text-[16px] font-medium">Suhas Nidgundi</p>
+            <p className="text-wp-text text-[16px] font-medium">{profile?.name || 'Developer'}</p>
           </div>
         </div>
         
@@ -63,7 +65,7 @@ const WPInfoModal = ({ isOpen, onClose, isDark, toggleTheme }: WPInfoModalProps)
           <MapPin className="w-6 h-6 text-wp-emerald" />
           <div>
             <p className="text-wp-text/60 text-[12px] uppercase tracking-wide">Location</p>
-            <p className="text-wp-text text-[16px]">Pune, India</p>
+            <p className="text-wp-text text-[16px]">{profile?.location || 'India'}</p>
           </div>
         </div>
         

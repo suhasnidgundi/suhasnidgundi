@@ -1,17 +1,37 @@
-import { ExternalLink, Github, TrendingUp } from 'lucide-react';
+import { TrendingUp, FolderOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Link } from 'react-router-dom';
+import { useFeaturedProject } from '@/hooks/useProjects';
 
 const FeaturedProject = () => {
-  const project = {
-    title: 'Cloud Deployment Pipeline',
-    description: 'An automated CI/CD pipeline that streamlines deployment workflows, reducing deployment time by 75% while ensuring code quality through integrated testing.',
-    image: '/placeholder.svg',
-    techStack: ['Next.js', 'AWS', 'Docker', 'GitHub Actions', 'Terraform'],
-    impact: 'Reduced deployment cycle from 2 hours to 30 minutes',
-    githubUrl: '#',
-    liveUrl: '#',
-  };
+  const { data: project, isLoading } = useFeaturedProject();
+
+  if (isLoading) {
+    return (
+      <section className="py-20 bg-muted/30">
+        <div className="container mx-auto px-4 text-center text-muted-foreground text-sm">
+          Loading featured project...
+        </div>
+      </section>
+    );
+  }
+
+  if (!project) {
+    return (
+      <section className="py-20 bg-muted/30">
+        <div className="container mx-auto px-4 text-center">
+          <div className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-muted mb-4">
+            <FolderOpen className="h-6 w-6 text-muted-foreground" />
+          </div>
+          <h2 className="text-xl font-semibold text-foreground mb-1">No Featured Project</h2>
+          <p className="text-sm text-muted-foreground max-w-md mx-auto">
+            No projects have been marked as featured in Vercel storage yet.
+          </p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-20 bg-muted/30">
@@ -21,14 +41,14 @@ const FeaturedProject = () => {
             Featured Project
           </h2>
           <p className="text-lg text-muted-foreground">
-            My proudest work with real-world impact
+            Real-world impact and production systems
           </p>
         </div>
 
         <div className="mx-auto max-w-5xl">
           <div className="overflow-hidden rounded-xl border border-border bg-card shadow-lg card-hover">
             <div className="grid md:grid-cols-2 gap-0">
-              {/* Project Image */}
+              {/* Project Image / Icon */}
               <div className="relative aspect-video md:aspect-auto bg-muted">
                 <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5">
                   <div className="text-center p-8">
@@ -50,38 +70,32 @@ const FeaturedProject = () => {
                 </p>
 
                 {/* Tech Stack */}
-                <div className="mb-4 flex flex-wrap gap-2">
-                  {project.techStack.map((tech) => (
-                    <Badge key={tech} variant="secondary" className="text-xs">
-                      {tech}
-                    </Badge>
-                  ))}
-                </div>
+                {project.tech_stack && project.tech_stack.length > 0 && (
+                  <div className="mb-4 flex flex-wrap gap-2">
+                    {project.tech_stack.map((tech) => (
+                      <Badge key={tech} variant="secondary" className="text-xs">
+                        {tech}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
 
                 {/* Impact Metric */}
-                <div className="mb-6 rounded-lg bg-primary/5 p-4 border border-primary/10">
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-primary" />
-                    <span className="font-medium text-foreground">Impact:</span>
+                {project.impact_metric && (
+                  <div className="mb-6 rounded-lg bg-primary/5 p-4 border border-primary/10">
+                    <div className="flex items-center gap-2">
+                      <TrendingUp className="h-4 w-4 text-primary" />
+                      <span className="text-sm font-semibold text-primary">
+                        {project.impact_metric}
+                      </span>
+                    </div>
                   </div>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {project.impact}
-                  </p>
-                </div>
+                )}
 
-                {/* CTAs */}
-                <div className="flex gap-3">
-                  <Button className="flex-1" asChild>
-                    <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="mr-2 h-4 w-4" />
-                      View Details
-                    </a>
-                  </Button>
-                  <Button variant="outline" size="icon" asChild>
-                    <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" aria-label="View on GitHub">
-                      <Github className="h-5 w-5" />
-                    </a>
-                  </Button>
+                <div className="flex gap-4">
+                  <Link to={`/projects/${project.$id}`}>
+                    <Button>View Details</Button>
+                  </Link>
                 </div>
               </div>
             </div>

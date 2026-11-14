@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useProfile } from "@/hooks/useProfile";
 import useAnalytics from "@/hooks/useAnalytics";
 import useXPSound from "@/hooks/useXPSound";
 import XPTaskbar from "@/components/xp/XPTaskbar";
@@ -30,6 +31,7 @@ const TASKBAR_HEIGHT = 30;
 
 const HomeContent: React.FC<HomeProps> = ({ isDark, toggleTheme }) => {
   const navigate = useNavigate();
+  const { data: profile } = useProfile();
   const { playSound, toggleMute } = useXPSound();
   const [isMuted, setIsMuted] = useState(false);
 
@@ -233,8 +235,8 @@ const HomeContent: React.FC<HomeProps> = ({ isDark, toggleTheme }) => {
             onClose={commonProps.onClose}
             onDownload={() => {
               const link = document.createElement('a');
-              link.href = '/resume.pdf';
-              link.download = 'Suhas_Nidgundi_Resume.pdf';
+              link.href = profile?.resumeUrl || '/resume.pdf';
+              link.download = profile?.resumeFilename || 'Resume.pdf';
               link.click();
             }}
             onMinimize={commonProps.onMinimize}

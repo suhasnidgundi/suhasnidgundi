@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { X, Send, Sparkles, Bot, User, Trash2 } from 'lucide-react';
+import { useProfile } from '@/hooks/useProfile';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -11,19 +12,22 @@ interface WPAIChatModalProps {
   onClose: () => void;
 }
 
-const SUGGESTIONS = [
-  "What are Suhas's top projects?",
-  "Tell me about Suhas's experience",
-  "What is Suhas's tech stack?",
-  "How can I contact Suhas?",
-];
-
 const WPAIChatModal = ({ isOpen, onClose }: WPAIChatModalProps) => {
+  const { data: profile } = useProfile();
+  const firstName = profile?.name ? profile.name.split(' ')[0] : 'the author';
+
+  const suggestions = [
+    `What are ${firstName}'s top projects?`,
+    `Tell me about ${firstName}'s experience`,
+    `What is ${firstName}'s tech stack?`,
+    `How can I contact ${firstName}?`,
+  ];
+
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
       content:
-        "👋 Hi! I am Suhas's AI Portfolio Assistant powered by Vercel AI SDK.\n\nAsk me anything about Suhas's projects, experience, skills, or contact info!",
+        `👋 Hi! I am ${profile?.name || 'the author'}'s AI Portfolio Assistant powered by Vercel AI SDK.\n\nAsk me anything about projects, experience, skills, or contact info!`,
     },
   ]);
   const [input, setInput] = useState('');
@@ -177,7 +181,7 @@ const WPAIChatModal = ({ isOpen, onClose }: WPAIChatModalProps) => {
         className="px-4 py-2 flex flex-wrap gap-1.5 border-t border-wp-border/50 bg-wp-bg"
         onClick={(e) => e.stopPropagation()}
       >
-        {SUGGESTIONS.map((item, i) => (
+        {suggestions.map((item, i) => (
           <button
             key={i}
             onClick={() => handleSend(item)}
